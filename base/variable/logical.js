@@ -3,8 +3,8 @@ define(function(require) {
 
 return function(Variable) {
 
-   function LogicalVar(values) {
-
+   function LogicalVar(values, options) {
+      this.values = new Variable.Vector(values);
    }
 
    LogicalVar.prototype = Object.create(Variable.prototype);

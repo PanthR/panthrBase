@@ -3,8 +3,8 @@ define(function(require) {
 
 return function(Variable) {
 
-   function StringVar(values) {
-
+   function StringVar(values, options) {
+      this.values = new Variable.Vector(values);
    }
 
    StringVar.prototype = Object.create(Variable.prototype);

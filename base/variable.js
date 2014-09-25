@@ -8,7 +8,9 @@
 (function(define) {'use strict';
 define(function(require) {
 
-   var Variable;
+   var Variable, utils, generateName;
+
+   utils = require('./utils');
 
    /**
     * Create a new variable. `values` is an array or `Vector` with the desired values.
@@ -26,7 +28,14 @@ define(function(require) {
     * be as simple as passing a `values` argument to the constructor.
     */
    Variable = function(values, options) {
-
+      var ret;
+      if (options == null) { options = {}; }
+      options.mode = utils.getOption(options.mode, Object.keys(Variable.modes)) ||
+                     inferMode(values);
+      ret = new Variable.modes[options.mode](values, options);
+      ret.name  = options.name  || generateName();
+      ret.label = options.label || '';
+      return ret;
    };
 
    Variable.prototype = Object.create({});
@@ -38,6 +47,33 @@ define(function(require) {
    Variable.FactorVar   = require('./variable/factor')(Variable);
    Variable.OrdinalVar  = require('./variable/ordinal')(Variable);
    Variable.DateTimeVar = require('./variable/datetime')(Variable);
+
+   // mode values are the keys for Variable.modes
+   // the corresponding constructors are stored as values
+   Variable.modes = {
+      'scalar':   Variable.ScalarVar,
+      'logical':  Variable.LogicalVar,
+      'string':   Variable.StringVar,
+      'factor':   Variable.FactorVar,
+      'ordinal':  Variable.OrdinalVar,
+      'dateTime': Variable.DateTimeVar
+   };
+
+   // give a mode property to each Variable subclass
+   Object.keys(Variable.modes).forEach(function(key) {
+      Variable.modes[key].prototype.mode = function mode() { return key; };
+   });
+
+   function inferMode(values) {
+      throw new Error('TODO');
+   }
+
+   generateName = (function(index) {
+      return function genName() {
+         index += 1;
+         return 'Var' + ('0000' + index).slice(-4);
+      };
+   }(0));
 
    return Variable;
 

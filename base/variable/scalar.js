@@ -3,8 +3,8 @@ define(function(require) {
 
 return function(Variable) {
 
-   function ScalarVar(values) {
-
+   function ScalarVar(values, options) {
+      this.values = new Variable.Vector(values);
    }
 
    ScalarVar.prototype = Object.create(Variable.prototype);
