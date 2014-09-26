@@ -23,7 +23,7 @@ return function(Variable) {
       this.c2v = [null];     // codes for levels begin from 1, not 0.
       this.v2c = {};
       for (i = 0; i < arr.length; i += 1) {
-         if (!this.v2c.hasOwnProperty(arr[i])) {
+         if (arr[i] != null && !this.v2c.hasOwnProperty(arr[i])) {
             this.v2c[arr[i]] = this.c2v.length;
             this.c2v.push(arr[i].toString());
          }
