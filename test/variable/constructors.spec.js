@@ -67,6 +67,11 @@ describe('Variables can be ', function() {
       expect(v1.mode()).to.equal('dateTime');
    });
    it('created without an explicit mode being given', function() {
-
+      expect(new Variable([2.3, -123, 23])).to.be.instanceof(Variable.ScalarVar);
+      expect(new Variable(["2.3", "-123", "23"])).to.be.instanceof(Variable.FactorVar);
+      expect(new Variable([, , null])).to.be.instanceof(Variable.ScalarVar);
+      expect(new Variable([, , true])).to.be.instanceof(Variable.LogicalVar);
+      expect(new Variable([, , 23])).to.be.instanceof(Variable.ScalarVar);
+      expect(new Variable([, , "23"])).to.be.instanceof(Variable.FactorVar);
    });
 });

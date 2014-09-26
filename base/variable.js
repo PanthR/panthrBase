@@ -18,7 +18,7 @@ define(function(require) {
     *  - `name`: A brief label for the variable (to show in variable listings)
     *  - `label`: The label to use in graphs/tables/descriptions.
     *  - `mode`: A string describing what type of variable to create. If `mode` is missing
-    * an attempt to determine it based on the `values` will be made.
+    * it will be determined based on the first non-missing entry in `values`.
     *
     *
     * Further options depend on the particular mode chosen. See the subclass documentations
@@ -65,7 +65,10 @@ define(function(require) {
    });
 
    function inferMode(values) {
-      throw new Error('TODO');
+      var i = 0;
+      while (i < values.length && values[i] == null) { i += 1; }
+      if (i >= values.length || typeof values[i] === 'number') { return 'scalar'; }
+      return typeof values[i] === 'boolean' ? 'logical' : 'factor';
    }
 
    generateName = (function(index) {
