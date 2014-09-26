@@ -38,6 +38,15 @@ describe('Variables can be ', function() {
       expect(v1.values.toArray()).to.deep.equal(arr);
       expect(v1.mode()).to.equal('string');
    });
+   it('factor', function() {
+      var arr = ['b', 'a', 'a', 'c', 'b'];
+      var v1 = new Variable(arr,
+         {mode: 'factor', name: 'niceName', label: 'l1'});
+      expect(v1).to.be.instanceof(Variable);
+      expect(v1).to.be.instanceof(Variable.FactorVar);
+      expect(v1.values.toArray()).to.deep.equal([2, 1, 1, 3, 2]);
+      expect(v1.mode()).to.equal('factor');
+   });
    it('created without an explicit mode being given', function() {
 
    });

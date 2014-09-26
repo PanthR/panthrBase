@@ -13,7 +13,7 @@ define(function(require) {
    utils = require('./utils');
 
    /**
-    * Create a new variable. `values` is an array or `Vector` with the desired values.
+    * Create a new variable. `values` is an array with the desired values.
     * `options` is an object indicating properties of the variable:
     *  - `name`: A brief label for the variable (to show in variable listings)
     *  - `label`: The label to use in graphs/tables/descriptions.
