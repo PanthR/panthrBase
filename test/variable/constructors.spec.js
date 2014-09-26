@@ -47,6 +47,16 @@ describe('Variables can be ', function() {
       expect(v1.values.toArray()).to.deep.equal([2, 1, 1, 3, 2]);
       expect(v1.mode()).to.equal('factor');
    });
+   it('ordinal', function() {
+      var arr = ['b', 'a', 'a', 'c', 'b'];
+      var levels = ['c', 'b', 'a']
+      var v1 = new Variable(arr,
+         {mode: 'ordinal', name: 'niceName', label: 'l1', levels: levels});
+      expect(v1).to.be.instanceof(Variable);
+      expect(v1).to.be.instanceof(Variable.OrdinalVar);
+      expect(v1.values.toArray()).to.deep.equal([2, 3, 3, 1, 2]);
+      expect(v1.mode()).to.equal('ordinal');
+   });
    it('created without an explicit mode being given', function() {
 
    });
