@@ -52,6 +52,7 @@
       "sinon-chai": "^2.5.0"
    },
    "dependencies": {
-      "linalg-panthr": "*"
+      "linalg-panthr": "*",
+      "moment": "*"
    }
 }

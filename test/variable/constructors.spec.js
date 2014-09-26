@@ -57,6 +57,15 @@ describe('Variables can be ', function() {
       expect(v1.values.toArray()).to.deep.equal([2, 3, 3, 1, 2]);
       expect(v1.mode()).to.equal('ordinal');
    });
+   it('dateTime', function() {
+      var arr = ["01-25-2001", "01-25-2002", "01-26-2001"];
+      var v1 = new Variable(arr,
+         {mode: 'dateTime', name: 'niceName', label: 'l1', format: "MM-DD-YYYY"});
+      expect(v1).to.be.instanceof(Variable);
+      //TODO need to test the values once we have get and set methods
+      expect(v1).to.be.instanceof(Variable.DateTimeVar);
+      expect(v1.mode()).to.equal('dateTime');
+   });
    it('created without an explicit mode being given', function() {
 
    });
