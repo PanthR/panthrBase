@@ -38,6 +38,14 @@ return function(Variable) {
       return values.map(function(val) { return v2c[val]; });
    };
 
+   FactorVar.prototype.get = function get(i) {
+      var c2v = this.c2v;
+      if (typeof i !== 'number') {
+         return this.values.get(i).map(function(code) { return c2v[code]; });
+      }
+      return c2v[ this.values.get(i) ];
+   };
+
    return FactorVar;
 };
 

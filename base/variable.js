@@ -64,6 +64,13 @@ define(function(require) {
       Variable.modes[key].prototype.mode = function mode() { return key; };
    });
 
+   Variable.prototype.get = function get(i) {
+      if (i < 1 || i > this.values.length) { return null; }
+      return i == null ? this.values.toArray() : this.values.get(i);
+   };
+
+   // Helper methods
+
    function inferMode(values) {
       var i = 0;
       while (i < values.length && values[i] == null) { i += 1; }
