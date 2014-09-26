@@ -14,6 +14,7 @@ describe('Variable get', function() {
       expect(Variable).to.respondTo('get');
       expect(v1.get(2)).to.equal(-12.2);
       expect(v1.get([1, 2])).to.deep.equal([2.12, -12.2]);
+      expect(v1.get([1, 5, 2])).to.deep.equal([2.12, null, -12.2]);
       expect(v1.get(4)).to.not.exist;
       expect(v3.get(3)).to.not.exist;
       expect(v4.get(3)).to.not.exist;
