@@ -12,7 +12,6 @@ describe('Variables can be ', function() {
       expect(v2).to.be.instanceof(Variable);
       expect(v2).to.be.instanceof(Variable.ScalarVar);
       expect(v1.name).to.equal('niceName');
-      expect(v2.name[v2.name.length - 1]).to.equal('1');
       expect(v1.label).to.equal('l1');
       expect(v2.label).to.equal('');
       expect(v2.values).to.be.instanceof(Variable.Vector);
