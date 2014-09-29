@@ -34,4 +34,20 @@ describe('Variable fillers include ', function() {
       expect(v2).to.be.instanceOf(Variable.FactorVar);
       expect(v2.get()).to.deep.equal(['a','b','a','b','a','b']);
    });
+   it('seq', function() {
+   // from, to, step
+   var v1 = Variable.seq(5.1, 6.9, 0.5);
+   expect(v1).to.be.instanceOf(Variable.ScalarVar);
+   expect(v1.get()).to.deep.equal([5.1, 5.6, 6.1, 6.6]);
+
+   // from, to (step is 1 or -1)
+   var v2 = Variable.seq(6.9, 4.5, {name: 'hey'});
+   expect(v2.name).to.equal('hey');
+   expect(v2.get()).to.deep.equal([6.9, 5.9, 4.9]);
+
+   // to (from is 1, step is 1)
+   v2 = Variable.seq(4.5);
+   expect(v2.get()).to.deep.equal([1, 2, 3, 4]);
+
+   });
 });

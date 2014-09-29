@@ -76,6 +76,24 @@ define(function(require) {
       return new Variable(arr, options);
    };
 
+   /**
+    * Construct a scalar variable from an arithmetic sequence.
+    * `step` defaults to 1 or -1 if omitted.
+    * `from` defaults to 1 (`to` is positive in this case)
+    * seq(5.1, 6.1, .5) would have values [5.1, 5.6, 6.1]
+    * seq(5, 7.5) would have values [5, 6, 7]
+    * `options` parameter is an optional options object
+    */
+   Variable.seq = function seq(from, to, step, options) {
+      var args, v;
+      args = Array.prototype.slice.call(arguments);
+      if (typeof args[args.length - 1] === 'object') {
+         options = args.pop();
+      }
+      v = Variable.Vector.seq.apply(null, args);
+      return new Variable(v, options);
+   };
+
    Variable.prototype.get = function get(i) {
       return i == null ? this.values.toArray() : this.values.get(i);
    };
