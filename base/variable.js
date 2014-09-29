@@ -77,6 +77,17 @@ define(function(require) {
       return this.values.length;
    };
 
+   /**
+    * Resize a variable to the new `length`. If fill is `true`, recycle the values to
+    * reach the new length.
+    * If fill is `false` or omitted, new values will be `null`.
+    */
+   Variable.prototype.resize = function resize(length, fill) {
+      if (fill !== true) { fill = function(i) { return null; }; }
+      this.values = this.values.resize(length, fill);
+      return this;
+   };
+
    // Helper methods
 
    function inferMode(values) {
