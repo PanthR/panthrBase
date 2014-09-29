@@ -36,6 +36,17 @@ return function(Variable) {
 
    DateTimeVar.prototype = Object.create(Variable.prototype);
 
+   // `i` should be required here.
+   DateTimeVar.prototype.set = function set(i, val, format) {
+      var f = format == null ? function(s) { return moment(s); }
+                             : function(s) { return moment(s, format); }
+      function getMillis(val) {
+         if (Array.isArray(val)) { return val.map(getMillis); }
+         return typeof val === 'string' ? f(val) : val;
+      }
+      this.values.set(i, getMillis(val));
+   }
+
    return DateTimeVar;
 };
 

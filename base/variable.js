@@ -69,6 +69,11 @@ define(function(require) {
       return i == null ? this.values.toArray() : this.values.get(i);
    };
 
+   Variable.prototype.set = function set(i, val) {
+      this.values.set(i, val);
+      return this;
+   }
+
    // Helper methods
 
    function inferMode(values) {

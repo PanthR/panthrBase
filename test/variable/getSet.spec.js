@@ -43,3 +43,22 @@ describe('Variable get', function() {
       expect(v5.get([1, 2]).length).to.equal(2);
    });
 });
+describe('Variable set', function() {
+   it('exists', function() {
+      expect(Variable).to.respondTo('set');
+      expect(function() { v1.set(1, 1.2); }).to.not.throw(Error);
+      expect(v1.get(1)).to.equal(1.2);
+      expect(v1.set([1, 2], [3.42, 3.41]));
+      expect(v1.get(2)).to.equal(3.41);
+      expect(v1.get(1)).to.equal(3.42);
+   });
+   it('works for factors and ordered', function() {
+      expect(function() { v2.set(1, '3'); }).to.not.throw(Error);
+      expect(v2.get(1)).to.equal('3');
+   });
+   it('works datetime', function() {
+      expect(function() { v5.set([1, 2], '2003-02-22') }).to.not.throw(Error);
+      expect(moment(v5.get(1)).format('YYYY-MM-DD')).to.equal('2003-02-22');
+      expect(moment(v5.get(2)).format('YYYY-MM-DD')).to.equal('2003-02-22');
+   });
+});
