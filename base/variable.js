@@ -71,7 +71,11 @@ define(function(require) {
    Variable.prototype.set = function set(i, val) {
       this.values.set(i, val);
       return this;
-   }
+   };
+
+   Variable.prototype.length = function length() {
+      return this.values.length;
+   };
 
    // Helper methods
 
