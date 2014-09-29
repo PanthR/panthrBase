@@ -41,7 +41,9 @@ return function(Variable) {
    FactorVar.prototype.get = function get(i) {
       var c2v = this.c2v;
       if (typeof i === 'number') { return c2v[ this.values.get(i) ]; }
-      return this.values.get(i).map(function(code) { return c2v[code]; });
+      return this.values.get(i).map(function(code) {
+         return code == null ? null : c2v[code];
+      });
    };
 
    FactorVar.prototype.set = function set(i, val) {
