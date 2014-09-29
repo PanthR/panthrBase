@@ -58,11 +58,23 @@ define(function(require) {
       'ordinal':  Variable.OrdinalVar,
       'dateTime': Variable.DateTimeVar
    };
-
    // give a mode property to each Variable subclass
    Object.keys(Variable.modes).forEach(function(key) {
       Variable.modes[key].prototype.mode = function mode() { return key; };
    });
+
+   /**
+    * Construct a variable from the function `f(i)`, using arguments
+    * i = from .. to
+    */
+   Variable.tabulate = function tabulate(f, from, to, options) {
+      var arr, i;
+      arr = [];
+      for (i = from; i <= to; i += 1) {
+         arr.push(f(i));
+      }
+      return new Variable(arr, options);
+   };
 
    Variable.prototype.get = function get(i) {
       return i == null ? this.values.toArray() : this.values.get(i);
