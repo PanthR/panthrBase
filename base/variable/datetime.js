@@ -31,7 +31,7 @@ return function(Variable) {
             return moment(val, options.format).valueOf();
          });
       }
-      this.values = new Variable.Vector(this.values);
+      this.values = new Variable.Vector(this.values).mutable(true);
    }
 
    DateTimeVar.prototype = Object.create(Variable.prototype);

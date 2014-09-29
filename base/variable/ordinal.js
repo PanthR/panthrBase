@@ -15,7 +15,7 @@ return function(Variable) {
    function OrdinalVar(values, options) {
       this.levels(options.levels || values.slice().sort());
       // the values of a factor "are" the corresponding codes
-      this.values = new Variable.Vector(this.getCodes(values));
+      this.values = new Variable.Vector(this.getCodes(values)).mutable(true);
    }
 
    OrdinalVar.prototype = Object.create(Variable.FactorVar.prototype);

@@ -4,7 +4,7 @@ define(function(require) {
 return function(Variable) {
 
    function ScalarVar(values, options) {
-      this.values = new Variable.Vector(values);
+      this.values = new Variable.Vector(values).mutable(true);
    }
 
    ScalarVar.prototype = Object.create(Variable.prototype);

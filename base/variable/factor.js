@@ -7,7 +7,7 @@ return function(Variable) {
    function FactorVar(values, options) {
       this.levels(values.slice().sort());
       // the values of a factor "are" the corresponding codes
-      this.values = new Variable.Vector(this.getCodes(values));
+      this.values = new Variable.Vector(this.getCodes(values)).mutable(true);
    }
 
    FactorVar.prototype = Object.create(Variable.prototype);
