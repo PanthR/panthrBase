@@ -29,6 +29,7 @@ define(function(require) {
     */
    Variable = function(values, options) {
       var ret;
+      if (values instanceof Variable.Vector) { values = values.toArray(); }
       if (options == null) { options = {}; }
       options.mode = utils.getOption(options.mode, Object.keys(Variable.modes)) ||
                      inferMode(values);
@@ -131,7 +132,7 @@ define(function(require) {
    };
 
    // Helper methods
-
+   // values is an array!
    function inferMode(values) {
       var i = 0;
       while (i < values.length && values[i] == null) { i += 1; }

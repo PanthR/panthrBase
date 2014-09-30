@@ -3,7 +3,7 @@ define(function(require) {
 
 return function(Variable) {
 
-   // values will be an array
+   // values _will_ be an array
    function FactorVar(values, options) {
       this.levels(values.slice().sort());
       // the values of a factor "are" the corresponding codes
