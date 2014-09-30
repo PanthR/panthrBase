@@ -118,14 +118,16 @@ define(function(require) {
    };
 
    /**
-    * Resize a variable to the new `length`. If fill is `true`, recycle the values to
-    * reach the new length.
-    * If fill is `false` or omitted, new values will be `null`.
+    * Return a new variable which results from resizing `this`.
+    * If fill is `true`, recycle the values to reach the new length, `length`.
+    * If fill is `false` or omitted, the new values will be `null`.
     */
    Variable.prototype.resize = function resize(length, fill) {
+      var newVar;
+      newVar = this.clone();
       if (fill !== true) { fill = function(i) { return null; }; }
-      this.values = this.values.resize(length, fill);
-      return this;
+      newVar.values = newVar.values.resize(length, fill);
+      return newVar;
    };
 
    // Helper methods
