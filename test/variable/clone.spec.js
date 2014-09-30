@@ -28,4 +28,16 @@ describe('Clone', function() {
          expect(w.values).to.not.equal(v.values);
       });
    });
+   describe('reproduce', function() {
+      it('can make a variable of length 0', function() {
+         A.forEach(function(v) {
+            expect(v.reproduce([]).mode()).to.equal(v.mode());
+            expect(v.reproduce([]).length()).to.equal(0);
+         });
+      });
+      it('can make a new variable using a vector of values', function() {
+         expect(A[3].reproduce(new Variable.Vector([1, 2, 1])).levels())
+            .to.deep.equal(A[3].levels());
+      });
+   });
 });

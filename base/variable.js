@@ -113,7 +113,20 @@ define(function(require) {
     * mode, and label.
     */
    Variable.prototype.clone = function clone() {
-      return new Variable(this.values.clone(), {
+      return this.reproduce(this.values.clone());
+   };
+
+   /**
+    * Return a new variable with all the same settings as `this`
+    * but with values taken from `newValues`, which may be
+    * a `Vector`, or an array.
+    *
+    * Note: If `this` is a factor or an ordinal variable, it is
+    * assumed that the new values are codes which are in agreement
+    * with the system of codes for `this`.
+    */
+   Variable.prototype.reproduce = function reproduce(newValues) {
+      return new Variable(newValues, {
          mode: this.mode(), label: this.label
       });
    };

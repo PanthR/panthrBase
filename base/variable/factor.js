@@ -63,8 +63,9 @@ return function(Variable) {
       return this;
    };
 
-   FactorVar.prototype.clone = function clone() {
-      return new Variable(this.get(), {
+   FactorVar.prototype.reproduce = function reproduce(newValues) {
+      newValues = newValues.map(function(code) { return this.c2v[code]; }.bind(this));
+      return new Variable(newValues, {
          mode: this.mode(), label: this.label, levels: this.levels()
       });
    };
