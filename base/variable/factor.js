@@ -63,6 +63,12 @@ return function(Variable) {
       return this;
    };
 
+   FactorVar.prototype.clone = function clone() {
+      return new Variable(this.get(), {
+         mode: this.mode(), label: this.label, levels: this.levels()
+      });
+   };
+
    return FactorVar;
 };
 

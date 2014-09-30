@@ -108,6 +108,16 @@ define(function(require) {
    };
 
    /**
+    * Clone `this`, creating a new variable with the same values,
+    * mode, and label.
+    */
+   Variable.prototype.clone = function clone() {
+      return new Variable(this.values.clone(), {
+         mode: this.mode(), label: this.label
+      });
+   };
+
+   /**
     * Resize a variable to the new `length`. If fill is `true`, recycle the values to
     * reach the new length.
     * If fill is `false` or omitted, new values will be `null`.
