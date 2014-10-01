@@ -54,6 +54,55 @@ describe('Variable fillers include ', function() {
    // to (from is 1, step is 1)
    v2 = Variable.seq(4.5);
    expect(v2.get()).to.deep.equal([1, 2, 3, 4]);
-
+   });
+   describe('rep', function() {
+      var v1 = new Variable([5.5, 3.3, -2.5]);
+      var v2 = new Variable(['c', 'x', 'x']);
+      var v3 = new Variable(['c', 'x', 'x'], {mode: 'ord', levels:['x', 'c']});
+      var v4 = new Variable([true, false, true], {mode: 'logical'});
+      var counts = [5.5, 3.3, -2.5];
+      // `times` is a number: repeat the variable that many times
+      it('with a number will repeat the variable', function() {
+         expect(v1.rep(3).get()).to.deep.equal([
+            5.5, 3.3, -2.5, 5.5, 3.3, -2.5, 5.5, 3.3, -2.5]);
+         expect(v2.rep(3).get()).to.deep.equal([
+            'c', 'x', 'x', 'c', 'x', 'x', 'c', 'x', 'x']);
+         expect(v3.rep(2.9).get()).to.deep.equal([
+            'c', 'x', 'x', 'c', 'x', 'x']);
+         expect(v4.rep(1).get()).to.deep.equal([
+            true, false, true]);
+      });
+      // `times` is a variable or array: use the values as frequencies for
+      // corresponding entries.  `times` must have same length as `this`
+      it('with a variable or array will repeat the variable', function() {
+         expect(v1.rep(v1).get()).to.deep.equal([
+            5.5, 5.5, 5.5, 5.5, 5.5, 3.3, 3.3, 3.3]);
+         expect(v1.rep(counts).get()).to.deep.equal([
+            5.5, 5.5, 5.5, 5.5, 5.5, 3.3, 3.3, 3.3]);
+         expect(v2.rep(v1).get()).to.deep.equal([
+            'c', 'c', 'c', 'c', 'c', 'x', 'x', 'x']);
+         expect(v3.rep([2, 3, 2]).get()).to.deep.equal([
+            'c', 'c', 'x', 'x', 'x', 'x', 'x']);
+      });
+      it('returns a variable of the same subclass & correct length', function(){
+         var A = [v1, v2, v3, v3];
+         A.forEach(function(v) {
+            expect(v.rep(10*Math.random()).mode()).to.equal(v.mode());
+            expect(v.rep(v1).mode()).to.equal(v.mode());
+            expect(v.rep(counts).mode()).to.equal(v.mode());
+            expect(v.rep({length: 2.5}).mode()).to.equal(v.mode());
+            expect(v.rep({each: 2.5}).mode()).to.equal(v.mode());
+            expect(v.rep(5).length()).to.equal(v.length()*5);
+            expect(v.rep(v1).length()).to.equal(5+3+0);
+            expect(v.rep(counts).length()).to.equal(5+3+0);
+            expect(v.rep({length: 2.5}).length()).to.equal(2);
+            expect(v.rep({each: 2.5}).length()).to.equal(v.length()*2);
+         });
+      });
+      it('repeats missing values', function() {
+         var v = new Variable([3.5, null, 1]);
+         expect(v.rep(3).get(5)).to.equal(null);
+         expect(v.rep(v1).get(8)).to.equal(null);
+      });
    });
 });
