@@ -9,6 +9,12 @@ return function(Variable) {
 
    StringVar.prototype = Object.create(Variable.prototype);
 
+   StringVar.prototype.asScalar = function asScalar() {
+      return new Variable(this.values.map(function(val){
+         return val == null ? null : parseFloat(val);
+      }));
+   };
+
    return StringVar;
 };
 

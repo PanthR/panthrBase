@@ -9,6 +9,14 @@ return function(Variable) {
 
    LogicalVar.prototype = Object.create(Variable.prototype);
 
+   LogicalVar.prototype.asScalar = function asScalar() {
+      return new Variable(this.values.map(function(val) {
+         return val === true ? 1
+              : val === false ? 0
+                              : null;
+      }));
+   };
+
    return LogicalVar;
 };
 

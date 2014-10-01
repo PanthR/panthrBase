@@ -47,6 +47,12 @@ return function(Variable) {
       this.values.set(i, getMillis(val));
    };
 
+   DateTimeVar.prototype.asString = function asString() {
+      return Variable.string(this.values.map(function(val) {
+         return val == null ? val : moment(val).format();
+      }));
+   };
+
    return DateTimeVar;
 };
 

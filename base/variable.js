@@ -128,6 +128,15 @@ define(function(require) {
       return new Variable(v, options);
    };
 
+   Variable.prototype.asScalar = function asScalar() {
+      return new Variable(this.values);
+   };
+
+   Variable.prototype.asString = function asString() {
+      return Variable.string(this.values.map(function(val) {
+         return val == null ? null : '' + val;
+      }));
+   };
    /**
     * Repeats a variable according to a pattern to make a new variable.
     * `times` can be used in several different ways, depending on its type.
