@@ -60,6 +60,15 @@ describe('Variables can be ', function() {
       expect(v1).to.be.instanceof(Variable.OrdinalVar);
       expect(v1.values.toArray()).to.deep.equal([2, 3, 3, 1, 2]);
       expect(v1.mode()).to.equal('ordinal');
+      expect(Variable.ordinal(['b', 'a', 'a'], 'aLabel').get()).to.deep.equal(['b', 'a', 'a']);
+      expect(Variable.ordinal(['b', 'a', 'a'], 'aLabel').levels()).to.deep.equal(['a', 'b']);
+      expect(Variable.ordinal(['b', 'a', 'a'], 'aLabel').label).to.equal('aLabel');
+      expect(Variable.ordinal(['b', 'a', 'a'], ['b', 'a']).get()).to.deep.equal(['b', 'a', 'a']);
+      expect(Variable.ordinal(['b', 'a', 'a'], ['b', 'a']).levels()).to.deep.equal(['b', 'a']);
+      expect(Variable.ordinal(['b', 'a', 'a'], ['b', 'a']).label).to.equal('');
+      expect(Variable.ordinal(['b', 'a', 'a'], ['b', 'a'], 'aLabel').get()).to.deep.equal(['b', 'a', 'a']);
+      expect(Variable.ordinal(['b', 'a', 'a'], ['b', 'a'], 'aLabel').levels()).to.deep.equal(['b', 'a']);
+      expect(Variable.ordinal(['b', 'a', 'a'], ['b', 'a'], 'aLabel').label).to.equal('aLabel');
    });
    it('dateTime', function() {
       var arr = ["01-25-2001", "01-25-2002", "01-26-2001"];

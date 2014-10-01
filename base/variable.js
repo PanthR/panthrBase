@@ -64,6 +64,39 @@ define(function(require) {
       Variable.modes[key].prototype.mode = function mode() { return key; };
    });
 
+   /** Convenience constructor. */
+   Variable.scalar = function scalar(values, label) {
+      return new Variable(values, { mode: 'scalar', label: label });
+   };
+
+   /** Convenience constructor. */
+   Variable.logical = function logical(values, label) {
+      return new Variable(values, { mode: 'logical', label: label });
+   };
+
+   /** Convenience constructor. */
+   Variable.string = function string(values, label) {
+      return new Variable(values, { mode: 'string', label: label });
+   };
+
+   /** Convenience constructor. */
+   Variable.factor = function factor(values, label) {
+      return new Variable(values, { mode: 'factor', label: label });
+   };
+
+   /** Convenience constructor. `levels` or `label` could be omitted. */
+   Variable.ordinal = function ordinal(values, levels, label) {
+      return new Variable(values,
+         Array.isArray(levels) ? { mode: 'ordinal', levels: levels, label: label }
+                               : { mode: 'ordinal', label: levels }
+      );
+   };
+
+   /** Convenience constructor. */
+   Variable.dateTime = function dateTime(values, label) {
+      return new Variable(values, { mode: 'date', label: label });
+   };
+
    /**
     * Construct a variable from the function `f(i)`, using arguments
     * i = from .. to
