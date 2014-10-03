@@ -41,19 +41,19 @@ describe('Variable fillers include ', function() {
       expect(v2.get()).to.deep.equal(['a','b','a','b','a','b']);
    });
    it('seq', function() {
-   // from, to, step
-   var v1 = Variable.seq(5.1, 6.9, 0.5);
-   expect(v1).to.be.instanceOf(Variable.ScalarVar);
-   expect(v1.get()).to.deep.equal([5.1, 5.6, 6.1, 6.6]);
+      // from, to, step
+      var v1 = Variable.seq(5.1, 6.9, 0.5);
+      expect(v1).to.be.instanceOf(Variable.ScalarVar);
+      expect(v1.get()).to.deep.equal([5.1, 5.6, 6.1, 6.6]);
 
-   // from, to (step is 1 or -1)
-   var v2 = Variable.seq(6.9, 4.5, {name: 'hey'});
-   expect(v2.name).to.equal('hey');
-   expect(v2.get()).to.deep.equal([6.9, 5.9, 4.9]);
+      // from, to (step is 1 or -1)
+      var v2 = Variable.seq(6.9, 4.5, {name: 'hey'});
+      expect(v2.name).to.equal('hey');
+      expect(v2.get()).to.deep.equal([6.9, 5.9, 4.9]);
 
-   // to (from is 1, step is 1)
-   v2 = Variable.seq(4.5);
-   expect(v2.get()).to.deep.equal([1, 2, 3, 4]);
+      // to (from is 1, step is 1)
+      v2 = Variable.seq(4.5);
+      expect(v2.get()).to.deep.equal([1, 2, 3, 4]);
    });
    describe('rep', function() {
       var v1 = new Variable([5.5, 3.3, -2.5]);
@@ -85,7 +85,7 @@ describe('Variable fillers include ', function() {
             'c', 'c', 'x', 'x', 'x', 'x', 'x']);
       });
       it('returns a variable of the same subclass & correct length', function(){
-         var A = [v1, v2, v3, v3];
+         var A = [v1, v2, v3, v4];
          A.forEach(function(v) {
             expect(v.rep(10*Math.random()).mode()).to.equal(v.mode());
             expect(v.rep(v1).mode()).to.equal(v.mode());
@@ -103,6 +103,89 @@ describe('Variable fillers include ', function() {
          var v = new Variable([3.5, null, 1]);
          expect(v.rep(3).get(5)).to.equal(null);
          expect(v.rep(v1).get(8)).to.equal(null);
+      });
+   });
+   describe('concat', function() {
+      var A = [
+         new Variable([5.5, 3.3, -2.5]),
+         new Variable(['c', 'x', 'x']),
+         new Variable(['c', 'x', 'x'], {mode: 'str'}),
+         new Variable([true, false, true], {mode: 'logical'}),
+         new Variable(['2014-05-17', '2001-08-25', '1985-01-02'],
+         { mode: 'date'}),
+         new Variable(['c', 'x', 'x'], {mode: 'ord', levels:['x', 'c']})
+      ];
+      it('preserves mode when modes are uniform and not ordinal', function() {
+         expect(Variable).itself.to.respondTo('concat');
+         A.slice(0,5).forEach(function(v) { 
+            var w = Variable.concat(v, v, v);
+            expect(w.mode()).to.equal(v.mode());
+            expect(w.length()).to.equal(v.length() * 3);
+            expect(w.get().slice(0,3)).to.deep.equal(v.get());
+            expect(w.get().slice(3,6)).to.deep.equal(v.get());
+            expect(w.get().slice(6,9)).to.deep.equal(v.get());
+            w = Variable.concat(v);
+            expect(w.mode()).to.equal(v.mode());
+            expect(w.get()).to.deep.equal(v.get());
+         });
+         var w = Variable.concat();
+         expect(w.mode()).to.equal('scalar');
+         expect(w.get()).to.deep.equal([]);
+      });
+      it('except for 2 or more ordinals being concatted', function() {
+         var v = A[5];
+         var w = Variable.concat(v, v, v);
+         expect(w.mode()).to.equal('factor');
+         expect(w.length()).to.equal(v.length() * 3);
+         expect(w.get().slice(0,3)).to.deep.equal(v.get());
+         expect(w.get().slice(3,6)).to.deep.equal(v.get());
+         expect(w.get().slice(6,9)).to.deep.equal(v.get());
+         w = Variable.concat(v);
+         expect(w.mode()).to.equal(v.mode());
+         expect(w.get()).to.deep.equal(v.get());
+      })
+      it('returns string if at least one mode is a string', function() {
+         function pick() { 
+            return A[Math.floor(A.length*Math.random())];
+         }
+         for (var i = 0; i < 15; i += 1) {
+            expect(Variable.concat(pick(), A[2], pick()).mode()).to.equal('string');
+            expect(Variable.concat(pick(), A[2], pick()).length()).to.equal(9);
+         }
+      })
+      it('returns factor if all modes ordered or factor, not just 1 ord', function() {
+         function pick() { 
+            return A[Math.random() > .5 ? 1 : 5];
+         }
+         for (var i = 0; i < 15; i += 1) {
+            var w = Variable.concat(pick(), pick());
+            expect(w.mode()).to.equal('factor');
+            expect(w.length()).to.equal(6);
+            expect(w.get().slice(0,3)).to.deep.equal(A[1].get());
+            expect(w.get().slice(3,6)).to.deep.equal(A[1].get());
+         }
+      })
+      it('returns scalar otherwise when modes not uniform', function() {
+         var ind = [0, 1, 3, 4, 5];
+         var i, j, k;
+         for (i = 0; i < 20; i += 1) {
+            j = ind[Math.floor(5 * Math.random())];
+            k = ind[2 + Math.floor(2 * Math.random())];
+            if (j !== k) {
+               var w = Variable.concat(A[j], A[k], A[k]);
+               expect(w.mode()).to.equal('scalar');
+               expect(w.length()).to.equal(9);
+               expect(w.get().slice(0,3)).to.deep.equal(A[j].asScalar().get());
+               expect(w.get().slice(3,6)).to.deep.equal(A[k].asScalar().get());
+               expect(w.get().slice(6,9)).to.deep.equal(A[k].asScalar().get());
+            }
+         }
+      })
+      it('which is also in the prototype', function() {
+         expect(Variable).to.respondTo('concat');
+         expect(A[1].concat(A[2], A[3]).length()).to.equal(9);
+         expect(A[1].concat(A[2]).length()).to.equal(6);
+         expect(A[1].concat().length()).to.equal(3);
       });
    });
 });

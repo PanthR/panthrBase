@@ -128,6 +128,26 @@ define(function(require) {
       return new Variable(v, options);
    };
 
+   /**
+    * Takes 0 or more variables as arguments and concatenates them.
+    */
+   Variable.concat = function concat(vars) {
+      var commonMode, converters;
+      if (arguments.length === 0) { return Variable.scalar([]); }
+      if (arguments.length === 1) { return arguments[0]; }
+      vars = [].slice.call(arguments);  // at least 2 variables
+      commonMode = vars.map(function(v) { return v.mode(); }).reduce(_lcMode);
+      converters = {
+         'scalar': function(v) { return v.asScalar(); },
+         'string': function(v) { return v.asString(); },
+         'factor': function(v) { return v.asString(); }
+      };
+      // make all vars the same type & concatenate their values
+      if (converters[commonMode]) { vars = vars.map(converters[commonMode]); }
+      vars = vars.map(function(v) { return v.get(); });  // array of arrays
+      return new Variable([].concat.apply([], vars), { mode: commonMode });
+   };
+
    Variable.prototype.asScalar = function asScalar() {
       return new Variable(this.values);
    };
@@ -137,6 +157,7 @@ define(function(require) {
          return val == null ? null : '' + val;
       }));
    };
+
    /**
     * Repeats a variable according to a pattern to make a new variable.
     * `times` can be used in several different ways, depending on its type.
@@ -202,6 +223,15 @@ define(function(require) {
       return newVar;
    };
 
+   /**
+    * See `Variable.concat`.
+    */
+   Variable.prototype.concat = function concat(vars) {
+      vars = [].slice.call(arguments);
+      vars.unshift(this);
+      return Variable.concat.apply(null, vars);
+   };
+
    // Helper methods
    // values is an array!
    function inferMode(values) {
@@ -217,6 +247,20 @@ define(function(require) {
          return 'Var' + ('0000' + index).slice(-4);
       };
    }(0));
+
+
+   /*
+    * Given two mode strings `m1` and `m2`, returns the 'least common mode'.
+    * Helper for the `concat` method and possibly others.
+    * For example, _lcMode('factor', 'logical') would be 'scalar'.
+    */
+   function _lcMode(m1, m2) {
+      if (m1 === 'ordinal') { m1 = 'factor'; }
+      if (m2 === 'ordinal') { m2 = 'factor'; }
+      if (m1 === m2) { return m1; }
+      if (m1 === 'string' || m2 === 'string') { return 'string'; }
+      return 'scalar';
+   }
 
    return Variable;
 
