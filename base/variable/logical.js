@@ -17,6 +17,15 @@ return function(Variable) {
       }));
    };
 
+   LogicalVar.prototype.which = function which() {
+      // `false` -> 0; `true` -> the array index plus 1; and NA -> NA
+      var arr;
+      arr = this.values.toArray().map(function(v, k) {
+         return v === false ? 0 : v && k + 1;
+      }).filter(function(v) { return v !== 0; });
+      return new Variable(arr);
+   };
+
    return LogicalVar;
 };
 
