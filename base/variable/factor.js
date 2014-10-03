@@ -38,7 +38,7 @@ return function(Variable) {
       return values.map(function(val) { return v2c[val]; });
    };
 
-   FactorVar.prototype.get = function get(i) {
+   FactorVar.prototype._get = function _get(i) {
       var c2v = this.c2v;
       if (typeof i === 'number') { return c2v[ this.values.get(i) ]; }
       return this.values.get(i).map(function(code) {

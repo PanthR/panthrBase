@@ -1,5 +1,9 @@
 var Variable  = require('../../base/variable');
-var expect = require('chai').expect;
+var chai = require('chai');
+var expect = chai.expect;
+var sinon = require('sinon');
+var sinonChai = require('sinon-chai');
+chai.use(sinonChai);
 var moment = require('moment');
 
 var v1 = new Variable([2.12, -12.2, 3, undefined]);
@@ -9,7 +13,7 @@ var v4 = new Variable([true, false, , true]);
 var v5 = new Variable(['23-10-2007', '22-09-2008'], { mode: 'date', format: 'DD-MM-YYYY' });
 var v6 = new Variable(['A', 'A', 'B', 'D'], { mode: 'ord', levels: ['C', 'A', 'D', 'B'] });
 
-describe('Variable get', function() {
+describe('Variable#get', function() {
    it('exists', function() {
       expect(Variable).to.respondTo('get');
       expect(v1.get(2)).to.equal(-12.2);
@@ -41,6 +45,40 @@ describe('Variable get', function() {
       expect(v5.get(0)).to.not.exist;
       expect(v5.get([1, 2])).to.exist;
       expect(v5.get([1, 2]).length).to.equal(2);
+   });
+   describe('testing the indexing modes', function() {
+      var spy;
+      before(function() {
+         spy = sinon.spy(v1,'_get');
+      });
+      after(function() {
+         spy.restore();
+      });
+
+      it('-- accepts an array of non-positive integers', function() {
+         v1.get([-1, 0, -2]);
+         expect(spy.lastCall.args[0]).to.deep.equal([3,4]);
+      });
+      it('-- should throw error if there are both positive and negative indices', function() {
+         expect(function() { v1.get([-3, 2, 0] ); }).to.throw(Error);
+      });
+      it('-- accepts a logical variable', function(){
+         var L = new Variable([true, false, true, true]);
+         v1.get(L);
+         spy.lastCall.args[0].forEach(function(i) { expect(L.get(i)).to.be.true; });
+         expect(spy.lastCall.args[0].length).to.equal(3);
+         expect(function() { v1.get(new Variable([true, false])); }).to.throw(Error);
+         v1.get(v4);    // v1 = [t, f, , t]
+         expect(spy.lastCall.args[0][2]).to.not.exist;
+      });
+      it('-- accepts a scalar variable', function() {
+         var S = new Variable([-1, 0, -2]);
+         v1.get(S);
+         expect(spy.lastCall.args[0]).to.deep.equal([3,4]);
+         S = new Variable([1, 0, 2]);
+         v1.get(S);
+         expect(spy.lastCall.args[0]).to.deep.equal([1,2]);
+      });
    });
 });
 describe('Variable set', function() {

@@ -158,7 +158,52 @@ define(function(require) {
       }));
    };
 
+   /**
+    * Return the values(s) indicated by `i`.  (Keep in mind that Variables
+    * are indexed from 1.)
+    *
+    * - if `i` is a positive integer, return the value at index `i`.
+    * - if `i` is an array of non-negative integers, return an array of
+    * the corresponding values (skipping indices of value 0).
+    * - if `i` is an array of non-positive integers, return an array of
+    * all values of `this` except those indicated by the negative indices.
+    * - if `i` is a scalar variable, it is converted into an array.
+    * - if `i` is a logical variable, it must have the same length as `this`, in
+    * which case, return an array of the values which correspond to the `true`
+    * values in `i`.
+    */
+   /* eslint-disable complexity */
    Variable.prototype.get = function get(i) {
+      var allNonPos, allNonNeg;
+      if (i instanceof Variable) {
+         if (i.mode() === 'logical') {
+            if (!this.sameLength(i)) {
+               throw new Error('incompatible lengths');
+            }
+            i = i.which();    // to scalar variable
+         }
+         i = i.values;        // to vector
+      }
+      if (i instanceof Variable.Vector) { i = i.get(); } // to array
+      // single numbers fall through to end
+      if (Array.isArray(i)) {
+         allNonPos = i.every(function(v) { return !(v > 0); });
+         allNonNeg = i.every(function(v) { return !(v < 0); });
+         if (allNonPos) {
+            i = this.values.toArray().map(function(v, k) {
+               k += 1;
+               return i.indexOf(-k) === -1 ? k : 0;
+            });
+         } else if (!allNonNeg) {
+            throw new Error('Cannot use both positive and negative indices.');
+         }
+         i = i.filter(function(v) { return !(v <= 0); }); // only keep pos, NA
+      }
+      return this._get(i);
+   };
+   /* eslint-enable */
+
+   Variable.prototype._get = function _get(i) {
       return i == null ? this.values.toArray() : this.values.get(i);
    };
 
@@ -248,6 +293,10 @@ define(function(require) {
       return new Variable(this.values.map(f), mode);
    };
 
+   Variable.prototype.sameLength = function sameLength(other) {
+      return this.values.length === other.values.length;
+   };
+
    // Helper methods
    // values is an array!
    function inferMode(values) {
@@ -263,7 +312,6 @@ define(function(require) {
          return 'Var' + ('0000' + index).slice(-4);
       };
    }(0));
-
 
    /*
     * Given two mode strings `m1` and `m2`, returns the 'least common mode'.
