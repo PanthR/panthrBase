@@ -232,6 +232,22 @@ define(function(require) {
       return Variable.concat.apply(null, vars);
    };
 
+   // Iterators
+
+   Variable.prototype.each = function each(f) {
+      this.values.each(f);
+   };
+
+   Variable.prototype.reduce = function reduce(f, initial) {
+      return this.values.reduce(f, initial);
+   };
+
+   // mode is optional
+   Variable.prototype.map = function map(f, mode) {
+      if (mode) { mode = { 'mode': mode }; }
+      return new Variable(this.values.map(f), mode);
+   };
+
    // Helper methods
    // values is an array!
    function inferMode(values) {
