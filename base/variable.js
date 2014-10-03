@@ -158,22 +158,6 @@ define(function(require) {
       }));
    };
 
-   /**
-    * Repeats a variable according to a pattern to make a new variable.
-    * `times` can be used in several different ways, depending on its type.
-    * - `times` is a number: repeat the variable that many times
-    * - `times` is a variable or array: use the values as frequencies for
-    * corresponding entries.  `times` must have same length as `this`
-    * - `times` is an object with a `length` property: cycle the values in `this`
-    * until length `length` is filled
-    * - `times` is an object with an `each` property: repeats each value that
-    * many times (before going on to the next value)
-    */
-   Variable.prototype.rep = function rep(times) {
-      if (times instanceof Variable) { times = times.values; }
-      return this.reproduce(this.values.rep(times));
-   };
-
    Variable.prototype.get = function get(i) {
       return i == null ? this.values.toArray() : this.values.get(i);
    };
@@ -208,6 +192,22 @@ define(function(require) {
       return new Variable(newValues, {
          mode: this.mode(), label: this.label
       });
+   };
+
+   /**
+    * Repeats a variable according to a pattern to make a new variable.
+    * `times` can be used in several different ways, depending on its type.
+    * - `times` is a number: repeat the variable that many times
+    * - `times` is a variable or array: use the values as frequencies for
+    * corresponding entries.  `times` must have same length as `this`
+    * - `times` is an object with a `length` property: cycle the values in `this`
+    * until length `length` is filled
+    * - `times` is an object with an `each` property: repeats each value that
+    * many times (before going on to the next value)
+    */
+   Variable.prototype.rep = function rep(times) {
+      if (times instanceof Variable) { times = times.values; }
+      return this.reproduce(this.values.rep(times));
    };
 
    /**
