@@ -11,6 +11,13 @@ define(function(require) {
     */
    var utils = {};
 
+   /** Returns true iff `val` is undefined, null, or NaN. **/
+   utils.isMissing = function isMissing(val) {
+      /* eslint-disable no-self-compare */
+      return val == null || val !== val;
+      /* eslint-enable */
+   };
+
    /** Arithmetic operators */
    utils.op = {};
 
