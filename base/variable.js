@@ -180,7 +180,28 @@ define(function(require) {
       return i == null ? this.values.toArray() : this.values.get(i);
    };
 
+   /**
+     * Set the entries indicated by `i` to the values indicated by `val`.
+     * (Keep in mind that Variables are indexed from 1.)
+     *
+     * `val` may be a single value, or a `Variable` or array of values of
+     * the appropriate length.
+     *
+     * - if `i` is a positive integer, set the value at index `i`.
+     * - if `i` is an array of non-negative integers, set
+     * the corresponding values (skipping indices of value 0).
+     * - if `i` is an array of non-positive integers, set
+     * all values of `this` except those indicated by the negative indices.
+     * - if `i` is a scalar variable, it is converted into an array.
+     * - if `i` is a logical variable, it must have the same length as `this`, in
+     * which case, we set the values which correspond to the `true` values in `i`.
+     */
    Variable.prototype.set = function set(i, val) {
+      if (val instanceof Variable) { val = val.get(); }
+      return this._set(normalizeIndices(this, i), val);
+   };
+
+   Variable.prototype._set = function _set(i, val) {
       this.values.set(i, val);
       return this;
    };

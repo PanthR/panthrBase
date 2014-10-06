@@ -46,7 +46,9 @@ return function(Variable) {
       });
    };
 
-   FactorVar.prototype.set = function set(i, val) {
+   // Val can be an array of values or a single value.
+   // Those values can be the numeric codes or the string labels.
+   FactorVar.prototype._set = function _set(i, val) {
       var c2v = this.c2v;
       var v2c = this.v2c;
       function getCode(val) {
