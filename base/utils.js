@@ -11,6 +11,25 @@ define(function(require) {
     */
    var utils = {};
 
+   /** Arithmetic operators */
+   utils.op = {};
+
+   /** The function that adds two numbers. Also available as `utils.op['+']`. */
+   utils.op.add = function add(a, b) { return a + b; };
+   utils.op['+'] = utils.op.add;
+
+   /** The function that subtracts two numbers. Also available as `utils.op['-']`. */
+   utils.op.sub = function sub(a, b) { return a - b; };
+   utils.op['-'] = utils.op.sub;
+
+   /** The function that multiplies two numbers. Also available as `utils.op['*']`. */
+   utils.op.mult = function mult(a, b) { return a * b; };
+   utils.op['*'] = utils.op.mult;
+
+   /** The function that divides two numbers. Also available as `utils.op['/']`. */
+   utils.op.div = function divide(a, b) { return a / b; };
+   utils.op['/'] = utils.op.div;
+
    /**
     * Take a user-provided option description `s` and a list of
     * allowable option settings.  Return the first element of the list
