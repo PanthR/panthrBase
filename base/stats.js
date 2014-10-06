@@ -2,8 +2,9 @@
 define(function(require) {
 
 return function(Base) {
-
+   /* eslint-disable no-unused-vars */
    var Variable, Dataset, utils;
+   /* eslint-enable */
 
    Variable = Base.Variable;
    Dataset  = Base.Dataset;
