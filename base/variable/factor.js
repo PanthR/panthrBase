@@ -51,12 +51,22 @@ return function(Variable) {
    FactorVar.prototype._set = function _set(i, val) {
       var c2v = this.c2v;
       var v2c = this.v2c;
+      /* eslint-disable complexity */
       function getCode(val) {
          if (Array.isArray(val)) { return val.map(getCode); }
-         if (typeof val === 'string') { return v2c[val]; }
-         val = Math.floor(val);
-         return val < 1 || val >= c2v.length ? null : val;
+         if (typeof val === 'string') {
+            if (!v2c.hasOwnProperty(val)) {
+               throw new Error('Invalid value for factor');
+            }
+            return v2c[val];
+         }
+         val = val || NaN;
+         if (val < 1 || val >= c2v.length) {
+            throw new Error('Invalid value for factor');
+         }
+         return Math.floor(val) || null;
       }
+      /* eslint-enable */
       if (arguments.length === 1) {
          this.values.set(getCode(i));
       } else {

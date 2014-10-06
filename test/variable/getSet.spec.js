@@ -92,7 +92,11 @@ describe('Variable set', function() {
    });
    it('works for factors and ordered', function() {
       expect(function() { v2.set(1, '3'); }).to.not.throw(Error);
+      expect(function() { v2.set(1, '3.1'); }).to.throw(Error);
       expect(v2.get(1)).to.equal('3');
+      expect(function() { v2.set(1, 4); }).to.throw(Error);
+      expect(function() { v2.set(1, null); }).to.not.throw(Error);
+      expect(v2.get(1)).to.not.exist;
    });
    it('works datetime', function() {
       expect(function() { v5.set([1, 2], '2003-02-22') }).to.not.throw(Error);
