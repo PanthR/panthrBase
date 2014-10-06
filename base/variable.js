@@ -318,7 +318,8 @@ define(function(require) {
          } else if (!allNonNeg) {
             throw new Error('Cannot use both positive and negative indices.');
          }
-         ind = ind.filter(function(v) { return !(v <= 0); }); // only keep pos, NA
+         ind = ind.map(function(v) { return v === +v ? v : null; })
+                  .filter(function(v) { return v == null || v > 0; }); // only keep pos, NA
       }
       return ind;
    }
