@@ -20,6 +20,8 @@ define(function(require) {
    Base.Variable = require('./base/variable');
    /** Implementation of "statistics" datasets. */
    Base.Dataset = require('./base/dataset');
+   
+   require('./base/stats')(Base);
 
    return Base;
 
