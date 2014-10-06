@@ -19,10 +19,12 @@ return function(Variable) {
 
    LogicalVar.prototype.which = function which() {
       // `false` -> 0; `true` -> the array index plus 1; and NA -> NA
-      var arr;
-      arr = this.values.toArray().map(function(v, k) {
-         return v === false ? 0 : v && k + 1;
-      }).filter(function(v) { return v !== 0; });
+      var arr, k, v;
+      arr = this.values.toArray();
+      for (k = 0; k < arr.length; k += 1) {
+         arr[k] = arr[k] === false ? 0 : (arr[k] || null) && k + 1;
+      }
+      arr = arr.filter(function(v) { return v !== 0; });
       return new Variable(arr);
    };
 
