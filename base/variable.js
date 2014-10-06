@@ -281,12 +281,24 @@ define(function(require) {
 
    // Iterators
 
-   Variable.prototype.each = function each(f) {
-      this.values.each(f);
+   // skipMissing defaults to false
+   Variable.prototype.each = function each(f, skipMissing) {
+      var f2;
+      f2 = function(val, i) {
+         if (!utils.isMissing(val) || skipMissing !== true) { f(val, i); }
+      };
+      this.values.each(f2);
    };
 
-   Variable.prototype.reduce = function reduce(f, initial) {
-      return this.values.reduce(f, initial);
+   // skipMissing defaults to false
+   Variable.prototype.reduce = function reduce(f, initial, skipMissing) {
+      var f2;
+      f2 = function(acc, val, i) {
+         if (acc === null) { return null; }
+         if (!utils.isMissing(val)) { return f(acc, val, i); }
+         return skipMissing === true ? acc : null;
+      };
+      return this.values.reduce(f2, initial);
    };
 
    // mode is optional
