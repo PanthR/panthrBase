@@ -201,7 +201,9 @@ define(function(require) {
    Variable.prototype.set = function set(i, val) {
       if (val instanceof Variable) { val = val.get(); }
       i = normalizeIndices(this, i);
+      /* eslint-disable no-extra-parens */
       if (i == null || (Array.isArray(i) && i.indexOf(null) >= 0)) {
+      /* eslint-enable */
          throw new Error('Missing indices not allowed in "set"');
       }
       return this._set(i, val);
