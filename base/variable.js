@@ -172,36 +172,9 @@ define(function(require) {
     * which case, return an array of the values which correspond to the `true`
     * values in `i`.
     */
-   /* eslint-disable complexity */
    Variable.prototype.get = function get(i) {
-      var allNonPos, allNonNeg;
-      if (i instanceof Variable) {
-         if (i.mode() === 'logical') {
-            if (!this.sameLength(i)) {
-               throw new Error('incompatible lengths');
-            }
-            i = i.which();    // to scalar variable
-         }
-         i = i.values;        // to vector
-      }
-      if (i instanceof Variable.Vector) { i = i.get(); } // to array
-      // single numbers fall through to end
-      if (Array.isArray(i)) {
-         allNonPos = i.every(function(v) { return !(v > 0); });
-         allNonNeg = i.every(function(v) { return !(v < 0); });
-         if (allNonPos) {
-            i = this.values.toArray().map(function(v, k) {
-               k += 1;
-               return i.indexOf(-k) === -1 ? k : 0;
-            });
-         } else if (!allNonNeg) {
-            throw new Error('Cannot use both positive and negative indices.');
-         }
-         i = i.filter(function(v) { return !(v <= 0); }); // only keep pos, NA
-      }
-      return this._get(i);
+      return this._get(normalizeIndices(this, i));
    };
-   /* eslint-enable */
 
    Variable.prototype._get = function _get(i) {
       return i == null ? this.values.toArray() : this.values.get(i);
@@ -298,6 +271,38 @@ define(function(require) {
    };
 
    // Helper methods
+
+   /* eslint-disable complexity */
+   function normalizeIndices(v, ind) {
+      var allNonPos, allNonNeg;
+      if (ind instanceof Variable) {
+         if (ind.mode() === 'logical') {
+            if (!v.sameLength(ind)) {
+               throw new Error('incompatible lengths');
+            }
+            ind = ind.which();    // to scalar variable
+         }
+         ind = ind.values;        // to vector
+      }
+      if (ind instanceof Variable.Vector) { ind = ind.get(); } // to array
+      // single numbers fall through to end
+      if (Array.isArray(ind)) {
+         allNonPos = ind.every(function(v) { return !(v > 0); });
+         allNonNeg = ind.every(function(v) { return !(v < 0); });
+         if (allNonPos) {
+            ind = v.values.toArray().map(function(v, k) {
+               k += 1;
+               return ind.indexOf(-k) === -1 ? k : 0;
+            });
+         } else if (!allNonNeg) {
+            throw new Error('Cannot use both positive and negative indices.');
+         }
+         ind = ind.filter(function(v) { return !(v <= 0); }); // only keep pos, NA
+      }
+      return ind;
+   }
+   /* eslint-enable */
+
    // values is an array!
    function inferMode(values) {
       var i = 0;
