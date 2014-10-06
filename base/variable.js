@@ -195,10 +195,16 @@ define(function(require) {
      * - if `i` is a scalar variable, it is converted into an array.
      * - if `i` is a logical variable, it must have the same length as `this`, in
      * which case, we set the values which correspond to the `true` values in `i`.
+     *
+     * In all cases, if there are any null/undefined/NaN indices, an error occurs.
      */
    Variable.prototype.set = function set(i, val) {
       if (val instanceof Variable) { val = val.get(); }
-      return this._set(normalizeIndices(this, i), val);
+      i = normalizeIndices(this, i);
+      if (i == null || (Array.isArray(i) && i.indexOf(null) >= 0)) {
+         throw new Error('Missing indices not allowed in "set"');
+      }
+      return this._set(i, val);
    };
 
    Variable.prototype._set = function _set(i, val) {
