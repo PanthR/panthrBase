@@ -26,10 +26,15 @@ define(function(require) {
     *
     * Default name/label values will be generated if not provided. So creating a `Variable` can
     * be as simple as passing a `values` argument to the constructor.
+    *
+    * Variable construction and setting needs to preserve the invariant that all entries are
+    * either `null` or a "meaningful" value. All `undefined`, missing and `NaN` entries will be
+    * converted to `null`.
     */
    Variable = function(values, options) {
       var ret;
       if (values instanceof Variable.Vector) { values = values.toArray(); }
+      values = normalizeValue(values);
       if (options == null) { options = {}; }
       options.mode = utils.getOption(options.mode, Object.keys(Variable.modes)) ||
                      inferMode(values);
@@ -153,9 +158,9 @@ define(function(require) {
    };
 
    Variable.prototype.asString = function asString() {
-      return Variable.string(this.values.map(function(val) {
-         return val == null ? null : '' + val;
-      }));
+      return Variable.string(this.values.map(utils.makePreserveNull(
+         function(val) { return '' + val; }
+      )));
    };
 
    /**
@@ -199,7 +204,11 @@ define(function(require) {
      * In all cases, if there are any null/undefined/NaN indices, an error occurs.
      */
    Variable.prototype.set = function set(i, val) {
-      if (val instanceof Variable) { val = val.get(); }
+      if (val instanceof Variable) {
+         val = val.get();
+      } else {
+         val = normalizeValue(val); // Values from Variable#get already normalized
+      }
       i = normalizeIndices(this, i);
       /* eslint-disable no-extra-parens */
       if (i == null || (Array.isArray(i) && i.indexOf(null) >= 0)) {
@@ -284,27 +293,33 @@ define(function(require) {
    // skipMissing defaults to false
    Variable.prototype.each = function each(f, skipMissing) {
       var f2;
-      f2 = function(val, i) {
-         if (!utils.isMissing(val) || skipMissing !== true) { f(val, i); }
-      };
+      f2 = skipMissing !== true ? f :
+               function(val, i) { if (val !== null) { f(val, i); } };
       this.values.each(f2);
    };
 
    // skipMissing defaults to false
    Variable.prototype.reduce = function reduce(f, initial, skipMissing) {
       var f2;
-      f2 = function(acc, val, i) {
-         if (acc === null) { return null; }
-         if (!utils.isMissing(val)) { return f(acc, val, i); }
-         return skipMissing === true ? acc : null;
-      };
+      f2 = skipMissing !== true ? f :
+            function(acc, val, i) { return val === null ? acc : f(acc, val, i); };
       return this.values.reduce(f2, initial);
    };
 
-   // mode is optional
-   Variable.prototype.map = function map(f, mode) {
+   /** skipMissing defaults to false. If it is true, nulls automatically map to null and
+    * f is only applied to non-null values.
+    * `mode` must be a string if specified.
+    * Both skipMissing and mode are optional.
+    */
+   Variable.prototype.map = function map(f, skipMissing, mode) {
+      var f2;
+      if (arguments.length === 2 && typeof skipMissing === 'string') {
+         mode = skipMissing;
+         skipMissing = false;
+      }
       if (mode) { mode = { 'mode': mode }; }
-      return new Variable(this.values.map(f), mode);
+      f2 = skipMissing !== true ? f : utils.makePreserveNull(f);
+      return new Variable(this.values.map(f2), mode);
    };
 
    Variable.prototype.sameLength = function sameLength(other) {
@@ -313,33 +328,45 @@ define(function(require) {
 
    // Helper methods
 
+   /* Helper method to standardize values. All nan/missing/undefined turns to null.
+    * `val` can be an array or a single value. */
+   function normalizeValue(val) {
+      var i;
+      if (!Array.isArray(val)) { return utils.singleMissing(val); }
+      for (i = 0; i < val.length; i += 1) { val[i] = utils.singleMissing(val[i]); }
+      return val;
+   }
+
    /* eslint-disable complexity */
+   /* `v` is the Variable that these indices are meant to index.
+    * `ind` can be: single value, array, vector, logical variable,
+    * scalar variable (other variables turned scalar). Returns the indices as an array of
+    * the positions we are interested in, with `null`s in for any "missing" indices.
+    */
    function normalizeIndices(v, ind) {
       var allNonPos, allNonNeg;
       if (ind instanceof Variable) {
          if (ind.mode() === 'logical') {
-            if (!v.sameLength(ind)) {
-               throw new Error('incompatible lengths');
-            }
+            if (!v.sameLength(ind)) { throw new Error('incompatible lengths'); }
             ind = ind.which();    // to scalar variable
          }
          ind = ind.values;        // to vector
       }
       if (ind instanceof Variable.Vector) { ind = ind.get(); } // to array
+      ind = normalizeValue(ind);
       // single numbers fall through to end
       if (Array.isArray(ind)) {
          allNonPos = ind.every(function(v) { return !(v > 0); });
          allNonNeg = ind.every(function(v) { return !(v < 0); });
          if (allNonPos) {
-            ind = v.values.toArray().map(function(v, k) {
-               k += 1;
+            ind = v.values.map(function(val, k) {
                return ind.indexOf(-k) === -1 ? k : 0;
-            });
+            }).toArray();
          } else if (!allNonNeg) {
             throw new Error('Cannot use both positive and negative indices.');
          }
-         ind = ind.map(function(v) { return v === +v ? v : null; })
-                  .filter(function(v) { return v == null || v > 0; }); // only keep pos, NA
+         // ind contains only null, nonnegative integers at this point
+         ind = ind.filter(function(v) { return v !== 0; }); // drop the zeros
       }
       return ind;
    }

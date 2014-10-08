@@ -19,9 +19,9 @@ describe('Variable#get', function() {
       expect(v1.get(2)).to.equal(-12.2);
       expect(v1.get([1, 2])).to.deep.equal([2.12, -12.2]);
       expect(v1.get([1, 5, 2])).to.deep.equal([2.12, null, -12.2]);
-      expect(v1.get(4)).to.not.exist;
-      expect(v3.get(3)).to.not.exist;
-      expect(v4.get(3)).to.not.exist;
+      expect(v1.get(4)).to.equal(null);
+      expect(v3.get(3)).to.equal(null);
+      expect(v4.get(3)).to.equal(null);
       expect(v4.get(4)).to.equal(true);
    });
    it('places null in for missing/nan indices', function() {
@@ -30,12 +30,12 @@ describe('Variable#get', function() {
       expect(v1.get([1, NaN, 2])).to.deep.equal([2.12, null, -12.2]);
    });
    it('returns null when out of bounds', function() {
-      expect(v1.get(0)).to.not.exist;
-      expect(v1.get(5)).to.not.exist;
+      expect(v1.get(0)).to.equal(null);
+      expect(v1.get(5)).to.equal(null);
    });
    it('works for factors and ordered', function() {
-      expect(v2.get(0)).to.not.exist;
-      expect(v2.get(5)).to.not.exist;
+      expect(v2.get(0)).to.equal(null);
+      expect(v2.get(5)).to.equal(null);
       expect(v2.get(3)).to.equal('3');
       expect(v6.get(2)).to.equal('A');
       expect(v6.get(3)).to.equal('B');
@@ -47,7 +47,7 @@ describe('Variable#get', function() {
       expect(moment(v5.get(1)).year()).to.equal(2007);
       expect(moment(v5.get(1)).month()).to.equal(9);
       expect(moment(v5.get(1)).date()).to.equal(23);
-      expect(v5.get(0)).to.not.exist;
+      expect(v5.get(0)).to.equal(null);
       expect(v5.get([1, 2])).to.exist;
       expect(v5.get([1, 2]).length).to.equal(2);
    });
@@ -74,7 +74,7 @@ describe('Variable#get', function() {
          expect(spy.lastCall.args[0].length).to.equal(3);
          expect(function() { v1.get(new Variable([true, false])); }).to.throw(Error);
          v1.get(v4);    // v4 = [t, f, null, t]
-         expect(spy.lastCall.args[0][1]).to.not.exist;
+         expect(spy.lastCall.args[0][1]).to.equal(null);
       });
       it('-- accepts a scalar variable', function() {
          var S = new Variable([-1, 0, -2]);
@@ -101,7 +101,7 @@ describe('Variable set', function() {
       expect(v2.get(1)).to.equal('3');
       expect(function() { v2.set(1, 4); }).to.throw(Error);
       expect(function() { v2.set(1, null); }).to.not.throw(Error);
-      expect(v2.get(1)).to.not.exist;
+      expect(v2.get(1)).to.equal(null);
    });
    it('works datetime', function() {
       expect(function() { v5.set([1, 2], '2003-02-22') }).to.not.throw(Error);

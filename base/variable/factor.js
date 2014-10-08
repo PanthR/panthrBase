@@ -3,6 +3,9 @@ define(function(require) {
 
 return function(Variable) {
 
+   var utils;
+
+   utils = require('./../utils');
    // values _will_ be an array
    function FactorVar(values, options) {
       this.levels(values.slice().sort());
@@ -23,7 +26,7 @@ return function(Variable) {
       this.c2v = [null];     // codes for levels begin from 1, not 0.
       this.v2c = {};
       for (i = 0; i < arr.length; i += 1) {
-         if (arr[i] != null && !this.v2c.hasOwnProperty(arr[i])) {
+         if (arr[i] !== null && !this.v2c.hasOwnProperty(arr[i])) {
             this.v2c[arr[i]] = this.c2v.length;
             this.c2v.push(arr[i].toString());
          }
@@ -35,15 +38,17 @@ return function(Variable) {
    // corresponding array of numerical codes.
    FactorVar.prototype.getCodes = function getCodes(values) {
       var v2c = this.v2c;
-      return values.map(function(val) { return v2c[val]; });
+      return values.map(utils.makePreserveNull(
+         function(val) { return v2c[val]; }
+      ));
    };
 
    FactorVar.prototype._get = function _get(i) {
       var c2v = this.c2v;
-      if (typeof i === 'number') { return c2v[ this.values.get(i) ]; }
-      return this.values.get(i).map(function(code) {
-         return code == null ? null : c2v[code];
-      });
+      if (typeof i === 'number') { return utils.singleMissing(c2v[ this.values.get(i) ]); }
+      return this.values.get(i).map(utils.makePreserveNull(
+         function(code) { return c2v[code]; }
+      ));
    };
 
    // Val can be an array of values or a single value.
@@ -54,17 +59,17 @@ return function(Variable) {
       /* eslint-disable complexity */
       function getCode(val) {
          if (Array.isArray(val)) { return val.map(getCode); }
+         if (utils.isMissing(val)) { return null; }
          if (typeof val === 'string') {
             if (!v2c.hasOwnProperty(val)) {
                throw new Error('Invalid value for factor');
             }
             return v2c[val];
          }
-         val = val || NaN;
-         if (val < 1 || val >= c2v.length) {
+         if (isNaN(val) || val < 1 || val >= c2v.length) {
             throw new Error('Invalid value for factor');
          }
-         return Math.floor(val) || null;
+         return Math.floor(val);
       }
       /* eslint-enable */
       if (arguments.length === 1) {

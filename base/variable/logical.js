@@ -3,6 +3,10 @@ define(function(require) {
 
 return function(Variable) {
 
+   var utils;
+
+   utils = require('./../utils');
+
    function LogicalVar(values, options) {
       this.values = new Variable.Vector(values).mutable(true);
    }
@@ -10,21 +14,18 @@ return function(Variable) {
    LogicalVar.prototype = Object.create(Variable.prototype);
 
    LogicalVar.prototype.asScalar = function asScalar() {
-      return new Variable(this.values.map(function(val) {
-         return val === true ? 1
-              : val === false ? 0
-                              : null;
-      }));
+      return new Variable(this.values.map(utils.makePreserveNull(
+         function(val) { return val === true ? 1 : 0; }
+      )));
    };
 
    LogicalVar.prototype.which = function which() {
-      // `false` -> 0; `true` -> the array index plus 1; and NA -> NA
-      var arr, k, v;
-      arr = this.values.toArray();
-      for (k = 0; k < arr.length; k += 1) {
-         arr[k] = arr[k] === false ? 0 : (arr[k] || null) && k + 1;
-      }
-      arr = arr.filter(function(v) { return v !== 0; });
+      // `false` -> goes away; `true` -> the array index plus 1; and null -> null
+      var arr;
+      arr = [];
+      this.values.forEach(function(v, i) {
+         if (v !== false) { arr.push(v === true ? i : null); }
+      });
       return new Variable(arr);
    };
 

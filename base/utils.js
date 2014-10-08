@@ -18,6 +18,19 @@ define(function(require) {
       /* eslint-enable */
    };
 
+   utils.singleMissing = function singleMissing(val) {
+      return utils.isMissing(val) ? null : val;
+   };
+
+   /* Returns a new function `g` such that: `g(any missing)` is `null`, and `g(val)` is either `f(val)`
+    * or `null` if `f(val)` would be "isMissing". */
+   utils.makePreserveNull = function makePreserveNull(f) {
+      return function(val) {
+         return utils.isMissing(val) ? null :
+               utils.singleMissing(f.apply(null, [].slice.call(arguments)));
+      };
+   };
+
    /** Arithmetic operators */
    utils.op = {};
 

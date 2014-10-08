@@ -3,8 +3,9 @@ define(function(require) {
 
 return function(Variable) {
 
-   var moment;       // date-time module
+   var moment,utils;       // date-time module
    moment = require('moment');
+   utils = require('./../utils');
 
    /**
     * Need to know (or infer) how to read the values.
@@ -24,12 +25,14 @@ return function(Variable) {
          if (values.length === 0 || typeof values[0] === 'number') {
             this.values = values.slice();
          } else {
-            this.values = values.map(function(val) { return moment(val).valueOf(); });
+            this.values = values.map(utils.makePreserveNull(
+               function(val) { return moment(val).valueOf(); }
+            ));
          }
       } else {
-         this.values = values.map(function(val) {
-            return moment(val, options.format).valueOf();
-         });
+         this.values = values.map(utils.makePreserveNull(
+            function(val) { return moment(val, options.format).valueOf(); }
+         ));
       }
       this.values = new Variable.Vector(this.values).mutable(true);
    }
@@ -37,20 +40,19 @@ return function(Variable) {
    DateTimeVar.prototype = Object.create(Variable.prototype);
 
    // `i` should be required here.
+   // `val` is single string or number or array thereof
    DateTimeVar.prototype._set = function _set(i, val, format) {
       var f = format == null ? function(s) { return moment(s); }
                              : function(s) { return moment(s, format); };
       function getMillis(val) {
          if (Array.isArray(val)) { return val.map(getMillis); }
-         return typeof val === 'string' ? f(val) : val;
+         return utils.singleMissing(typeof val === 'string' ? f(val) : val);
       }
       this.values.set(i, getMillis(val));
    };
 
    DateTimeVar.prototype.asString = function asString() {
-      return Variable.string(this.values.map(function(val) {
-         return val == null ? val : moment(val).format();
-      }));
+      return this.map(function(val) { return moment(val).format(); }, true, 'string');
    };
 
    return DateTimeVar;

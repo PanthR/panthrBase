@@ -23,9 +23,9 @@ describe('Variable Conversion:', function() {
       expect(vs[2].asScalar().get(2)).to.equal(-12.2);
       expect(vs[3].asScalar().get(2)).to.equal(0);
       expect(vs[5].asScalar().get(2)).to.equal(2);
-      expect(vs[0].asScalar().get(4)).to.not.exist;
-      expect(vs[2].asScalar().get(3)).to.not.exist;
-      expect(vs[3].asScalar().get(3)).to.not.exist;
+      expect(vs[0].asScalar().get(4)).to.equal(null);
+      expect(vs[2].asScalar().get(3)).to.equal(null);
+      expect(vs[3].asScalar().get(3)).to.equal(null);
    });
    it('asString', function() {
       vs.forEach(function(v) {
@@ -38,8 +38,8 @@ describe('Variable Conversion:', function() {
       expect(vs[2].asString().get(2)).to.equal('-12.2');
       expect(vs[3].asString().get(2)).to.equal('false');
       expect(vs[5].asString().get(2)).to.equal('A');
-      expect(vs[0].asString().get(4)).to.not.exist;
-      expect(vs[2].asString().get(3)).to.not.exist;
-      expect(vs[3].asString().get(3)).to.not.exist;
+      expect(vs[0].asString().get(4)).to.equal(null);
+      expect(vs[2].asString().get(3)).to.equal(null);
+      expect(vs[3].asString().get(3)).to.equal(null);
    });
 });

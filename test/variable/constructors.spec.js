@@ -44,11 +44,11 @@ describe('Variables can be ', function() {
       var v2 = new Variable(new Variable.Vector(['b', 'a', 'a', , 'c', 'b']));
       expect(v1).to.be.instanceof(Variable);
       expect(v1).to.be.instanceof(Variable.FactorVar);
-      expect(v1.values.toArray()).to.deep.equal([2, 1, 1, , 3, 2]);
+      expect(v1.values.toArray()).to.deep.equal([2, 1, 1, null, 3, 2]);
       expect(v1.mode()).to.equal('factor');
       expect(v2).to.be.instanceof(Variable);
       expect(v2).to.be.instanceof(Variable.FactorVar);
-      expect(v2.values.toArray()).to.deep.equal([2, 1, 1, , 3, 2]);
+      expect(v2.values.toArray()).to.deep.equal([2, 1, 1, null, 3, 2]);
       expect(v2.mode()).to.equal('factor');
    });
    it('ordinal', function() {
