@@ -26,8 +26,9 @@ return function(Base) {
     */
     Variable.prototype.mean = function mean(skipMissing) {
       var v;  // the variable whose mean we will return
+      v = this.asScalar();
       v = skipMissing === true ? this.nonMissing() : this;
-      return v.sum() / v.length();
+      return utils.singleMissing(v.sum() / v.length());
     };
 
    return Base;
