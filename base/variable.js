@@ -158,7 +158,7 @@ define(function(require) {
    };
 
    Variable.prototype.asString = function asString() {
-      return Variable.string(this.values.map(utils.makePreserveNull(
+      return Variable.string(this.values.map(utils.makePreserveMissing(
          function(val) { return '' + val; }
       )));
    };
@@ -182,7 +182,7 @@ define(function(require) {
    };
 
    Variable.prototype._get = function _get(i) {
-      return i == null ? this.values.toArray() : this.values.get(i);
+      return utils.isMissing(i) ? this.values.toArray() : this.values.get(i);
    };
 
    /**
@@ -211,7 +211,7 @@ define(function(require) {
       }
       i = normalizeIndices(this, i);
       /* eslint-disable no-extra-parens */
-      if (i == null || (Array.isArray(i) && i.indexOf(null) >= 0)) {
+      if (utils.isMissing(i) || (Array.isArray(i) && utils.hasMissing(i))) {
       /* eslint-enable */
          throw new Error('Missing indices not allowed in "set"');
       }
@@ -269,12 +269,12 @@ define(function(require) {
    /**
     * Return a new variable which results from resizing `this`.
     * If fill is `true`, recycle the values to reach the new length, `length`.
-    * If fill is `false` or omitted, the new values will be `null`.
+    * If fill is `false` or omitted, the new values will be `NaN`.
     */
    Variable.prototype.resize = function resize(length, fill) {
       var newVar;
       newVar = this.clone();
-      if (fill !== true) { fill = function(i) { return null; }; }
+      if (fill !== true) { fill = function(i) { return utils.missing; }; }
       newVar.values = newVar.values.resize(length, fill);
       return newVar;
    };
@@ -294,7 +294,7 @@ define(function(require) {
    Variable.prototype.each = function each(f, skipMissing) {
       var f2;
       f2 = skipMissing !== true ? f :
-               function(val, i) { if (val !== null) { f(val, i); } };
+               function(val, i) { if (utils.isNotMissing(val)) { f(val, i); } };
       this.values.each(f2);
    };
 
@@ -302,13 +302,12 @@ define(function(require) {
    Variable.prototype.reduce = function reduce(f, initial, skipMissing) {
       var f2;
       f2 = skipMissing !== true ? f :
-            function(acc, val, i) { return val === null ? acc : f(acc, val, i); };
+            function(acc, val, i) { return utils.isMissing(val) ? acc : f(acc, val, i); };
       return this.values.reduce(f2, initial);
    };
 
-   /** skipMissing defaults to false. If it is true, nulls automatically map to null and
-    * f is only applied to non-null values.
-    * `mode` must be a string if specified.
+   /** skipMissing defaults to false. If it is true, missings automatically map to missing
+    * and f is only applied to non-missing values. `mode` must be a string if specified.
     * Both skipMissing and mode are optional.
     */
    Variable.prototype.map = function map(f, skipMissing, mode) {
@@ -318,7 +317,7 @@ define(function(require) {
          skipMissing = false;
       }
       if (mode) { mode = { 'mode': mode }; }
-      f2 = skipMissing !== true ? f : utils.makePreserveNull(f);
+      f2 = skipMissing !== true ? f : utils.makePreserveMissing(f);
       return new Variable(this.values.map(f2), mode);
    };
 
@@ -339,7 +338,7 @@ define(function(require) {
     * Return a `Variable` of the non-null values from `this`.
     */
    Variable.prototype.nonMissing = function nonMissing() {
-      return this.filter(function(val) { return val !== null; });
+      return this.filter(utils.isNotMissing);
    };
 
    Variable.prototype.sameLength = function sameLength(other) {
@@ -361,7 +360,7 @@ define(function(require) {
    /* `v` is the Variable that these indices are meant to index.
     * `ind` can be: single value, array, vector, logical variable,
     * scalar variable (other variables turned scalar). Returns the indices as an array of
-    * the positions we are interested in, with `null`s in for any "missing" indices.
+    * the positions we are interested in, with `NaN`s in for any "missing" indices.
     */
    function normalizeIndices(v, ind) {
       var allNonPos, allNonNeg;
@@ -395,7 +394,7 @@ define(function(require) {
    // values is an array!
    function inferMode(values) {
       var i = 0;
-      while (i < values.length && values[i] == null) { i += 1; }
+      while (i < values.length && utils.isMissing(values[i])) { i += 1; }
       if (i >= values.length || typeof values[i] === 'number') { return 'scalar'; }
       return typeof values[i] === 'boolean' ? 'logical' : 'factor';
    }

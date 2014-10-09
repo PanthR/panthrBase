@@ -25,12 +25,12 @@ return function(Variable) {
          if (values.length === 0 || typeof values[0] === 'number') {
             this.values = values.slice();
          } else {
-            this.values = values.map(utils.makePreserveNull(
+            this.values = values.map(utils.makePreserveMissing(
                function(val) { return moment(val).valueOf(); }
             ));
          }
       } else {
-         this.values = values.map(utils.makePreserveNull(
+         this.values = values.map(utils.makePreserveMissing(
             function(val) { return moment(val, options.format).valueOf(); }
          ));
       }

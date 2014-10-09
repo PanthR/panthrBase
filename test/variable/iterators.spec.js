@@ -1,4 +1,5 @@
 var Variable  = require('../../base/variable');
+var utils  = require('../../base/utils');
 var expect = require('chai').expect;
 var A = [
    new Variable([5.5, 3.3, -2.5]),
@@ -42,7 +43,7 @@ describe('Variable iterators: ', function() {
       it('defaults to skipMissing false', function() {
          Amiss.forEach(function(v) {
             var c = 0;
-            v.each(function(val, i) { c += 1; expect(v.values.get(i)).to.equal(val); });
+            v.each(function(val, i) { c += 1; expect(utils.equal(v.values.get(i), val)).to.be.true; });
             expect(c).to.equal(v.length());
          });
       });
@@ -50,8 +51,8 @@ describe('Variable iterators: ', function() {
          Amiss.forEach(function(v) {
             var c = 0;
             v.each(function(val, i) { c += 1;
-               expect(v.values.get(i)).to.equal(val);
-               expect(val).to.not.equal(null);
+               expect(utils.equal(v.values.get(i), val)).to.be.true;
+               expect(utils.isNotMissing(val)).to.be.true;
             }, true);
             expect(c).to.equal(v.length() - 1);
          });
@@ -91,10 +92,10 @@ describe('Variable iterators: ', function() {
             var c = 0, acc = Math.random();
             function f(_acc, val, i) {
                c += 1;
-               expect(_acc).to.equal(acc);
-               expect(v.values.get(i)).to.equal(val);
+               expect(utils.equal(_acc, acc));
+               expect(utils.equal(v.values.get(i), val)).to.be.true;
                acc = Math.random();
-               if (acc < 0.5) { acc = null; }
+               if (acc < 0.5) { acc = utils.isMissing; }
                return acc;
             }
             v.reduce(f, acc);
@@ -106,11 +107,11 @@ describe('Variable iterators: ', function() {
             var c = 0, acc = Math.random();
             function f(_acc, val, i) {
                c += 1;
-               expect(_acc).to.equal(acc);
-               expect(val).to.not.equal(null);
-               expect(v.values.get(i)).to.equal(val);
+               expect(utils.equal(_acc, acc));
+               expect(utils.isNotMissing(val)).to.be.true;
+               expect(utils.equal(v.values.get(i), val)).to.be.true;
                acc = Math.random();
-               if (acc < 0.5) { acc = null; }
+               if (acc < 0.5) { acc = utils.missing; }
                return acc;
             }
             v.reduce(f, acc, true);
@@ -158,7 +159,7 @@ describe('Variable iterators: ', function() {
             var c = 0;
             function f(val, i) {
                c += 1;
-               expect(v.values.get(i)).to.equal(val);
+               expect(utils.equal(v.values.get(i), val)).to.be.true;
             }
             v.map(f, 'string');
             expect(c).to.equal(v.length());
@@ -169,8 +170,8 @@ describe('Variable iterators: ', function() {
             var c = 0;
             function f(val, i) {
                c += 1;
-               expect(v.values.get(i)).to.equal(val);
-               expect(val).to.not.equal(null);
+               expect(utils.equal(v.values.get(i), val)).to.be.true;
+               expect(utils.isNotMissing(val)).to.be.true;
             }
             v.map(f, true);
             expect(c).to.equal(v.length() - 1);
@@ -189,7 +190,7 @@ describe('Variable iterators: ', function() {
       ];
       it('returns correct values', function() {
          Amiss.forEach(function(v) {
-            var w = v.filter(function(val) { return val !== null; });
+            var w = v.filter(utils.isNotMissing);
             expect(w.mode()).to.equal(v.mode());
             expect(w.length()).to.equal(3);
             expect(w.get(1)).to.equal(v.get(1));

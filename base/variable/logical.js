@@ -14,17 +14,17 @@ return function(Variable) {
    LogicalVar.prototype = Object.create(Variable.prototype);
 
    LogicalVar.prototype.asScalar = function asScalar() {
-      return new Variable(this.values.map(utils.makePreserveNull(
+      return new Variable(this.values.map(utils.makePreserveMissing(
          function(val) { return val === true ? 1 : 0; }
       )));
    };
 
    LogicalVar.prototype.which = function which() {
-      // `false` -> goes away; `true` -> the array index plus 1; and null -> null
+      // `false` -> goes away; `true` -> the array index plus 1; and missing -> missing
       var arr;
       arr = [];
       this.values.forEach(function(v, i) {
-         if (v !== false) { arr.push(v === true ? i : null); }
+         if (v !== false) { arr.push(v === true ? i : utils.missing); }
       });
       return new Variable(arr);
    };

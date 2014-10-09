@@ -1,4 +1,5 @@
 var Variable  = require('../../base/variable');
+var utils  = require('../../base/utils');
 var expect = require('chai').expect;
 
 describe('Variable fillers include ', function() {
@@ -12,16 +13,18 @@ describe('Variable fillers include ', function() {
       expect(r1.get()).to.deep.equal([1.2, 3.1, -2.5, 0, 1.2, 3.1, -2.5]);
       r2 = r1.resize(10);
       expect(r2).to.not.equal(r1);
-      expect(r2.get()).to.deep.equal([
-         1.2, 3.1, -2.5, 0, 1.2, 3.1, -2.5, null, null, null]);
+      expect(utils.areEqualArrays(r2.get(),
+      [ 1.2, 3.1, -2.5, 0, 1.2, 3.1, -2.5, utils.missing, utils.missing,
+                                           utils.missing])).to.be.true;
       expect(v1.resize(4).get()).to.deep.equal([1.2, 3.1, -2.5, 0]);
       r1 = v2.resize(7, true);
       expect(r1).to.not.equal(v2);
       expect(r1.get()).to.deep.equal(['c', 'b', 'c', 'c', 'a', 'c', 'b']);
       r2 = r1.resize(10, 42);
       expect(r2).to.not.equal(r1);
-      expect(r2.get()).to.deep.equal([
-         'c', 'b', 'c', 'c', 'a', 'c', 'b', null, null, null]);
+      expect(utils.areEqualArrays(r2.get(),
+      [ 'c', 'b', 'c', 'c', 'a', 'c', 'b',
+               utils.missing, utils.missing, utils.missing])).to.be.true;
       r1 = r2.resize(4, true);
       expect(r1).to.not.equal(r2);
       expect(r1.get()).to.deep.equal(['c', 'b', 'c', 'c']);
@@ -101,8 +104,8 @@ describe('Variable fillers include ', function() {
       });
       it('repeats missing values', function() {
          var v = new Variable([3.5, null, 1]);
-         expect(v.rep(3).get(5)).to.equal(null);
-         expect(v.rep(v1).get(8)).to.equal(null);
+         expect(utils.isMissing(v.rep(3).get(5))).to.be.true;
+         expect(utils.isMissing(v.rep(v1).get(8))).to.be.true;
       });
    });
    describe('concat', function() {
@@ -121,28 +124,28 @@ describe('Variable fillers include ', function() {
             var w = Variable.concat(v, v, v);
             expect(w.mode()).to.equal(v.mode());
             expect(w.length()).to.equal(v.length() * 3);
-            expect(w.get().slice(0,3)).to.deep.equal(v.get());
-            expect(w.get().slice(3,6)).to.deep.equal(v.get());
-            expect(w.get().slice(6,9)).to.deep.equal(v.get());
+            expect(utils.areEqualArrays(w.get().slice(0,3), v.get())).to.be.true;
+            expect(utils.areEqualArrays(w.get().slice(3,6), v.get())).to.be.true;
+            expect(utils.areEqualArrays(w.get().slice(6,9), v.get())).to.be.true;
             w = Variable.concat(v);
             expect(w.mode()).to.equal(v.mode());
-            expect(w.get()).to.deep.equal(v.get());
+            expect(utils.areEqualArrays(w.get(), v.get())).to.be.true;
          });
          var w = Variable.concat();
          expect(w.mode()).to.equal('scalar');
-         expect(w.get()).to.deep.equal([]);
+         expect(utils.areEqualArrays(w.get(), [])).to.be.true;
       });
       it('except for 2 or more ordinals being concatted', function() {
          var v = A[5];
          var w = Variable.concat(v, v, v);
          expect(w.mode()).to.equal('factor');
          expect(w.length()).to.equal(v.length() * 3);
-         expect(w.get().slice(0,3)).to.deep.equal(v.get());
-         expect(w.get().slice(3,6)).to.deep.equal(v.get());
-         expect(w.get().slice(6,9)).to.deep.equal(v.get());
+         expect(utils.areEqualArrays(w.get().slice(0,3), v.get())).to.be.true;
+         expect(utils.areEqualArrays(w.get().slice(3,6), v.get())).to.be.true;
+         expect(utils.areEqualArrays(w.get().slice(6,9), v.get())).to.be.true;
          w = Variable.concat(v);
          expect(w.mode()).to.equal(v.mode());
-         expect(w.get()).to.deep.equal(v.get());
+         expect(utils.areEqualArrays(w.get(), v.get())).to.be.true;
       })
       it('returns string if at least one mode is a string', function() {
          function pick() { 
@@ -161,8 +164,8 @@ describe('Variable fillers include ', function() {
             var w = Variable.concat(pick(), pick());
             expect(w.mode()).to.equal('factor');
             expect(w.length()).to.equal(6);
-            expect(w.get().slice(0,3)).to.deep.equal(A[1].get());
-            expect(w.get().slice(3,6)).to.deep.equal(A[1].get());
+            expect(utils.areEqualArrays(w.get().slice(0,3), A[1].get())).to.be.true;
+            expect(utils.areEqualArrays(w.get().slice(3,6), A[1].get())).to.be.true;
          }
       })
       it('returns scalar otherwise when modes not uniform', function() {
@@ -175,9 +178,9 @@ describe('Variable fillers include ', function() {
                var w = Variable.concat(A[j], A[k], A[k]);
                expect(w.mode()).to.equal('scalar');
                expect(w.length()).to.equal(9);
-               expect(w.get().slice(0,3)).to.deep.equal(A[j].asScalar().get());
-               expect(w.get().slice(3,6)).to.deep.equal(A[k].asScalar().get());
-               expect(w.get().slice(6,9)).to.deep.equal(A[k].asScalar().get());
+               expect(utils.areEqualArrays(w.get().slice(0,3), A[j].asScalar().get())).to.be.true;
+               expect(utils.areEqualArrays(w.get().slice(3,6), A[k].asScalar().get())).to.be.true;
+               expect(utils.areEqualArrays(w.get().slice(6,9), A[k].asScalar().get())).to.be.true;
             }
          }
       })
