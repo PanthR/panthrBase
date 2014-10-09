@@ -8,6 +8,8 @@ var A = [
    new Variable(['c', , 'x', 'x'], {mode: 'ord', levels:['x', 'c']})
 ];
 var E = new Variable([]);
+var M = new Variable([null, NaN, undefined]);
+var STR = Variable.string(["help","me","please!"]);
 
 describe('Basic statistics', function() {
    it('sum', function() {
@@ -25,6 +27,9 @@ describe('Basic statistics', function() {
       expect(A[3].sum(true)).to.equal(2+1+1);
       expect(E.sum(true)).to.equal(0);
       expect(E.sum()).to.equal(0);
+      expect(utils.isMissing(STR.sum())).to.be.true;
+      expect(M.sum(true)).to.equal(0);
+      expect(utils.isMissing(M.sum())).to.be.true;
    });
    it('mean', function() {
       expect(Variable).to.respondTo('mean');

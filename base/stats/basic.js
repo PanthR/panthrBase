@@ -16,7 +16,7 @@ return function(Base) {
     * `this` has missing values, result is null.
     */
    Variable.prototype.sum = function sum(skipMissing) {
-      return this.reduce(utils.op.add, 0, skipMissing);
+      return this.asScalar().reduce(utils.op.add, 0, skipMissing);
    };
 
    /**
