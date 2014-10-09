@@ -25,7 +25,7 @@ define(function(require) {
       /* eslint-disable no-self-compare */
       return val != null && val === val;
       /* eslint-enable */
-   }
+   };
 
    /** For an array, returns whether the array has any "missing values" in it. */
    utils.hasMissing = function hasMissing(arr) {
@@ -46,8 +46,8 @@ define(function(require) {
    };
 
    utils.equal = function equal(a, b) {
-      return (utils.isMissing(a)) ? utils.isMissing(b)
-                                  : utils.isNotMissing(b) && a === b;
+      return utils.isMissing(a) ? utils.isMissing(b)
+                                : utils.isNotMissing(b) && a === b;
    };
 
    /**
