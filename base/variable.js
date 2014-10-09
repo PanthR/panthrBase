@@ -303,7 +303,7 @@ define(function(require) {
       var f2;
       f2 = skipMissing !== true ? f :
             function(acc, val, i) { return utils.isMissing(val) ? acc : f(acc, val, i); };
-      return this.values.reduce(f2, initial);
+      return utils.singleMissing(this.values.reduce(f2, initial));
    };
 
    /** skipMissing defaults to false. If it is true, missings automatically map to missing
