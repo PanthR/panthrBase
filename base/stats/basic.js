@@ -24,12 +24,20 @@ return function(Base) {
     * `skipMissing` defaults to false.  If `skipMissing` is false and
     * `this` has missing values, result is null.
     */
-    Variable.prototype.mean = function mean(skipMissing) {
-      var v;  // the variable whose mean we will return
-      v = this.asScalar();
-      v = skipMissing === true ? this.nonMissing() : this;
-      return utils.singleMissing(v.sum() / v.length());
-    };
+   Variable.prototype.mean = function mean(skipMissing) {
+     var v;  // the variable whose mean we will return
+     v = filterMissing(this.asScalar(), skipMissing);
+     return utils.singleMissing(v.sum() / v.length());
+   };
+
+   // helper methods
+
+   // Takes a variable `v` and a boolean `skipMissing`.
+   // If `skipMissing` is true, filters out those missing values.
+   // skipMissing defaults to false.
+   function filterMissing(v, skipMissing) {
+      return skipMissing === true ? v.nonMissing() : v;
+   }
 
    return Base;
 };
