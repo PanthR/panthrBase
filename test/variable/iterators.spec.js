@@ -177,4 +177,29 @@ describe('Variable iterators: ', function() {
          });
       });
    });
+   describe('filter', function() {
+      var Amiss = [
+         new Variable([5.5, , 3.3, -2.5]),
+         new Variable(['c', , 'x', 'x']),
+         new Variable(['c', , 'x', 'x'], {mode: 'str'}),
+         new Variable([true, , false, true], {mode: 'logical'}),
+         new Variable(['2014-05-17', , '2001-08-25', '1985-01-02'],
+         { mode: 'date'}),
+         new Variable(['c', , 'x', 'x'], {mode: 'ord', levels:['x', 'c']})
+      ];
+      it('returns correct values', function() {
+         Amiss.forEach(function(v) {
+            var w = v.filter(function(val) { return val !== null; });
+            expect(w.mode()).to.equal(v.mode());
+            expect(w.length()).to.equal(3);
+            expect(w.get(1)).to.equal(v.get(1));
+            expect(w.get(2)).to.equal(v.get(3));
+            expect(w.get(3)).to.equal(v.get(4));
+            w = v.filter(function(val, i) { return i === 3; })
+            expect(w.mode()).to.equal(v.mode());
+            expect(w.length()).to.equal(1);
+            expect(w.get(1)).to.equal(v.get(3));
+         });
+      });
+   });
 });

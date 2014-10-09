@@ -322,6 +322,26 @@ define(function(require) {
       return new Variable(this.values.map(f2), mode);
    };
 
+   /**
+    * Given a predicate, `pred(val, i)`, return a `Variable` of the values from `this`
+    * which pass the predicate.
+    */
+   Variable.prototype.filter = function filter(pred) {
+      var arr;
+      arr = [];
+      this.values.each(function(val, i) {
+         if (pred(val, i)) { arr.push(val); }
+      });
+      return this.reproduce(arr);
+   };
+
+   /**
+    * Return a `Variable` of the non-null values from `this`.
+    */
+   Variable.prototype.nonMissing = function nonMissing() {
+      return this.filter(function(val) { return val !== null; });
+   };
+
    Variable.prototype.sameLength = function sameLength(other) {
       return this.values.length === other.values.length;
    };
