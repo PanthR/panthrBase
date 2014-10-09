@@ -11,6 +11,9 @@ define(function(require) {
     */
    var utils = {};
 
+   /** Value to be used for missing */
+   utils.missing = NaN;
+
    /** Returns true iff `val` is undefined, null, or NaN. **/
    utils.isMissing = function isMissing(val) {
       /* eslint-disable no-self-compare */
@@ -18,17 +21,46 @@ define(function(require) {
       /* eslint-enable */
    };
 
+   utils.isNotMissing = function isNotMissing(val) {
+      /* eslint-disable no-self-compare */
+      return val != null && val === val;
+      /* eslint-enable */
+   }
+
+   /** For an array, returns whether the array has any "missing values" in it. */
+   utils.hasMissing = function hasMissing(arr) {
+      return arr.some(utils.isMissing);
+   };
+
    utils.singleMissing = function singleMissing(val) {
-      return utils.isMissing(val) ? null : val;
+      return utils.isMissing(val) ? NaN : val;
    };
 
    /* Returns a new function `g` such that: `g(any missing)` is `null`, and `g(val)` is either `f(val)`
     * or `null` if `f(val)` would be "isMissing". */
-   utils.makePreserveNull = function makePreserveNull(f) {
+   utils.makePreserveMissing = function makePreserveMissing(f) {
       return function(val) {
-         return utils.isMissing(val) ? null :
+         return utils.isMissing(val) ? NaN :
                utils.singleMissing(f.apply(null, [].slice.call(arguments)));
       };
+   };
+
+   utils.equal = function equal(a, b) {
+      return (utils.isMissing(a)) ? utils.isMissing(b)
+                                  : utils.isNotMissing(b) && a === b;
+   };
+
+   /**
+    * Checks for array element equality where NaN is considered equal to NaN. Does not
+    * recurse.
+    */
+   utils.areEqualArrays = function areEqualArrays(A, B) {
+      var i;
+      if (A.length !== B.length) { return false; }
+      for (i = 0; i < A.length; i += 1) {
+         if (!utils.equal(A[i], B[i])) { return false; }
+      }
+      return true;
    };
 
    /** Arithmetic operators */
