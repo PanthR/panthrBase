@@ -30,6 +30,24 @@ return function(Base) {
      return utils.singleMissing(v.sum() / v.length());
    };
 
+   /**
+    * Return the minimum of the values.
+    * `skipMissing` defaults to false.  If `skipMissing` is false and
+    * `this` has missing values, result is missing.
+    */
+   Variable.prototype.min = function min(skipMissing) {
+      return this.asScalar().reduce(utils.op.min2, Infinity, skipMissing);
+   };
+
+   /**
+    * Return the maximum of the values.
+    * `skipMissing` defaults to false.  If `skipMissing` is false and
+    * `this` has missing values, result is missing.
+    */
+   Variable.prototype.max = function max(skipMissing) {
+      return this.asScalar().reduce(utils.op.max2, -Infinity, skipMissing);
+   };
+
    // helper methods
 
    // Takes a variable `v` and a boolean `skipMissing`.

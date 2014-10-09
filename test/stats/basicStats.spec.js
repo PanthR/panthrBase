@@ -50,4 +50,29 @@ describe('Basic statistics', function() {
       expect(utils.isMissing(M.mean(true))).to.be.true;
       expect(utils.isMissing(M.mean())).to.be.true;
    });
+   it('min', function() {
+      expect(A[0].min(true)).to.equal(-2.5);
+      expect(A[1].min(true)).to.equal(1);
+      expect(A[2].min(true)).to.equal(0);
+      expect(A[3].min(true)).to.equal(1);
+      [E, M, STR].forEach(function(v) {
+         expect(v.min(true)).to.equal(Infinity);
+      });
+      A.concat([M, STR]).forEach(function(v) {
+         expect(utils.isMissing(v.min())).to.be.true;
+      });
+      expect(E.min()).to.equal(Infinity);
+   });
+   it('max', function() {
+      expect(A[0].max(true)).to.equal(5.5);
+      expect(A[1].max(true)).to.equal(2);
+      expect(A[2].max(true)).to.equal(1);
+      expect(A[3].max(true)).to.equal(2);
+      [E, M, STR].forEach(function(v) {
+         expect(v.max(true)).to.equal(-Infinity);
+      });
+      A.concat([M, STR]).forEach(function(v) {
+         expect(utils.isMissing(v.max())).to.be.true;
+      });
+      expect(E.max()).to.equal(-Infinity);   });
 });

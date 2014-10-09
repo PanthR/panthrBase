@@ -82,6 +82,12 @@ define(function(require) {
    utils.op.div = function divide(a, b) { return a / b; };
    utils.op['/'] = utils.op.div;
 
+   /** The function that takes two values and returns the minimum. */
+   utils.op.min2 = function min2(a, b) { return Math.min(a, b); };
+
+   /** The function that takes two values and returns the maximum. */
+   utils.op.max2 = function max2(a, b) { return Math.max(a, b); };
+
    /**
     * Take a user-provided option description `s` and a list of
     * allowable option settings.  Return the first element of the list
