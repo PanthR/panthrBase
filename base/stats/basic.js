@@ -45,6 +45,10 @@ return function(Base) {
       );
    };
 
+   Variable.prototype.sd = function sd(skipMissing) {
+      return utils.singleMissing(Math.sqrt(this.var(skipMissing)));
+   };
+
    /**
     * Return the minimum of the values.
     * `skipMissing` defaults to false.  If `skipMissing` is false and

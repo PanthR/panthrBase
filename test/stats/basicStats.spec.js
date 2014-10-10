@@ -76,7 +76,7 @@ describe('Basic statistics', function() {
       });
       expect(E.max()).to.equal(-Infinity);
    });
-   it('var (variance)', function() {
+   it('var (variance) and standard deviation', function() {
       var A1 = Variable.seq(5, 1);
       var A2 = Variable([null]).concat(A1);
       expect(A1).to.respondTo('var');
@@ -85,5 +85,11 @@ describe('Basic statistics', function() {
       expect(utils.isMissing(A2.var())).to.be.true;
       expect(utils.isMissing(Variable([1]).var())).to.be.true;
       expect(utils.isMissing(Variable([]).var())).to.be.true;
+      expect(A1).to.respondTo('sd');
+      expect(A1.sd()).to.be.closeTo(Math.sqrt(2.5), 0.000001);
+      expect(A2.sd(true)).to.be.closeTo(Math.sqrt(2.5), 0.000001);
+      expect(utils.isMissing(A2.sd())).to.be.true;
+      expect(utils.isMissing(Variable([1]).sd())).to.be.true;
+      expect(utils.isMissing(Variable([]).sd())).to.be.true;
    });
 });
