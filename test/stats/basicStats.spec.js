@@ -74,5 +74,16 @@ describe('Basic statistics', function() {
       A.concat([M, STR]).forEach(function(v) {
          expect(utils.isMissing(v.max())).to.be.true;
       });
-      expect(E.max()).to.equal(-Infinity);   });
+      expect(E.max()).to.equal(-Infinity);
+   });
+   it('var (variance)', function() {
+      var A1 = Variable.seq(5, 1);
+      var A2 = Variable([null]).concat(A1);
+      expect(A1).to.respondTo('var');
+      expect(A1.var()).to.equal(2.5);
+      expect(A2.var(true)).to.equal(2.5);
+      expect(utils.isMissing(A2.var())).to.be.true;
+      expect(utils.isMissing(Variable([1]).var())).to.be.true;
+      expect(utils.isMissing(Variable([]).var())).to.be.true;
+   });
 });

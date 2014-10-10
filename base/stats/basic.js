@@ -30,6 +30,21 @@ return function(Base) {
      return utils.singleMissing(v.sum() / v.length());
    };
 
+   Variable.prototype.var = function variance(skipMissing) {
+      var res, K;
+      res = this.reduce(function(acc, val) {
+         if (K == null) { K = val; } // Center around first value for stability
+         val = val - K;
+         acc.sum += val;
+         acc.sumSquares += val * val;
+         acc.length += 1;
+         return acc;
+      }, { sum: 0, sumSquares: 0, length: 0 }, skipMissing);
+      return utils.singleMissing( (res.sumSquares - res.sum * res.sum / res.length) /
+                                  (res.length - 1)
+      );
+   };
+
    /**
     * Return the minimum of the values.
     * `skipMissing` defaults to false.  If `skipMissing` is false and
