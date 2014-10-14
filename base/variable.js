@@ -186,6 +186,9 @@ define(function(require) {
       return utils.isMissing(i) ? this.values.toArray() : this.values.get(i);
    };
 
+   Variable.prototype.toArray = function toArray() {
+      return this.get();
+   };
    /**
      * Set the entries indicated by `i` to the values indicated by `val`.
      * (Keep in mind that Variables are indexed from 1.)

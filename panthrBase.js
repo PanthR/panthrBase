@@ -25,6 +25,7 @@ return function(loader) {
 
    loader.addClass('Variable', Base.Variable);
    loader.addClass('Dataset', Base.Dataset);
+   loader.loadModule(require('./base/fun'));
    loader.loadModule(require('./base/stats'));
 
    return Base;
