@@ -18,6 +18,8 @@ define(function(require) {
     *  - `label`: The label to use in graphs/tables/descriptions.
     *  - `mode`: A string describing what type of variable to create. If `mode` is missing
     * it will be determined based on the first non-missing entry in `values`.
+    *  - `_names`: An optional vector/array/variable of equal length containing names for
+    * the values. Access it via the `names` method.
     *
     *
     * Further options depend on the particular mode chosen. See the subclass documentations
@@ -224,6 +226,13 @@ define(function(require) {
 
    Variable.prototype.length = function length() {
       return this.values.length;
+   };
+
+   Variable.prototype.names = function names(newNames) {
+      if (arguments.length === 0) { return this._names; }
+      this._names = utils.isMissing(newNames) || !newNames ?
+                        utils.missing : Variable.string(newNames);
+      return this;
    };
 
    /**

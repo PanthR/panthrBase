@@ -44,3 +44,20 @@ describe('Variable Conversion:', function() {
       expect(utils.isMissing(vs[3].asScalar().get(3))).to.be.true;
    });
 });
+describe('Name labels', function() {
+   var v = new Variable([2.12, -12.2, 3, undefined]);
+   it('can be set via names(newValues)', function() {
+      expect(v).to.respondTo('names');
+      expect(function() { v.names(['A', 'B', 'C', 'X']); }).to.not.throw(Error);
+   });
+   it('can be gotten via names()', function() {
+      var names = v.names();
+      expect(names).to.be.instanceof(Variable.StringVar);
+      expect(names.get()).to.deep.equal(['A', 'B', 'C', 'X']);
+   });
+   it('can be cleared via names(null)', function() {
+      expect(function() { v.names(null); }).to.not.throw(Error);   
+      expect(utils.isMissing(v.names())).to.be.ok;
+      expect(utils.isMissing(v.names(['A', 'B', 'C', 'X']).names(false).names())).to.be.ok;
+   });
+});
