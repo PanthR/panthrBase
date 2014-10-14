@@ -9,6 +9,8 @@ define(function(require) {
     * Barb Wahl <wahl@hanover.edu>
     * Bill Altermatt <altermattw@hanover.edu>
     */
+   
+return function(loader) {
    var Base;
 
    /**
@@ -20,10 +22,14 @@ define(function(require) {
    Base.Variable = require('./base/variable');
    /** Implementation of "statistics" datasets. */
    Base.Dataset = require('./base/dataset');
-   
-   require('./base/stats')(Base);
+
+   loader.addClass('Variable', Base.Variable);
+   loader.addClass('Dataset', Base.Dataset);
+   loader.loadModule(require('./base/stats'));
 
    return Base;
+
+}
 
 });
 

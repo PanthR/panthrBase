@@ -2,7 +2,7 @@
    "name": "panthrbase",
    "version": "0.0.1",
    "description": "Base Structures for PanthR",
-   "main": "index.js",
+   "main": "panthrBase.js",
    "scripts": {
       "test": "mocha --reporter=progress --recursive --require=./test/stackFixer.js",
       "lint": "eslint base",
@@ -52,6 +52,7 @@
       "sinon-chai": "^2.5.0"
    },
    "dependencies": {
+      "panthrloader": "*",
       "linalg-panthr": "*",
       "moment": "*"
    }

@@ -1,10 +1,10 @@
 (function(define) {'use strict';
 define(function(require) {
 
-return function(Base) {
-   require('./stats/basic')(Base);
-
-   return Base;
+return function(loader) {
+   // create and populate the stats module
+   loader.addModule('stats', {});
+   loader.loadModule(require('./stats/basic'));
 };
 
 });

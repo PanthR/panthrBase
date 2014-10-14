@@ -1,4 +1,4 @@
-var Variable  = require('../../panthrBase').Variable;
+var Variable  = require('../../index').Variable;
 var utils  = require('../../base/utils');
 var expect = require('chai').expect;
 var A = [
