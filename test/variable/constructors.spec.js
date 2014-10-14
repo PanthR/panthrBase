@@ -5,14 +5,13 @@ var expect = require('chai').expect;
 describe('Variables can be ', function() {
    it('scalar', function() {
       var v1 = new Variable([1.2, 3.1, -2.5, 0],
-         {mode: 'Sc', name: 'niceName', label: 'l1'});
+         { mode: 'Sc', label: 'l1' });
       var v2 = new Variable([1.2, 3.1, -2.5, 0],
-         {mode: 'Sc'});
+         { mode: 'Sc' });
       expect(v1).to.be.instanceof(Variable);
       expect(v1).to.be.instanceof(Variable.ScalarVar);
       expect(v2).to.be.instanceof(Variable);
       expect(v2).to.be.instanceof(Variable.ScalarVar);
-      expect(v1.name).to.equal('niceName');
       expect(v1.label).to.equal('l1');
       expect(v2.label).to.equal('');
       expect(v2.values).to.be.instanceof(Variable.Vector);
@@ -23,7 +22,7 @@ describe('Variables can be ', function() {
    it('logical', function() {
       var arr = [true, false, true, true];
       var v1 = new Variable(arr,
-         {mode: 'log', name: 'niceName', label: 'l1'});
+         {mode: 'log', label: 'l1'});
       expect(v1).to.be.instanceof(Variable);
       expect(v1).to.be.instanceof(Variable.LogicalVar);
       expect(v1.values.toArray()).to.deep.equal(arr);
@@ -32,7 +31,7 @@ describe('Variables can be ', function() {
    it('string', function() {
       var arr = ['true', 'false', 'true', 'truthy'];
       var v1 = new Variable(arr,
-         {mode: 'string', name: 'niceName', label: 'l1'});
+         {mode: 'string', label: 'l1'});
       expect(v1).to.be.instanceof(Variable);
       expect(v1).to.be.instanceof(Variable.StringVar);
       expect(v1.values.toArray()).to.deep.equal(arr);
@@ -41,7 +40,7 @@ describe('Variables can be ', function() {
    it('factor', function() {
       var arr = ['b', 'a', 'a', , 'c', 'b'];
       var v1 = new Variable(arr,
-         {mode: 'factor', name: 'niceName', label: 'l1'});
+         {mode: 'factor', label: 'l1'});
       var v2 = new Variable(new Variable.Vector(['b', 'a', 'a', , 'c', 'b']));
       expect(v1).to.be.instanceof(Variable);
       expect(v1).to.be.instanceof(Variable.FactorVar);
@@ -56,7 +55,7 @@ describe('Variables can be ', function() {
       var arr = ['b', 'a', 'a', 'c', 'b'];
       var levels = ['c', 'b', 'a']
       var v1 = new Variable(arr,
-         {mode: 'ordinal', name: 'niceName', label: 'l1', levels: levels});
+         {mode: 'ordinal', label: 'l1', levels: levels});
       expect(v1).to.be.instanceof(Variable);
       expect(v1).to.be.instanceof(Variable.OrdinalVar);
       expect(v1.values.toArray()).to.deep.equal([2, 3, 3, 1, 2]);
@@ -74,7 +73,7 @@ describe('Variables can be ', function() {
    it('dateTime', function() {
       var arr = ["01-25-2001", "01-25-2002", "01-26-2001"];
       var v1 = new Variable(arr,
-         {mode: 'dateTime', name: 'niceName', label: 'l1', format: "MM-DD-YYYY"});
+         {mode: 'dateTime', label: 'l1', format: "MM-DD-YYYY"});
       expect(v1).to.be.instanceof(Variable);
       //TODO need to test the values once we have get and set methods
       expect(v1).to.be.instanceof(Variable.DateTimeVar);

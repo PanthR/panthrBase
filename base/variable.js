@@ -8,14 +8,13 @@
 (function(define) {'use strict';
 define(function(require) {
 
-   var Variable, utils, generateName;
+   var Variable, utils;
 
    utils = require('./utils');
 
    /**
     * Create a new variable. `values` is an array with the desired values.
     * `options` is an object indicating properties of the variable:
-    *  - `name`: A brief label for the variable (to show in variable listings)
     *  - `label`: The label to use in graphs/tables/descriptions.
     *  - `mode`: A string describing what type of variable to create. If `mode` is missing
     * it will be determined based on the first non-missing entry in `values`.
@@ -24,7 +23,7 @@ define(function(require) {
     * Further options depend on the particular mode chosen. See the subclass documentations
     * for details.
     *
-    * Default name/label values will be generated if not provided. So creating a `Variable` can
+    * A default label value will be generated if not provided. So creating a `Variable` can
     * be as simple as passing a `values` argument to the constructor.
     *
     * Variable construction and setting needs to preserve the invariant that all entries are
@@ -39,7 +38,7 @@ define(function(require) {
       options.mode = utils.getOption(options.mode, Object.keys(Variable.modes)) ||
                      inferMode(values);
       ret = new Variable.modes[options.mode](values, options);
-      ret.name  = options.name  || generateName();
+      ret._names = utils.missing;
       ret.label = options.label || '';
       return ret;
    };
@@ -398,13 +397,6 @@ define(function(require) {
       if (i >= values.length || typeof values[i] === 'number') { return 'scalar'; }
       return typeof values[i] === 'boolean' ? 'logical' : 'factor';
    }
-
-   generateName = (function(index) {
-      return function genName() {
-         index += 1;
-         return 'Var' + ('0000' + index).slice(-4);
-      };
-   }(0));
 
    /*
     * Given two mode strings `m1` and `m2`, returns the 'least common mode'.

@@ -4,7 +4,7 @@ var expect = require('chai').expect;
 
 describe('Variable fillers include ', function() {
    it('resize', function() {
-      var v1 = new Variable([1.2, 3.1, -2.5, 0], {mode: 'Sc', name: 'niceName', label: 'l1'});
+      var v1 = new Variable([1.2, 3.1, -2.5, 0], {mode: 'Sc', label: 'l1'});
       var v2 = new Variable(['c', 'b', 'c', 'c', 'a']);
       var r1, r2;
       expect(Variable).to.respondTo('resize');
@@ -34,7 +34,7 @@ describe('Variable fillers include ', function() {
       expect(Variable).itself.to.respondTo('tabulate');
       var f1, f2;
       f1= function(i) { return i*i; };
-      var v1 = Variable.tabulate(f1, 1, 4, {name: 'v1', mode: 'sc'});
+      var v1 = Variable.tabulate(f1, 1, 4, {  mode: 'sc' });
       expect(v1.length()).to.equal(4);
       expect(v1.get()).to.deep.equal([1, 4, 9, 16]);
       f2 = function(i) { return ['a', 'b'][i%2]; };
@@ -50,8 +50,7 @@ describe('Variable fillers include ', function() {
       expect(v1.get()).to.deep.equal([5.1, 5.6, 6.1, 6.6]);
 
       // from, to (step is 1 or -1)
-      var v2 = Variable.seq(6.9, 4.5, {name: 'hey'});
-      expect(v2.name).to.equal('hey');
+      var v2 = Variable.seq(6.9, 4.5);
       expect(v2.get()).to.deep.equal([6.9, 5.9, 4.9]);
 
       // to (from is 1, step is 1)
