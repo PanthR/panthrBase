@@ -189,6 +189,10 @@ define(function(require) {
    Variable.prototype.toArray = function toArray() {
       return this.get();
    };
+
+   Variable.prototype.toVector = function toVector() {
+      return this.values;
+   };
    /**
      * Set the entries indicated by `i` to the values indicated by `val`.
      * (Keep in mind that Variables are indexed from 1.)
