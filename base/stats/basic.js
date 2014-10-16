@@ -2,9 +2,11 @@
 define(function(require) {
 
 return function(loader) {
-   var utils;
+   var utils, Variable;
 
    utils = require('../utils');
+
+   Variable = loader.getClass('Variable');
 
    /**
     * Return the sum of the values.
@@ -61,6 +63,39 @@ return function(loader) {
     */
    loader.addInstanceMethod('Variable', 'max', function max(skipMissing) {
       return this.asScalar().reduce(utils.op.max2, -Infinity, skipMissing);
+   });
+
+   /**
+    * Return the permutation that sorts the elements in the variable according
+    * to the order specified by `desc`.
+    * - If `desc` is a boolean, then `false` indicates ascending order, `true`
+    * indicates descending order.
+    * - If `desc` is a function `f(a, b)`, then it is interpreted as the comparator
+    * for sorting, and must return `-1` if `a` precedes `b`, `0` if `a` and `b` are "equal"
+    * in order, and `1` if `b` precedes `a`.
+    * - If `desc` is omitted, it defaults to `false`.
+    */
+   loader.addInstanceMethod('Variable', 'order', function order(desc) {
+      return Variable.scalar(this.toVector().order(desc));
+   });
+
+   /**
+    * Return a new variable with the values sorted in the order specified by `desc`.
+    * See `Variable.order`.
+    */
+   loader.addInstanceMethod('Variable', 'sort', function sort(desc) {
+      return this.reproduce(this.toVector().sort(desc));
+   });
+
+   /**
+    * For now using type 7 from R. `ps` can be a single number or an array/variable/vector
+    * of numbers in the range [0, 1].
+    * If `this` has missing values and `skipMissing` is false (default), error will occur.
+    * If `ps` has missing values, they will be preserved.
+    * Return a variable with names to label the quantiles.
+    */
+   loader.addInstanceMethod('Variable', 'quantile', function quantile(ps, skipMissing) {
+
    });
 
    // helper methods
