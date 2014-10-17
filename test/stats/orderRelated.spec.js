@@ -72,5 +72,42 @@ describe('sort', function() {
       expect(w.sort().asScalar().toArray()).to.deep.equal([1, 1, 1, 2, 2, 3]);
       expect(w.sort(true).asScalar().toArray()).to.deep.equal([3, 2, 2, 1, 1, 1]);
    });
-
+});
+describe('quantile', function() {
+   var v1 = new Variable([3, 4, 5, 6, 7]);
+   var v2 = new Variable([3, 4, NaN, 5, 6, 7, NaN]);
+   it('works when no missing values', function() {
+      expect(v1.quantile(.2).toArray()).to.deep.equal([3.8]);
+      expect(v1.quantile(.25).toArray()).to.deep.equal([4]);
+      expect(v1.quantile(0).toArray()).to.deep.equal([3]);
+      expect(v1.quantile(1).toArray()).to.deep.equal([7]);
+   });
+   it('skips values missing in the variable if skipMissing', function() {
+      expect(v2.quantile(.2, true).toArray()).to.deep.equal([3.8]);
+      expect(v2.quantile(.25, true).toArray()).to.deep.equal([4]);
+      expect(v2.quantile(0, true).toArray()).to.deep.equal([3]);
+      expect(v2.quantile(1, true).toArray()).to.deep.equal([7]);
+   });
+   it('throws an error if missing and not skipMissing', function() {
+      expect(function() { v2.quantile(.2)}).to.throw(Error);
+   });
+   it('preserves missing values in the `probs` argument', function() {
+      expect(utils.areEqualArrays(v1.quantile([.2, NaN, null, .5, undefined]).toArray(),
+         [3.8, utils.missing, utils.missing, 5, utils.missing])).to.be.true;
+   });
+   it('works for different `probs` formats: 1 value, array, vector, variable', function() {
+      expect(v1.quantile(new Variable.Vector([.2, .25, 1])).toArray())
+         .to.deep.equal([3.8, 4, 7]);
+      expect(v1.quantile(new Variable([.2, .25, 1])).toArray())
+         .to.deep.equal([3.8, 4, 7]);
+   });
+   it('generates appropriate name labels', function() {
+            expect(v1.quantile(new Variable([.2, .25, 1]))
+               .names().toArray()).to.deep.equal(['20%', '25%', '100%']);
+   });
+   it('errors when prob < 0 or prob > 1', function() {
+      expect(function() { v1.quantile(-2)}).to.throw(Error);
+      expect(function() { v1.quantile(-.02)}).to.throw(Error);
+      expect(function() { v1.quantile(1.1)}).to.throw(Error);
+   });
 });

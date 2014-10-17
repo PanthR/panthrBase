@@ -88,14 +88,42 @@ return function(loader) {
    });
 
    /**
-    * For now using type 7 from R. `ps` can be a single number or an array/variable/vector
-    * of numbers in the range [0, 1].
-    * If `this` has missing values and `skipMissing` is false (default), error will occur.
-    * If `ps` has missing values, they will be preserved.
-    * Return a variable with names to label the quantiles.
+    * Return the requested quantiles for the values of `this`.
+    * `probs` can be a single number or array/Vector/Variable, and is
+    * used to specify the desired quantiles.  Each value in `probs`
+    * should be in the range [0, 1].  If a value in `probs` is missing
+    * then the corresponding quantile will be recorded as missing.
+    * `skipMissing` defaults to false.  If `skipMissing` is false and
+    * `this` has missing values, an error is thrown.
+    * The quantile results are returned in a 'named' scalar variable.
     */
-   loader.addInstanceMethod('Variable', 'quantile', function quantile(ps, skipMissing) {
-
+   loader.addInstanceMethod('Variable', 'quantile',
+   function quantile(probs, skipMissing) {
+      var getQuant, quantiles, names;
+      if (skipMissing === true) {
+         return this.nonMissing().quantile(probs);
+      } else if (this.hasMissing()) {
+         throw new Error(
+            'missing values in variable and skipMissing not set to true'
+         );
+      }
+      probs = Variable.ensureArray(probs);
+      probs.forEach(function(p) { if (p < 0 || p > 1) {
+         throw new Error('"probs" outside [0, 1]');
+      }});
+      getQuant = function(p) {
+         var g, k;
+         p = p * (this.length() - 1) + 1;
+         k = Math.floor(p);
+         g = p - k; // fractional part of scaled prob
+         // interpolate: (1-g)*x[k] + g*x[k+1]
+         return (1 - g) * this.get(k) + g * this.get(k + 1);
+      }.bind(this.asScalar().sort());
+      quantiles = probs.map(utils.makePreserveMissing(getQuant));
+      names = probs.map(function(p) {
+         return utils.isMissing(p) ? utils.missing : p * 100 + '%';
+      });
+      return Variable.scalar(quantiles).names(names);
    });
 
    // helper methods
