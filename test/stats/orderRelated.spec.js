@@ -111,3 +111,24 @@ describe('quantile', function() {
       expect(function() { v1.quantile(1.1)}).to.throw(Error);
    });
 });
+describe('median', function() {
+   var v1 = new Variable([3, 4, 5, 6, 7]);
+   var v2 = new Variable([3, 4, NaN, 5, 6, 7, NaN]);
+   it('returns a (the correct) number', function() {
+      expect(v1.median()).to.equal(5);
+      expect(new Variable([3,4,5,6]).median()).to.equal(4.5);
+      expect(v2.median(true)).to.equal(5);
+      expect(utils.isMissing(v2.median())).to.be.true;
+   });
+});
+describe('fiveNum', function() {
+   var v1 = new Variable([3, 4, 5, 6, 7]);
+   var v2 = new Variable([3, 4, NaN, 5, 6, 7, NaN]);
+   it('returns the correct numbers', function() {
+      expect(v1.fiveNum().toArray()).to.deep.equal([3,4,5,6,7]);
+      expect(new Variable([3,4,5,6]).fiveNum().toArray())
+         .to.deep.equal([3, 3.75, 4.5, 5.25, 6]);
+      expect(v2.median(true)).to.equal(5);
+      expect(utils.isMissing(v2.median())).to.be.true;
+   });
+});

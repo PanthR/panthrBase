@@ -126,6 +126,16 @@ return function(loader) {
       return Variable.scalar(quantiles).names(names);
    });
 
+   loader.addInstanceMethod('Variable', 'median', function median(skipMissing) {
+      return this.hasMissing() && skipMissing !== true ? utils.missing
+         : this.quantile(0.5, true).get(1);
+   });
+
+   loader.addInstanceMethod('Variable', 'fiveNum', function fiveNum(skipMissing) {
+      return this.quantile([0, 0.25, 0.5, 0.75, 1], skipMissing)
+         .names(['Min', 'Q1', 'Median', 'Q3', 'Max']);
+   });
+
    // helper methods
 
    // Takes a variable `v` and a boolean `skipMissing`.
