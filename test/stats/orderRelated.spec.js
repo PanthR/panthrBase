@@ -132,3 +132,16 @@ describe('fiveNum', function() {
       expect(utils.isMissing(v2.median())).to.be.true;
    });
 });
+describe('table', function() {
+   var v1 = new Variable([4.5, 2.3, 2.3, 4.5, 1.2, 4.5]);
+   it('returns a variable of frequencies (with names)', function() {
+      expect(v1.table().toArray()).to.deep.equal([1, 2, 3]);
+      expect(v1.table().names().asScalar().toArray()).to.deep.equal([1.2, 2.3, 4.5]);
+   });
+   it('tabulates missing values at the end', function() {
+      var v2 = new Variable([3, 4, NaN, 3, 6, 4, NaN]);
+      expect(v2.table().toArray()).to.deep.equal([2, 2, 1, 2]);
+      expect(utils.areEqualArrays(v2.table().names().asScalar().toArray(),
+                                  [3, 4, 6, utils.missing]));
+   });
+});

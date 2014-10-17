@@ -136,6 +136,25 @@ return function(loader) {
          .names(['Min', 'Q1', 'Median', 'Q3', 'Max']);
    });
 
+   /**
+    * Frequency tables. Converts the variable to factor first.
+    */
+   loader.addInstanceMethod('Variable', 'table', function table() {
+      var factor, freqs, missing, names;
+      factor = Variable.factor(this.toArray()).sort();
+      freqs = [];
+      missing = 0;
+      factor.each(function(val) {
+         if (utils.isMissing(val)) {
+            missing += 1;
+         } else {
+            freqs[val - 1] = freqs[val - 1] ? freqs[val - 1] + 1 : 1;
+         }
+      });
+      names = factor.levels();
+      if (missing > 0) { freqs.push(missing); names.push(utils.missing); }
+      return Variable.scalar(freqs).names(names);
+   });
    // helper methods
 
    // Takes a variable `v` and a boolean `skipMissing`.
