@@ -365,6 +365,10 @@ define(function(require) {
       return this.filter(utils.isNotMissing);
    };
 
+   Variable.prototype.hasMissing = function hasMissing() {
+      return utils.hasMissing(this.toArray());
+   };
+
    Variable.prototype.sameLength = function sameLength(other) {
       return this.values.length === other.values.length;
    };
