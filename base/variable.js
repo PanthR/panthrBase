@@ -154,6 +154,15 @@ define(function(require) {
       return new Variable([].concat.apply([], vars), { mode: commonMode });
    };
 
+   // val can be a single number / missing / array / Variable / Vector
+   // returns an array with missing values normalized to utils.missing
+   Variable.ensureArray = function ensureArray(val) {
+      if (val instanceof Variable) { val = val.toVector(); }
+      if (val instanceof Variable.Vector) { val = val.toArray(); }
+      if (!Array.isArray(val)) { val = [val]; }
+      return normalizeValue(val);
+   };
+
    Variable.prototype.asScalar = function asScalar() {
       return new Variable(this.values);
    };
