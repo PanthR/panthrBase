@@ -20,10 +20,13 @@ return function(loader) {
 
    /** Implementation of "statistics" variables. */
    Base.Variable = require('./base/variable');
+   /** Implementation of basic list structure. */
+   Base.List = require('./base/list');
    /** Implementation of "statistics" datasets. */
    Base.Dataset = require('./base/dataset');
 
    loader.addClass('Variable', Base.Variable);
+   loader.addClass('List', Base.List);
    loader.addClass('Dataset', Base.Dataset);
    loader.loadModule(require('./base/fun'));
    loader.loadModule(require('./base/stats'));
