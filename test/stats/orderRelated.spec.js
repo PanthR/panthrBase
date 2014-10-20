@@ -144,4 +144,9 @@ describe('table', function() {
       expect(utils.areEqualArrays(v2.table().names().asScalar().toArray(),
                                   [3, 4, 6, utils.missing]));
    });
+   it('works for factor variables', function() {
+      var v3 = new Variable(["d","c","d","a"]);
+      expect(v3.table().toArray()).to.deep.equal([1, 1, 2]);
+      expect(v3.table().names().toArray()).to.deep.equal(["a","c","d"]);
+   });
 });
