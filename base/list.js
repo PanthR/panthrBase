@@ -31,19 +31,15 @@ define(function(require) {
     */
    function List(values) {
       if (!(this instanceof List)) { return new List(values); }
-      this._namesObj = {};
-      this._namesArr = [null];
       if (Array.isArray(values)) {
-         this.values = values;
-         this.values.unshift(null);
+         this._names = [null];
+         this.values = [null].concat(values);
       } else {
          // Given an object. Need to populate array based on it
-         this.values = [null];
-         Object.keys(values || {}).forEach(function(key) {
-            this.values.push(values[key]);
-            this._namesObj[key] = this._namesArr.length;
-            this._namesArr.push(key);
-         }.bind(this));
+         this._names = [null].concat(Object.keys(values || {}));
+         this.values = this._names.map(function(key) {
+            return key === null ? null : values[key];
+         });
       }
    }
 
@@ -55,31 +51,20 @@ define(function(require) {
     * this.names(i, newName);  // newName is a string or null (or evals to missing)
     * this.names(newNames);   // Array of strings/nulls of length equal to list length
     */
-   List.prototype.names = function names(newNames) {
-      var i;
+   List.prototype.names = function names(i, newNames) {
       if (arguments.length === 0) {
-         return Variable.string(this._namesArr.slice(1));
-      } else if (arguments.length > 1) {
-         i = newNames;
-         newNames = arguments[1];
-         delete this._namesObj[this._namesArr[i]];
-         this._namesObj[newNames] = i;
-         this._namesArr[i] = newNames;
-      } else {
-         if (!Array.isArray(newNames)) {
-            return this._namesArr[newNames];
-         }
-         if (newNames.length !== this.length()) {
+         return Variable.string(this._names.slice(1));
+      }
+      if (arguments.length > 1) {
+         this._names[i] = newNames;
+      } else { // one argument, `i`
+         if (!Array.isArray(i)) { return this._names[i]; }
+         if (i.length > this.length()) {
             throw new Error('Incompatible names length');
          }
-         this._namesArr = [null];
-         this._namesObj = {};
-         newNames.forEach(function(key) {
-            this._namesObj[key] = this._namesArr.length;
-            this._namesArr.push(key);
-         }.bind(this));
-         return this;
+         this._names = [null].concat(i);
       }
+      return this;
    };
 
    List.prototype.length = function length() {
@@ -93,11 +78,63 @@ define(function(require) {
     * - null/missing (return the array of values)
     */
    List.prototype.get = function get(i) {
-      if (arguments.length === 0) { return this.values.slice(1); }
-      if (typeof i === 'number') { return this.values[i]; }
-      return this._namesObj.hasOwnProperty(i) ?
-               this.values[this._namesObj[i]] :
-               utils.missing;
+      if (utils.isMissing(i)) { return this.values.slice(1); }
+      if (typeof i !== 'number') {
+         i = this._names.indexOf(i);
+         if (i === -1) { return utils.missing; }
+      }
+      return this.values[i];
+   };
+
+   /**
+    * i can be:
+    * - index:  If i > length of list, create new item at index i and fill the
+    *           gap with missing
+    * - string (name):  If i is not already a name in the list, append new item
+    *                   with name `i`.  Else, update existing item with new value.
+    * - object of name-value pairs (update existing, append new)
+    * - array of values (append new)
+    * val can be any sort of thing.
+    * omit `val` if `i` is an object or array.
+    */
+   List.prototype.set = function set(i, val) {
+      if (utils.isMissing(i)) { return this; }
+      if (typeof i === 'number' || typeof i === 'string') {
+         return this._set(i, val);
+      }
+      if (Array.isArray(i)) {
+         i.forEach(function(v) {
+            this._set(this.length() + 1, v);
+         }.bind(this));
+      } else {
+         // i is an object
+         Object.keys(i).forEach(function(key) {
+            this._set(key, i[key]);
+         }.bind(this));
+      }
+      return this;
+   };
+
+   // for setting exactly one value
+   // `i` is a positive int or a name string
+   // val is a thing
+   List.prototype._set = function _set(i, val) {
+      var name;
+      if (utils.isMissing(i)) { return this; }
+      if (typeof i === 'number') {
+         i = Math.floor(i);
+         if (i < 1) { throw new Error('cannot set at negative index: ' + i); }
+         this.values[i] = val;
+      } else {
+         name = i;
+         i = this._names.indexOf(name);
+         if (i === -1) { // append
+            i = this.length() + 1;
+            this._names[i] = name;
+         }
+         this.values[i] = val;
+      }
+      return this;
    };
 
    return List;
