@@ -137,6 +137,19 @@ define(function(require) {
       return this;
    };
 
+   /**
+    * Delete the item in the `i` position (i integer or string)
+    */
+   List.prototype.delete = function _delete(i) {
+    if (utils.isMissing(i)) { return this; }
+    if (typeof i !== 'number') { i = this._names.indexOf(i); }
+    if (i >= 1) {
+      this.values.splice(i, 1);
+      this._names.splice(i, 1);
+    }
+    return this;
+   };
+
    return List;
 
 });

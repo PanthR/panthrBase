@@ -90,5 +90,26 @@ describe('List set', function() {
       expect(l.length()).to.equal(7);
       //l.names(['x','y','z','p',,,'a']);
    });
-
+});
+describe('List delete', function() {
+   it('by index', function() {
+      var l = new List({a: 4, b: 7, c: -1});
+      expect(l.delete(2).get(2)).to.equal(-1);
+      expect(l.length()).to.equal(2);
+      expect(l.names().toArray()).to.deep.equal(['a', 'c']);
+      expect(l.delete(3).length()).to.equal(2);
+      expect(l.names().toArray()).to.deep.equal(['a', 'c']);
+      expect(l.delete(-1).length()).to.equal(2);
+      expect(l.names().toArray()).to.deep.equal(['a', 'c']);
+   });
+   it('by name', function() {
+      var l = new List({a: 4, b: 7, c: -1});
+      expect(l.delete('b').get(2)).to.equal(-1);
+      expect(l.length()).to.equal(2);
+      expect(l.names().toArray()).to.deep.equal(['a', 'c']);
+      expect(l.delete('b').length()).to.equal(2);
+      expect(l.names().toArray()).to.deep.equal(['a', 'c']);
+      expect(l.delete('d').length()).to.equal(2);
+      expect(l.names().toArray()).to.deep.equal(['a', 'c']);
+   });
 });
