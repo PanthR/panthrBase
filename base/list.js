@@ -150,6 +150,47 @@ define(function(require) {
     return this;
    };
 
+   /**
+   * Takes a function `f(val, i, name)` and applies it to each value in this
+   * list.  For any values with no associated name, `name` will be supplied as
+   * `undefined`.
+   */
+   List.prototype.each = function each(f) {
+      var i;
+      for (i = 1; i <= this.length(); i += 1) {
+         f(this.values[i], i, this._names[i]);
+      }
+      return this;
+   };
+
+   /**
+    * Takes a function `f(acc, val, i, name)` and accumulates a return value.
+    * For any values with no associated name, `name` will be supplied as
+    * `undefined`.
+    */
+   List.prototype.reduce = function reduce(f, initial) {
+      var i, acc;
+      acc = initial;
+      for (i = 1; i <= this.length(); i += 1) {
+         acc = f(acc, this.values[i], i, this._names[i]);
+      }
+      return acc;
+   };
+
+   /**
+    * Takes a function `f(val, i, name)` and applies it to each value in this
+    * list to create a new list.  For any values with no associated name,
+    * `name` will be supplied as `undefined`.
+    */
+   List.prototype.map = function map(f) {
+      var arr;
+      arr = [];
+      this.each(function(val, i, name) {
+         arr.push(f(val, i, name));
+      });
+      return (new List(arr)).names(this.names().toArray());
+   };
+
    return List;
 
 });
