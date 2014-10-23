@@ -1,6 +1,8 @@
-var List  = require('../../index').List;
+var Base = require('../../index');
+var List  = Base.List;
 var utils  = require('../../base/utils');
 var expect = require('chai').expect;
+var Variable = Base.Variable;
 
 describe('List construction', function() {
    it('takes no arguments', function() {
@@ -49,6 +51,8 @@ describe('List names', function() {
    it('can be set using the names function', function() {
       expect(l.names(3, 'z').get('z')).to.equal(l.get(3));
       expect(l.names(['p','q','r']).names().toArray()).to.deep.equal(['p','q','r']);
+      expect(l.names(new Variable(['p','q','x'])).names()
+                     .toArray()).to.deep.equal(['p','q','x']);
    })
    it('can be used to partially set the names', function() {
       expect(function () { l.names(['no','maybe']); }).to.not.throw(Error);

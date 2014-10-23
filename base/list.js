@@ -49,7 +49,7 @@ define(function(require) {
     * this.names();
     * this.names(i);
     * this.names(i, newName);  // newName is a string or null (or evals to missing)
-    * this.names(newNames);   // Array of strings/nulls of length equal to list length
+    * this.names(newNames);    // Array or Variable of strings/nulls
     */
    List.prototype.names = function names(i, newNames) {
       if (arguments.length === 0) {
@@ -58,6 +58,7 @@ define(function(require) {
       if (arguments.length > 1) {
          this._names[i] = newNames;
       } else { // one argument, `i`
+         if (i instanceof Variable) { i = i.asString().toArray(); }
          if (!Array.isArray(i)) { return this._names[i]; }
          if (i.length > this.length()) {
             throw new Error('Incompatible names length');
