@@ -219,6 +219,8 @@ define(function(require) {
      * which case, we set the values which correspond to the `true` values in `i`.
      *
      * In all cases, if there are any null/undefined/NaN indices, an error occurs.
+     *
+     * To set values out of bounds, you are required to call resize first.
      */
    Variable.prototype.set = function set(i, val) {
       if (val instanceof Variable) {
@@ -291,16 +293,17 @@ define(function(require) {
    };
 
    /**
-    * Return a new variable which results from resizing `this`.
+    * Resize `this`.
     * If fill is `true`, recycle the values to reach the new length, `length`.
     * If fill is `false` or omitted, the new values will be `NaN`.
     */
    Variable.prototype.resize = function resize(length, fill) {
-      var newVar;
-      newVar = this.clone();
       if (fill !== true) { fill = function(i) { return utils.missing; }; }
-      newVar.values = newVar.values.resize(length, fill);
-      return newVar;
+      this.values = this.values.resize(length, fill);
+      if (!utils.isMissing(this._names)) {
+         this._names = this._names.resize(length);
+      }
+      return this;
    };
 
    /**
