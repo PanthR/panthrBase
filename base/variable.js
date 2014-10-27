@@ -140,7 +140,7 @@ define(function(require) {
     * Takes 0 or more variables as arguments and concatenates them.
     */
    Variable.concat = function concat(vars) {
-      var commonMode, converters;
+      var commonMode, converters, names;
       if (arguments.length === 0) { return Variable.scalar([]); }
       if (arguments.length === 1) { return arguments[0]; }
       vars = [].slice.call(arguments);  // at least 2 variables
@@ -150,10 +150,25 @@ define(function(require) {
          'string': function(v) { return v.asString(); },
          'factor': function(v) { return v.asString(); }
       };
-      // make all vars the same type & concatenate their values
+      // make all vars the same type & concatenate their values and names
+      names = utils.missing;
+      if (!vars.every(function(v) {
+         return utils.isMissing(v.names());
+      })) {
+         names = [].concat.apply([], vars.map(function(v) {
+            var vNames;
+            vNames = v.names();
+            if (utils.isMissing(vNames)) {
+               // create an appropriate vector
+               vNames = Variable.Vector.const(utils.missing, v.length());
+            }
+            return vNames.toArray();
+         }));
+      }
       if (converters[commonMode]) { vars = vars.map(converters[commonMode]); }
       vars = vars.map(function(v) { return v.get(); });  // array of arrays
-      return new Variable([].concat.apply([], vars), { mode: commonMode });
+      return (new Variable([].concat.apply([], vars), { mode: commonMode }))
+                             .names(names);
    };
 
    // val can be a single number / missing / array / Variable / Vector

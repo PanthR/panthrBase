@@ -192,5 +192,16 @@ describe('Variable fillers include ', function() {
          expect(A[1].concat(A[2]).length()).to.equal(6);
          expect(A[1].concat().length()).to.equal(3);
       });
+      it('concats the names as well, unless none exist', function() {
+         var w1 = new Variable([5.5, 3.3, -2.5]);
+         var w2 = new Variable(['c', 'x', 'x']);
+         w1.names(["a","b","c"]);
+         expect(utils.areEqualArrays(w1.concat(w2).names().toArray(),
+            ["a","b","c", utils.missing, utils.missing, utils.missing]))
+            .to.be.true;
+         expect(w1.concat(w1).names().toArray())
+               .to.deep.equal(["a","b","c","a","b","c"]);
+         expect(utils.isMissing(w2.concat(w2).names())).to.be.true;
+      });
    });
 });
