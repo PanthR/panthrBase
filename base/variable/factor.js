@@ -81,11 +81,13 @@ return function(Variable) {
       return this;
    };
 
-   FactorVar.prototype.reproduce = function reproduce(newValues) {
+   FactorVar.prototype.reproduce = function reproduce(newValues, newNames) {
+      var newVar;
       newValues = newValues.map(function(code) { return this.c2v[code]; }.bind(this));
-      return new Variable(newValues, {
+      newVar = new Variable(newValues, {
          mode: this.mode(), label: this.label, levels: this.levels()
       });
+      return newNames ? newVar.names(newNames) : newVar;
    };
 
    FactorVar.prototype.asString = function asString() {

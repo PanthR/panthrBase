@@ -14,6 +14,7 @@ define(function(require) {
 
    /**
     * Create a new variable. `values` is an array with the desired values.
+    * If given a variable instead of an array, use `get`.
     * `options` is an object indicating properties of the variable:
     *  - `label`: The label to use in graphs/tables/descriptions.
     *  - `mode`: A string describing what type of variable to create. If `mode` is missing
@@ -34,6 +35,7 @@ define(function(require) {
     */
    Variable = function(values, options) {
       var ret;
+      if (values instanceof Variable) { values = values.get(); }
       if (values instanceof Variable.Vector) { values = values.toArray(); }
       values = normalizeValue(values);
       if (options == null) { options = {}; }
@@ -249,7 +251,7 @@ define(function(require) {
    Variable.prototype.names = function names(newNames) {
       if (arguments.length === 0) { return this._names; }
       this._names = utils.isMissing(newNames) || !newNames ?
-                        utils.missing : Variable.string(newNames);
+                        utils.missing : Variable.string(newNames).resize(this.length());
       return this;
    };
 
@@ -258,7 +260,7 @@ define(function(require) {
     * mode, and label.
     */
    Variable.prototype.clone = function clone() {
-      return this.reproduce(this.values.clone());
+      return this.reproduce(this.values.clone(), this.names());
    };
 
    /**
@@ -269,11 +271,16 @@ define(function(require) {
     * Note: If `this` is a factor or an ordinal variable, it is
     * assumed that the new values are codes which are in agreement
     * with the system of codes for `this`.
+    *
+    * If newNames is provided (variable/vector/array), it is used as the
+    * names for the new variable.
     */
-   Variable.prototype.reproduce = function reproduce(newValues) {
-      return new Variable(newValues, {
+   Variable.prototype.reproduce = function reproduce(newValues, newNames) {
+      var newVar;
+      newVar = new Variable(newValues, {
          mode: this.mode(), label: this.label
       });
+      return newNames ? newVar.names(newNames) : newVar;
    };
 
    /**
@@ -289,7 +296,11 @@ define(function(require) {
     */
    Variable.prototype.rep = function rep(times) {
       if (times instanceof Variable) { times = times.values; }
-      return this.reproduce(this.values.rep(times));
+      if (utils.isMissing(this._names)) {
+         return this.reproduce(this.values.rep(times));
+      }
+      return this.reproduce(this.values.rep(times),
+                            this.names().values.rep(times));
    };
 
    /**
@@ -345,7 +356,7 @@ define(function(require) {
       }
       if (mode) { mode = { 'mode': mode }; }
       f2 = skipMissing !== true ? f : utils.makePreserveMissing(f);
-      return new Variable(this.values.map(f2), mode);
+      return (new Variable(this.values.map(f2), mode)).names(this.names());
    };
 
    /**
@@ -356,9 +367,11 @@ define(function(require) {
       var arr;
       arr = [];
       this.values.each(function(val, i) {
-         if (pred(val, i)) { arr.push(val); }
+         if (pred(val, i)) { arr.push(i); }
       });
-      return this.reproduce(arr);
+      return !utils.isMissing(this._names) ?
+         this.reproduce(this.values.get(arr), this.names().get(arr)) :
+         this.reproduce(this.values.get(arr));
    };
 
    /**

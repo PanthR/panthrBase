@@ -177,6 +177,13 @@ describe('Variable iterators: ', function() {
             expect(c).to.equal(v.length() - 1);
          });
       });
+      it('preserves names', function() {
+         A.forEach(function(v) {
+            v.names(['A', 'B', 'C']);
+            expect(v.map(function(x) { return 1; }, true)
+                    .names().toArray()).to.deep.equal(['A','B','C']);
+         });
+      });
    });
    describe('filter', function() {
       var Amiss = [
@@ -201,6 +208,11 @@ describe('Variable iterators: ', function() {
             expect(w.length()).to.equal(1);
             expect(w.get(1)).to.equal(v.get(3));
          });
+      });
+      it('preserves the names', function() {
+         var v = A[0];
+         v.names(['A', 'B', 'C']);
+         expect(v.filter(function(v) { return v < 4; }).names().toArray()).to.deep.equal(['B','C']);
       });
    });
 });

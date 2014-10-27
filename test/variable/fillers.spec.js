@@ -100,6 +100,15 @@ describe('Variable fillers include ', function() {
          expect(utils.isMissing(v.rep(3).get(5))).to.be.true;
          expect(utils.isMissing(v.rep(v1).get(8))).to.be.true;
       });
+      it('preserves the names', function() {
+         v1.names(['A', 'B', 'C']);
+         expect(v1.rep(v1).names().toArray()).to.deep.equal([
+            'A', 'A', 'A', 'A', 'A', 'B', 'B', 'B']);
+         expect(v1.rep(counts).names().toArray()).to.deep.equal([
+            'A', 'A', 'A', 'A', 'A', 'B', 'B', 'B']);
+         expect(v1.rep(2).names().toArray()).to.deep.equal([
+            'A', 'B', 'C', 'A', 'B', 'C']);
+      });
    });
    describe('concat', function() {
       var A = [
