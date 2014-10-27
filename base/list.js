@@ -192,6 +192,50 @@ define(function(require) {
       return (new List(arr)).names(this.names().toArray());
    };
 
+ /**
+    * Returns a new Variable without changing this List.
+    * Works for values which are among the following (mixed ok):
+    * - single value
+    * - array
+    * - Vector
+    * - Variable
+    * - List
+    * Names are generated for the new Variable.  The general idea is
+    * to preserve any names in this list and/or in the values of this
+    * list in some reasonble way, wherever they exist.
+    * - If variable with names, and list entry also named, join the names
+    * - If variable with names, and list entry not named, use variable name
+    * - If variable without names, and list entry named, provide lname.1, ...
+    */
+   List.prototype.toVariable = function toVariable() {
+      var resolvedEntries;
+      resolvedEntries = this.get().map(function(val, i) {
+         if (val instanceof List) { return val.toVariable(); }
+         if (val instanceof Variable) { return val.clone(); }
+         if (val instanceof Variable.Vector ||
+             Array.isArray(val)) { return new Variable(val); }
+         // Single value. turn into a Variable
+         return new Variable([val]);
+      });
+      resolvedEntries.forEach(function(val, i) {
+         var names, listName;
+         names = val.names();            // StringVar of names, or utils.missing
+         listName = this.names(i + 1);   // String, or utils.missing
+         if (!utils.isMissing(listName)) {
+            if (utils.isMissing(names)) {
+               if (val.length() === 1) {
+                  return val.names([listName]); // hack!!
+               }
+               names = Variable.Vector.seq(val.length());
+            }
+            val.names(names.toArray()
+               .map(function(s) { return listName + '.' + s; })
+            );
+         }
+      }.bind(this));
+      return Variable.concat.apply(null, resolvedEntries);
+   };
+
    return List;
 
 });
