@@ -128,3 +128,17 @@ describe('Variable set', function() {
       expect(utils.areEqualArrays(v1.get(l1), [5, utils.missing, 1, utils.missing])).to.be.true;
    });
 });
+describe('Variable select', function() {
+   var v1 = new Variable([2.12, -12.2, 3, 23]);
+   v1.names(["a","b","c","d"]);
+   var w1 = v1.select(new Variable.Vector([2, 3, 4, 2, 3, 4]));
+   var v2= new Variable(["yes","no","yes","yes"]);
+   var w2 = v2.select([4,1,2]);
+   it('works when called with a vector', function() {
+      expect(w1.get()).to.deep.equal([-12.2, 3, 23, -12.2, 3, 23]);
+      expect(w1.names().toArray()).to.deep.equal(["b","c","d","b","c","d"]);
+   });
+   it('works when called with an array', function() {
+      expect(w2.get()).to.deep.equal(["yes","yes","no"]);
+   });
+});

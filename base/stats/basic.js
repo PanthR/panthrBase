@@ -84,7 +84,7 @@ return function(loader) {
     * See `Variable.order`.
     */
    loader.addInstanceMethod('Variable', 'sort', function sort(desc) {
-      return this.reproduce(this.toVector().sort(desc));
+      return this.select(this.toVector().order(desc).toArray());
    });
 
    /**

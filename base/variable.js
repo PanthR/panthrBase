@@ -260,7 +260,7 @@ define(function(require) {
     * mode, and label.
     */
    Variable.prototype.clone = function clone() {
-      return this.reproduce(this.values.clone(), this.names());
+      return this.select(Variable.Vector.seq(this.length()));
    };
 
    /**
@@ -284,6 +284,16 @@ define(function(require) {
    };
 
    /**
+    * From a given array or a Vector of indices, create a new Variable based off the
+    * values of `this` corresponding to those indices.
+    */
+   Variable.prototype.select = function select(indices) {
+      return !utils.isMissing(this._names) ?
+         this.reproduce(this.values.get(indices), this.names().get(indices)) :
+         this.reproduce(this.values.get(indices));
+   };
+
+   /**
     * Repeats a variable according to a pattern to make a new variable.
     * `times` can be used in several different ways, depending on its type.
     * - `times` is a number: repeat the variable that many times
@@ -296,11 +306,7 @@ define(function(require) {
     */
    Variable.prototype.rep = function rep(times) {
       if (times instanceof Variable) { times = times.values; }
-      if (utils.isMissing(this._names)) {
-         return this.reproduce(this.values.rep(times));
-      }
-      return this.reproduce(this.values.rep(times),
-                            this.names().values.rep(times));
+      return this.select(Variable.Vector.seq(this.length()).rep(times));
    };
 
    /**
@@ -369,9 +375,7 @@ define(function(require) {
       this.values.each(function(val, i) {
          if (pred(val, i)) { arr.push(i); }
       });
-      return !utils.isMissing(this._names) ?
-         this.reproduce(this.values.get(arr), this.names().get(arr)) :
-         this.reproduce(this.values.get(arr));
+      return this.select(arr);
    };
 
    /**
