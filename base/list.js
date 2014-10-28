@@ -223,23 +223,26 @@ define(function(require) {
          return new Variable([val]);
       });
       resolvedEntries.forEach(function(val, i) {
-         var names, listName;
-         names = val.names();            // StringVar of names, or utils.missing
-         listName = this.names(i + 1);   // String, or utils.missing
-         if (!utils.isMissing(listName)) {
-            if (utils.isMissing(names)) {
-               if (val.length() === 1) {
-                  return val.names([listName]); // hack!!
-               }
-               names = Variable.Vector.seq(val.length());
-            }
-            val.names(names.toArray()
-               .map(function(s) { return listName + '.' + s; })
-            );
-         }
+         val.names(joinNames(this.names(i + 1),
+                             val.names(),
+                             val.length()));
       }.bind(this));
       return Variable.concat.apply(null, resolvedEntries);
    };
+
+
+   /* Helper methods */
+   function joinNames(itemName, valueNames, length) {
+      if (utils.isMissing(itemName)) {
+         return Variable.ensureArray(valueNames);
+      }
+      if (utils.isMissing(valueNames)) {
+         if (length === 1) { return [itemName]; }
+         valueNames = Variable.Vector.seq(length);
+      }
+      return Variable.ensureArray(valueNames)
+                     .map(function(s) { return itemName + '.' + s; });
+   }
 
    return List;
 
