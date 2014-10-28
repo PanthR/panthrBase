@@ -53,11 +53,16 @@ define(function(require) {
     */
    List.prototype.names = function names(i, newNames) {
       if (arguments.length === 0) {
-         return Variable.string(this._names.slice(1));
+         return this._names.length > 1 ? Variable.string(this._names.slice(1))
+                                       : utils.missing;
       }
       if (arguments.length > 1) {
          this._names[i] = newNames;
       } else { // one argument, `i`
+         if (utils.isMissing(i)) {
+            this._names = [null];
+            return this;
+         }
          if (i instanceof Variable) { i = i.asString().toArray(); }
          if (!Array.isArray(i)) { return this._names[i]; }
          if (i.length > this.length()) {

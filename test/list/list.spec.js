@@ -58,7 +58,12 @@ describe('List names', function() {
       expect(function () { l.names(['no','maybe']); }).to.not.throw(Error);
       expect(l.names().toArray()).to.deep.equal(['no','maybe']);
       expect(function () { l.names([]); }).to.not.throw(Error);
-      expect(l.names().toArray()).to.deep.equal([]);
+      expect(utils.isMissing(l.names())).to.be.true;
+   })
+   it('can be deleted by calling with utils.missing', function() {
+      var l = (new List({a: 4, b: 7, c: -1}))
+               .names(['a','b','c']).names(utils.missing);
+      expect(utils.isMissing(l.names())).to.be.true;
    })
 });
 describe('List set', function() {
