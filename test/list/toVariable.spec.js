@@ -33,4 +33,22 @@ describe('toVariable', function() {
       expect(v1.names().toArray()).to.deep.equal(["a","b","c","d"]);
       expect(utils.isMissing(v2.names())).to.be.true;
    });
+   it('works with nested lists', function() {
+      var L4 = new List({ m: L1, g: L1 });
+      var M4 = L4.toVariable();
+      expect(M4.get()).to.deep.equal(M1.get().concat(M1.get()));
+      expect(M4.names().toArray()).to.deep.equal(
+         M1.names().toArray().map(function(s) { return 'm.' + s; }).concat(
+            M1.names().toArray().map(function(s) { return 'g.' + s; })
+         )
+      );
+   });
+   it('works with arrays and vectors', function() {
+      var L4 = new List({ a: [4, 1, 2], b: new Variable.Vector([5, 6, 3]) });
+      var M4 = L4.toVariable();
+      expect(M4.get()).to.deep.equal([4, 1, 2, 5, 6, 3]);
+      expect(M4.names().toArray()).to.deep.equal(
+         ["a.1","a.2","a.3","b.1","b.2","b.3"]
+      );
+   });
 });
