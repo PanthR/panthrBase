@@ -52,3 +52,54 @@ describe('toVariable', function() {
       );
    });
 });
+describe('unnest', function() {
+   var L;
+   beforeEach(function() {
+      L = new List({ a: new List({
+                        c: new Variable([1,2,3]),
+                        d: new List({
+                           f: new Variable([3,4,5])
+                        })
+                     }),
+                     b: new List({
+                        g: new Variable([1,2,3]).names(["A", "B", "C"])
+                     })
+                  });
+   });
+   it('changes nothing when level 0', function() {
+      L.unnest(0);
+      expect(L.names().toArray()).to.deep.equal(["a", "b"]);
+      expect(L.get("a").names().toArray()).to.deep.equal(["c", "d"]);
+      expect(L.get("a").get("d").names().toArray()).to.deep.equal(["f"]);
+      expect(L.get("b").get("g").names().toArray()).to.deep.equal(["A", "B", "C"]);
+      expect(L.get("b").get("g").get()).to.deep.equal([1, 2, 3]);
+      expect(L.get("a").get("d").get("f").get()).to.deep.equal([3, 4, 5]);
+   });
+   it('unravels top level when level = 1', function() {
+      L.unnest(1);
+      expect(L.names().toArray()).to.deep.equal(["a.c", "a.d", "b.g"]);
+      expect(L.get("a.d").names().toArray()).to.deep.equal(["f"]);
+      expect(L.get("b.g").names().toArray()).to.deep.equal(["A", "B", "C"]);
+      expect(L.get("b.g").get()).to.deep.equal([1, 2, 3]);
+      expect(L.get("a.d").get("f").get()).to.deep.equal([3, 4, 5]);
+      expect(L.get("a.c").get()).to.deep.equal([1, 2, 3]);
+   });
+   it('unravels more levels when level > 1', function() {
+      L.unnest(2);
+      expect(L.names().toArray()).to.deep.equal(["a.c", "a.d.f", "b.g"]);
+      expect(utils.isMissing(L.get("a.d.f").names())).to.be.ok;
+      expect(L.get("b.g").names().toArray()).to.deep.equal(["A", "B", "C"]);
+      expect(L.get("b.g").get()).to.deep.equal([1, 2, 3]);
+      expect(L.get("a.d.f").get()).to.deep.equal([3, 4, 5]);
+      expect(L.get("a.c").get()).to.deep.equal([1, 2, 3]);
+   });
+   it('higher than available level is ok', function() {
+      L.unnest(4);
+      expect(L.names().toArray()).to.deep.equal(["a.c", "a.d.f", "b.g"]);
+      expect(utils.isMissing(L.get("a.d.f").names())).to.be.ok;
+      expect(L.get("b.g").names().toArray()).to.deep.equal(["A", "B", "C"]);
+      expect(L.get("b.g").get()).to.deep.equal([1, 2, 3]);
+      expect(L.get("a.d.f").get()).to.deep.equal([3, 4, 5]);
+      expect(L.get("a.c").get()).to.deep.equal([1, 2, 3]);
+   });
+});

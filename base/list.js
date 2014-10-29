@@ -230,6 +230,40 @@ define(function(require) {
       return Variable.concat.apply(null, resolvedEntries);
    };
 
+   /**
+    * Unnests a number of levels out of a nested list, starting at the
+    * top level. This operation changes the list in _in place_.
+    * `levels` is the number of levels it will attempt to unnest.
+    * Level 0 indicates no change. Default is 1.
+    * Level Infinity indicates complete unnesting.
+    */
+   List.prototype.unnest = function unnest(levels) {
+      var i;
+      if (arguments.length === 0) { levels = 1; }
+      if (levels === 0) { return this; }
+      if (levels > 1) {
+         this.each(function(e) {
+            if (e instanceof List) { e.unnest(levels - 1); }
+         });
+      }
+      for (i = this.length(); i > 0; i -= 1) {
+         if (this.values[i] instanceof List) {
+            [].splice.apply(this._names,
+               [i, 1].concat(
+                  joinNames(this._names[i],
+                            this.values[i].names(),
+                            this.values[i].length()
+                  )
+               )
+            );
+            [].splice.apply(this.values,
+               [i, 1].concat(this.values[i].get())
+            );
+         }
+      }
+      return this;
+   };
+
 
    /* Helper methods */
    function joinNames(itemName, valueNames, length) {
