@@ -50,6 +50,7 @@ define(function(require) {
    Variable.prototype = Object.create({});
 
    Variable.Vector      = require('linalg-panthr').Vector;
+   Variable.Matrix      = require('linalg-panthr').Matrix;
    Variable.ScalarVar   = require('./variable/scalar')(Variable);
    Variable.LogicalVar  = require('./variable/logical')(Variable);
    Variable.StringVar   = require('./variable/string')(Variable);
