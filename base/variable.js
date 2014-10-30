@@ -32,10 +32,12 @@ define(function(require) {
     * Variable construction and setting needs to preserve the invariant that all entries are
     * either `null` or a "meaningful" value. All `undefined`, missing and `NaN` entries will be
     * converted to `null`.
+    *
+    * If `values` is a `Variable` it will simply be cloned (`options` will be ignored).
     */
    Variable = function(values, options) {
       var ret;
-      if (values instanceof Variable) { values = values.get(); }
+      if (values instanceof Variable) { return values.clone(); }
       if (values instanceof Variable.Vector) { values = values.toArray(); }
       values = normalizeValue(values);
       if (options == null) { options = {}; }
