@@ -15,8 +15,15 @@ define(function(require) {
    /**
     * See `List` for options for `values`.
     * An extra requirement is that all "variables" should have same length.
+    * If `values` is a `List`,`Vector`, or `Matrix`, it will be
+    * 'unpacked' to create the columns of the `Dataset`.
+    * If multiple arguments are provided, they are wrapped in an array.
     */
    function Dataset(values) {
+      if (arguments.length > 1 ||
+          isOfType(values, [List, Variable, Variable.Vector, Variable.Matrix])) {
+         values = [].slice.call(arguments);
+      }
       List.call(this, values);
       normalizeList(this).unnest(Infinity);
       return validateLengths(this);
@@ -24,6 +31,10 @@ define(function(require) {
 
    Dataset.prototype = Object.create(List.prototype);
 
+   // test if v is one of some list of types (an array)
+   function isOfType(v, types) {
+      return types.some(function(t) { return v instanceof t; });
+   }
    // Throw error if there are variables of unequal length
    function validateLengths(dSet) {
       dSet.reduce(function(acc, val) {
@@ -42,7 +53,7 @@ define(function(require) {
          if (val instanceof List) {
             normalizeList(val);
          } else if (val instanceof Variable.Matrix) {
-            list.set(i, normalizeList(List.apply({}, val.toArray())));
+            list.set(i, normalizeList(List.call({}, val.toArray())));
          } else {
             list.set(i, new Variable(val));
          }
