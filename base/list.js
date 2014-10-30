@@ -45,6 +45,7 @@ define(function(require) {
 
    List.prototype = Object.create({});
 
+   /* eslint-disable complexity */
    /**
     * this.names();
     * this.names(i);
@@ -54,7 +55,7 @@ define(function(require) {
    List.prototype.names = function names(i, newNames) {
       if (arguments.length === 0) {
          return utils.allMissing(this._names) ? utils.missing
-                                              : Variable.string(this._names.slice(1))
+                                              : Variable.string(this._names.slice(1));
       }
       if (arguments.length > 1) {
          this._names[i] = newNames;
@@ -72,6 +73,7 @@ define(function(require) {
       }
       return this;
    };
+   /* eslint-enable */
 
    List.prototype.length = function length() {
       return this.values.length - 1;
