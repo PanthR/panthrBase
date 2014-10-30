@@ -45,6 +45,11 @@ define(function(require) {
       };
    };
 
+  /** Return true if all entries in the array are missing */
+  utils.allMissing = function allMissing(arr) {
+    return arr.every(utils.isMissing);
+  };
+
    utils.equal = function equal(a, b) {
       return utils.isMissing(a) ? utils.isMissing(b)
                                 : utils.isNotMissing(b) && a === b;

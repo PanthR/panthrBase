@@ -32,13 +32,13 @@ define(function(require) {
    function List(values) {
       if (!(this instanceof List)) { return new List(values); }
       if (Array.isArray(values)) {
-         this._names = [null];
-         this.values = [null].concat(values);
+         this.values = [utils.missing].concat(values);
+         this._names = this.values.map(function() { return utils.missing; });
       } else {
          // Given an object. Need to populate array based on it
-         this._names = [null].concat(Object.keys(values || {}));
+         this._names = [utils.missing].concat(Object.keys(values || {}));
          this.values = this._names.map(function(key) {
-            return key === null ? null : values[key];
+            return utils.isMissing(key) ? key : values[key];
          });
       }
    }
@@ -53,22 +53,22 @@ define(function(require) {
     */
    List.prototype.names = function names(i, newNames) {
       if (arguments.length === 0) {
-         return this._names.length > 1 ? Variable.string(this._names.slice(1))
-                                       : utils.missing;
+         return utils.allMissing(this._names) ? utils.missing
+                                              : Variable.string(this._names.slice(1))
       }
       if (arguments.length > 1) {
          this._names[i] = newNames;
       } else { // one argument, `i`
          if (utils.isMissing(i)) {
-            this._names = [null];
+            this._names = this.values.map(function() { return utils.missing; });
             return this;
          }
          if (i instanceof Variable) { i = i.asString().toArray(); }
          if (!Array.isArray(i)) { return this._names[i]; }
-         if (i.length > this.length()) {
+         if (i.length !== this.length()) {
             throw new Error('Incompatible names length');
          }
-         this._names = [null].concat(i);
+         this._names = [utils.missing].concat(i);
       }
       return this;
    };

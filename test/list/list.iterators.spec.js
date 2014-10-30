@@ -7,7 +7,7 @@ describe('List iterators', function() {
    var names1 = ['a', 'b', 'c', 'd'];
    var l1 = new List(vals1).names(names1);
    var vals2 = [3, 7, utils.missing, 2];
-   var names2 = ['a', 'b', 'c'];
+   var names2 = ['a', 'b', 'c', 'd'];
    var l2 = new List(vals2).names(names2);
    describe('each', function() {
       it('calls f on each value with the correct arguments', function() {

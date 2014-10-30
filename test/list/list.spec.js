@@ -54,11 +54,10 @@ describe('List names', function() {
       expect(l.names(new Variable(['p','q','x'])).names()
                      .toArray()).to.deep.equal(['p','q','x']);
    })
-   it('can be used to partially set the names', function() {
-      expect(function () { l.names(['no','maybe']); }).to.not.throw(Error);
-      expect(l.names().toArray()).to.deep.equal(['no','maybe']);
-      expect(function () { l.names([]); }).to.not.throw(Error);
-      expect(utils.isMissing(l.names())).to.be.true;
+   it('cannot be used to partially set the names', function() {
+      expect(function () { l.names(['no','maybe']); }).to.throw(Error);
+      expect(function () { l.names([]); }).to.throw(Error);
+      expect(utils.isMissing(l.names())).to.be.false;
    })
    it('can be deleted by calling with utils.missing', function() {
       var l = (new List({a: 4, b: 7, c: -1}))
