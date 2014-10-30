@@ -102,4 +102,9 @@ describe('unnest', function() {
       expect(L.get("a.d.f").get()).to.deep.equal([3, 4, 5]);
       expect(L.get("a.c").get()).to.deep.equal([1, 2, 3]);
    });
+   it('works with an array of lists', function() {
+      var newList = new List([new List({a: [1,2,3], b: [4,5,6]}),
+                              new List({x: [7,8,9]})]);
+      expect(newList.unnest(Infinity).names().toArray()).to.deep.equal(['a','b','x']);
+   });
 });
