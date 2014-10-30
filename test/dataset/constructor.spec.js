@@ -110,5 +110,22 @@ describe('Dataset constructor', function() {
       expect(D.get(1)).to.not.equal(D.get(2));
       D.get(1).set(2, 5);
       expect(D.get(2).get(2)).to.equal(7);
+      var L;
+      L = new List({ a: new List({
+                        c: new Variable([1,2,3]),
+                        d: new List({
+                           f: new Variable([3,4,5])
+                        })
+                     }),
+                     b: new List({
+                        g: new Variable([7,8,9]).names(["A", "B", "C"])
+                     })
+                  });
+      D = new Dataset(L, L);
+      expect(D.length()).to.equal(6);
+      expect(D.get(1)).to.not.equal(L.get(1));
+      expect(D.get(1)).to.not.equal(D.get(4));
+      D.get(1).set(3, 10);
+      expect(D.get(4).get(3)).to.equal(3);
    });
 });

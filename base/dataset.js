@@ -26,7 +26,12 @@ define(function(require) {
       }
       List.call(this, values);
       normalizeList(this).unnest(Infinity);
-      return validateLengths(this);
+      validateLengths(this);
+      // clone each variable
+      this.each(function(val, i) {
+         List.prototype.set.call(this, i, new Variable(val));
+      }.bind(this));
+      return this;
    }
 
    Dataset.prototype = Object.create(List.prototype);
@@ -47,14 +52,13 @@ define(function(require) {
       return dSet;
    }
 
-   // Need to clone variables
    function normalizeList(list) {
       list.each(function(val, i, name) {
          if (val instanceof List) {
             normalizeList(val);
          } else if (val instanceof Variable.Matrix) {
             list.set(i, normalizeList(List.call({}, val.toArray())));
-         } else {
+         } else if (! (val instanceof Variable)) {
             list.set(i, new Variable(val));
          }
       });
