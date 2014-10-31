@@ -36,6 +36,29 @@ define(function(require) {
 
    Dataset.prototype = Object.create(List.prototype);
 
+   /**
+    * Return an array of arrays representing the columns.
+    */
+   Dataset.prototype.toArray = function toArray() {
+      return this.values.slice(1).map(function(val) {
+         return val.get();
+      });
+   };
+
+   /**
+    * Get the number of rows
+    */
+   Dataset.prototype.nRow = function nRow() {
+      return this.length() === 0 ? 0 : this.values[1].length();
+   };
+
+   /**
+    * Get the number of columns
+    */
+   Dataset.prototype.nCol = function nCol() {
+      return this.length();
+   };
+
    // test if v is one of some list of types (an array)
    function isOfType(v, types) {
       return types.some(function(t) { return v instanceof t; });
