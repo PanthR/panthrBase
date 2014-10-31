@@ -26,11 +26,11 @@ define(function(require) {
       }
       List.call(this, values);
       normalizeList(this).unnest(Infinity);
-      validateLengths(this);
       // clone each variable
       this.each(function(val, i) {
          List.prototype.set.call(this, i, new Variable(val));
       }.bind(this));
+      validateLengths(this);
       return this;
    }
 
