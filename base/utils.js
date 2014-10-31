@@ -68,6 +68,17 @@ define(function(require) {
       return true;
    };
 
+   utils.seq = function seq(from, to, step) {
+      var arr = [];
+      if (arguments.length === 1) { to = from; from = 1; }
+      if (arguments.length < 3) { step = to >= from ? 1 : -1; }
+      while ((to - from) * step >= 0) {
+         arr.push(from);
+         from += step;
+      }
+      return arr;
+   };
+
    /** Arithmetic operators */
    utils.op = {};
 

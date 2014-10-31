@@ -78,4 +78,18 @@ describe('utils has', function() {
          expect(utils.areEqualArrays(C, A)).to.not.be.ok;
       });
    });
+   describe('seq method', function() {
+      it('with 3 arguments', function() {
+         expect(utils.seq(2,5,2)).to.deep.equal([2,4]);
+         expect(utils.seq(4,1,-1)).to.deep.equal([4,3,2,1]);
+      });
+      it('with 2 arguments', function() {
+         expect(utils.seq(4,6)).to.deep.equal([4,5,6]);
+         expect(utils.seq(4,2)).to.deep.equal([4,3,2]);
+      });
+      it('with 1 argument', function() {
+         expect(utils.seq(4)).to.deep.equal([1,2,3,4]);
+         expect(utils.seq(1)).to.deep.equal([1]);
+      });
+   });
 });
