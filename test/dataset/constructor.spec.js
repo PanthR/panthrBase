@@ -105,8 +105,8 @@ describe('Dataset constructor', function() {
    it('clones any Variables which are provided', function() {
       var v = new Variable([6,7,8]).names(['a','b','c']);
       var D = new Dataset(v, v);
-      // List.get does not clone
-      expect(D.get(1)).to.equal(D.get(1));
+      // List.get does now clone
+      expect(D.get(1)).to.not.equal(D.get(1));
       expect(D.get(1)).to.not.equal(D.get(2));
       D.get(1).set(2, 5);
       expect(D.get(2).get(2)).to.equal(7);

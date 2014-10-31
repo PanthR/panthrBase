@@ -8,10 +8,11 @@
 (function(define) {'use strict';
 define(function(require) {
 
-   var List, Variable;
+   var List, Variable, utils;
 
    List     = require('./list');
    Variable = require('./variable');
+   utils    = require('./utils');
    /**
     * See `List` for options for `values`.
     * An extra requirement is that all "variables" should have same length.
@@ -35,6 +36,49 @@ define(function(require) {
    }
 
    Dataset.prototype = Object.create(List.prototype);
+
+   /**
+    * If only one argument, it is interpreted as columns
+    * `cols` can be:
+    *    - A string/number or array/variable/vector of strings/numbers
+    *    - A predicate that has form `pred(colName, j)`, and must return true for
+    *      those columns that are to be included in the get.
+    *    - The boolean `true`, indicating all columns should be used.
+    * `rows` can be:
+    *    - A number or array of numbers
+    *    - A predicate that has form `pred(row, i)`, where `row` is a function such
+    *      that `row(j)` returns the entry in the i-th row and the j-th column, while
+    *      `row(colName)` returns the entry in the i-th row and the column named `colName`.
+    * If called with only a column specification, and that column being a single number or name
+    * then the function returns a variable that is a clone of that column.
+    * If given two single values, returns the corresponding single value at the i-th row/j-th column.
+    * Otherwise the function returns a dataset that contains copies of the appropriate entries.
+    * Called with no arguments, the function return an array of arrays representing the columns.
+    */
+   Dataset.prototype.get = function get(rows, cols) {
+      var that = this;
+      if (arguments.length === 0) { return this.toArray(); }
+      if (arguments.length === 1) {
+         cols = rows;
+         rows = true;
+      }
+      cols = getColumns(cols, that);
+      rows = getRows(rows, that);
+
+      if (typeof cols === 'string' || typeof cols === 'number') {
+         if (typeof rows === 'number') {
+            return List.prototype.get.call(that, cols).get(rows);
+         }
+         return List.prototype.get.call(that, cols).select(rows);
+      }
+      // At this point: cols and rows are both arrays of the ones to be
+      // gotten.
+      return (new Dataset(cols.map(function(col) {
+         return List.prototype.get.call(that, col).select(rows);
+      }))).names(cols.map(function(col) {
+         return typeof col === 'string' ? col : that.names(col);
+      }));
+   };
 
    /**
     * Return an array of arrays representing the columns.
@@ -87,6 +131,59 @@ define(function(require) {
       });
       return list;
    }
+
+   /* eslint-disable complexity */
+   /**
+    * Given a columns specification, and a dataset `that`, returns the
+    * corresponding array of column indices. See `Dataset#get`.
+    */
+   function getColumns(cols, that) {
+      if (cols instanceof Variable) {
+         if (cols.mode() === 'logical') {
+            if (that.nCol() !== cols.length()) {
+               throw new Error('Logical vector does not match nCol');
+            }
+            cols = cols.which();    // to scalar variable
+         }
+         return cols.get();
+      }
+      if (cols instanceof Variable.Vector) { return cols.get(); }
+      if (cols === true) { return utils.seq(that.length()); }
+      if (typeof cols === 'function') {
+         return utils.seq(that.length()).filter(function(j) {
+            return cols(that._names[j], j);
+         });
+      }
+      return cols;
+   }
+
+   /**
+    * Given a row specification, and a dataset `that`, returns the
+    * corresponding array of row indices. See `Dataset#get`.
+    */
+   function getRows(rows, that) {
+      if (rows instanceof Variable) {
+         if (rows.mode() === 'logical') {
+            if (that.nRow() !== rows.length()) {
+               throw new Error('Logical vector does not match nRow');
+            }
+            rows = rows.which();    // to scalar variable
+         }
+         return rows.get();
+      }
+      if (rows instanceof Variable.Vector) { return rows.get(); }
+      if (rows === true) { return utils.seq(that.nRow()); }
+      if (typeof rows === 'function') {
+         return utils.seq(that.nRow()).filter(function(i) {
+            // rows here meant to be rows(row, i)
+            return rows(function(j) {
+               return that.get(j).get(i);
+            }, i);
+         });
+      }
+      return rows;
+   }
+   /* eslint-enable complexity */
 
    return Dataset;
 
