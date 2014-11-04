@@ -68,6 +68,13 @@ define(function(require) {
       return true;
    };
 
+   utils.arrayToObject = function arrayToObject(arr) {
+      var obj;
+      obj = {};
+      arr.forEach(function(k, i) { obj[k] = i + 1; });
+      return obj;
+   };
+
    utils.seq = function seq(from, to, step) {
       var arr = [];
       if (arguments.length === 1) { to = from; from = 1; }
