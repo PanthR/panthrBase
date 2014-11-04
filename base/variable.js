@@ -243,12 +243,12 @@ define(function(require) {
      * To set values out of bounds, you are required to call resize first.
      */
    Variable.prototype.set = function set(i, val) {
+      i = normalizeIndices(this, i);
       if (val instanceof Variable) {
          val = val.get();
       } else {
-         val = normalizeValue(val); // Values from Variable#get already normalized
+         val = normalizeValue(val, i); // Values from Variable#get already normalized
       }
-      i = normalizeIndices(this, i);
       /* eslint-disable no-extra-parens */
       if (utils.isMissing(i) || (Array.isArray(i) && utils.hasMissing(i))) {
       /* eslint-enable */
@@ -414,9 +414,12 @@ define(function(require) {
    // Helper methods
 
    /* Helper method to standardize values. All nan/missing/undefined turns to null.
-    * `val` can be an array or a single value. */
-   function normalizeValue(val) {
+    * `val` can be an array or a single value or a function of `i`. */
+   function normalizeValue(val, ind) {
       var i;
+      if (typeof val === 'function') {
+         return Array.isArray(ind) ? ind.map(val) : val(ind);
+      }
       if (!Array.isArray(val)) { return utils.singleMissing(val); }
       for (i = 0; i < val.length; i += 1) { val[i] = utils.singleMissing(val[i]); }
       return val;

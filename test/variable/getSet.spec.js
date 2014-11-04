@@ -127,6 +127,13 @@ describe('Variable set', function() {
       expect(function() { v1.set(l1, 10); }).to.throw(Error);
       expect(utils.areEqualArrays(v1.get(l1), [5, utils.missing, 1, utils.missing])).to.be.true;
    });
+   it('works if passed a function for the values', function() {
+      var v1 = new Variable([2.12, -12.2, 3, 23]);
+      v1.set([2, 3], function(i) {return i*i; });
+      expect(v1.get()).to.deep.equal([2.12, 4, 9, 23]);
+      v1.set(2, function(i) {return i+1; });
+      expect(v1.get()).to.deep.equal([2.12, 3, 9, 23]);
+   });
 });
 describe('Variable select', function() {
    var v1 = new Variable([2.12, -12.2, 3, 23]);
