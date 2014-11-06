@@ -83,6 +83,44 @@ define(function(require) {
    };
 
    /**
+    * See `Dataset#get` for how to use `rows` and `cols` to specify the positions to
+    * be set.  If only two arguments are provided, `rows` defaults to true.
+    * `vals` is used to specify new values in one of the following ways:
+    *   - a single value (to be used in all specified positions)
+    *   - a `Variable` / `Vector` / array (can only be used to set in a single column)
+    *   - a `Dataset` / `Matrix` (whose dims match those of the selected region)
+    *   - a function `f(i, j, name)` where `i` is a row number, `j` is a column number,
+    *     and `name` is a column name.
+    * This method should be called with at least 2 arguments.
+    * Note: If called with 2 arguments where the first is a number and the
+    * second is a variable, `set` with replace the old column variable with the
+    * one being provided.
+    */
+   Dataset.prototype.set = function set(rows, cols, vals) {
+      var that = this;
+      if (arguments.length === 2) {
+         vals = cols;
+         cols = rows;
+         rows = true;
+         if (vals instanceof Variable &&
+            (typeof cols === 'number' || typeof cols === 'string') &&
+            vals.length() === this.nrow) {
+            List.prototype.set.call(that, cols, vals.clone());
+         }
+      }
+      cols = getColumns(cols, that);
+      rows = getRows(rows, that);
+      vals = getValsFunction(vals, that, rows, cols);
+      // From this point on, `vals` is a function: `vals(i, j, name)`.
+      (Array.isArray(cols) ? cols : [cols]).forEach(function(j) {
+         List.prototype.get.call(that, j).set(rows, function(i) {
+            return vals(i, j, that.names(j));
+         });
+      });
+      return this;
+   };
+
+   /**
     * Return an array of arrays representing the columns.
     */
    Dataset.prototype.toArray = function toArray() {

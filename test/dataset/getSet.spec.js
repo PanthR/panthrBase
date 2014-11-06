@@ -31,12 +31,15 @@ describe('Dataset', function() {
          expect(dSet.get(new Variable.logical([true, false, true]),true))
             .to.be.instanceof(Dataset);
          expect(dSet.get(new Variable.logical([true, false, true]),true).nRow()).to.equal(2);
+         expect(dSet.get([true, false, true],true).nRow()).to.equal(2);
          expect(dSet.get(new Variable.logical([true, false, true]),true).nCol()).to.equal(3);
          expect(dSet.get(new Variable.logical([true, false, true]),true).get(1).get())
                .to.deep.equal([1,3]);
          expect(dSet.get(true, new Variable.logical([true, false, true])))
             .to.be.instanceof(Dataset);
          expect(dSet.get(true, new Variable.logical([true, false, true])).names().toArray())
+            .to.deep.equal(["a", "c"]);
+         expect(dSet.get(true, [true, false, true]).names().toArray())
             .to.deep.equal(["a", "c"]);
          expect(dSet.get(true, new Variable.logical([true, false, true])).get(2).get())
             .to.deep.equal(["A", "B", "B"]);
@@ -78,4 +81,58 @@ describe('Dataset', function() {
          expect(newSet.get(2,2)).to.equal("B");
       });
    })
+   describe('set', function() {
+      var dSet;
+      beforeEach(function() {
+         dSet = new Dataset({ a: [1,2,3], b: [5,6,7], c: new Variable(['A', 'B', 'B']) });
+      });
+      it('can set a single value', function() {
+         expect(dSet.set(2, 'a', 10).get(2, 'a')).to.equal(10);
+         expect(dSet.set(2, 1, function(i, j) { return i + (2*j); })
+            .get(2, 'a')).to.equal(4);
+         expect(dSet.set(2, 3, function(i, j) { return 1; }).get(2, 3)).to.equal('A');
+         expect(function() {dSet.set(4, 1, 2); }).to.throw(Error);
+      });
+      it('can set a whole column', function() {
+         expect(dSet.set('a', new Variable(['e', 'e', 'f']))
+            .get('a').toArray()).to.deep.equal(['e', 'e', 'f']);
+         expect(dSet.set('a', new Variable([4, 5, 6]))
+            .get('a').toArray()).to.deep.equal([4, 5, 6]);
+         expect(dSet.set(1,[14, 15, 16]).get('a').toArray()).to.deep.equal([14,15,16]);
+         expect(dSet.set(2, function(i) { return i*i; }).get('b').toArray()).to.deep.equal([1, 4, 9]);
+         expect(dSet.set(2, new Variable(['x','y','z']))
+            .get('b').toArray()).to.deep.equal(['x','y','z']);
+         // can't set two columns with one Variable
+         expect(function() {dSet.set([1, 2], new Variable([1, 2, 3])); }).to.throw(Error);
+         expect(function() {dSet.set(1, new Variable([1, 2, 3, 4])); }).to.throw(Error);
+         expect(function() {dSet.set(1, [1, 2, 3, 4]); }).to.throw(Error);
+      });
+      it('can set part of a column', function() {
+         expect(dSet.set([2, 3], 'a', [5, 6]).get('a').toArray()).to.deep.equal([1,5,6]);
+         expect(dSet.set([false, true, true], 2, [15, 16]).get('b').toArray())
+            .to.deep.equal([5,15,16]);
+         expect(dSet.set([2, 3], 2, function(i) { return i*i; }).get('b').toArray())
+            .to.deep.equal([5, 4, 9]);
+         expect(function() {dSet.set(2, 1, new Variable([1, 2, 3])); }).to.throw(Error);
+         expect(function() {dSet.set([1, 2], 1, [2, 3, 4]); }).to.throw(Error);
+         expect(function() {dSet.set([1, 2], [1, 2], [1, 2, 3, 4]); }).to.throw(Error);
+      });
+      it('can set a 2-dimensional selection', function() {
+         expect(dSet.set(2, true, dSet.get(1, true)).get(1).toArray()).to.deep.equal([1,1,3]);
+         expect(dSet.get(2).toArray()).to.deep.equal([5,5,7]);
+         expect(dSet.get(3).toArray()).to.deep.equal(['A','A','B']);
+         expect(dSet.set([1,2],[1,2],function(i,j) { return i + 3*j; }).get(1).toArray())
+            .to.deep.equal([4,5,3]);
+         expect(dSet.get(2).toArray()).to.deep.equal([7, 8, 7]);
+         expect(dSet.get(3).toArray()).to.deep.equal(['A','A','B']);
+         expect(function() { return dSet.set([2, 3], true, dSet.get(1, true)); } ).to.throw(Error);
+         expect(function() 
+            { return dSet.set(2, true, dSet.get(1, [true,true,false])); } )
+            .to.throw(Error);
+         expect(function() { return dSet.set(1, dSet.get(1, true)); } ).to.throw(Error);
+         expect(dSet.set(2, [1,2], dSet.get(1, [1,2])).get(1).toArray()).to.deep.equal([4,4,3]);
+         expect(dSet.set(2, [1,2], dSet.get(1, [1,2])).get(2).toArray())
+            .to.deep.equal([7,7,7]);
+      });
+   });
 })
