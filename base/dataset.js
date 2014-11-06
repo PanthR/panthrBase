@@ -227,6 +227,41 @@ define(function(require) {
       }
       return [rows];
    }
+
+   // Given a vals specification (for #set), returns a function
+   // Also validates dimensions for the region and the values
+   function getValsFunction(vals, that, rows, cols) {
+      if (typeof vals === 'function') { return vals; }
+      if (vals instanceof Variable.Matrix || vals instanceof Dataset) {
+         if (!Array.isArray(cols)) {
+            throw new Error('two-dimensional set requires multiple columns');
+         }
+         if (rows.length !== vals.nrow || cols.length !== vals.ncol) {
+            throw new Error('incompatible dims in two-dimensional Dataset set');
+         }
+         rows = utils.arrayToObject(rows);
+         cols = utils.arrayToObject(cols);
+         return function(i, j) {
+            return vals.get(rows[i], cols[j]);
+         };
+      }
+      if (Array.isArray(vals)) { vals = new Variable.Vector(vals); }
+      if (vals instanceof Variable) { vals = vals.toVector(); }
+      if (vals instanceof Variable.Vector) {
+         if (Array.isArray(cols)) {
+            throw new Error('one-dimensional set requires single column');
+         }
+         if (rows.length !== vals.length) {
+            throw new Error('incompatible lengths in one-dimensional Dataset set');
+         }
+         rows = utils.arrayToObject(rows);
+         return function(i) {
+            return vals.get(rows[i]);
+         };
+      }
+      // single value
+      return function() { return vals; };
+   }
    /* eslint-enable complexity */
 
    return Dataset;
