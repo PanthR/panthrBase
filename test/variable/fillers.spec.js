@@ -15,6 +15,8 @@ describe('Variable fillers include ', function() {
                                            utils.missing])).to.be.true;
       expect(v1.resize(4).get()).to.deep.equal([1.2, 3.1, -2.5, 0]);
       expect(v2.resize(7, true)).to.equal(v2);
+      // Resize should be returning a mutable vector
+      expect(function() { v1.set(2, 2); }).to.not.throw(Error);
       expect(v2.get()).to.deep.equal(['c', 'b', 'c', 'c', 'a', 'c', 'b']);
       expect(v2.resize(10, 42)).to.equal(v2);
       expect(utils.areEqualArrays(v2.get(),
