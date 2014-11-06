@@ -158,12 +158,12 @@ define(function(require) {
    };
    /* eslint-enable complexity */
 
-   /**
    /** Clone the dataset */
    Dataset.prototype.clone = function clone() {
       return new Dataset(this);
    };
 
+   /**
     * Return an array of arrays representing the columns.
     */
    Dataset.prototype.toArray = function toArray() {
