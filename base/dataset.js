@@ -120,6 +120,7 @@ define(function(require) {
       return this;
    };
 
+   /* eslint-disable complexity */
    /**
     * Called with one argument: It needs to be a (2-dimensional) matrix/dataset or
     * a (1-dimensional) array/vector, and then number rows will be inferred.
@@ -155,6 +156,7 @@ define(function(require) {
       });
       return this.set(function(row, i) { return i > oldnrow; }, true, values);
    };
+   /* eslint-enable complexity */
 
    /**
    /** Clone the dataset */
