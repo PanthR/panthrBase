@@ -8,7 +8,7 @@
 (function(define) {'use strict';
 define(function(require) {
 
-   var Variable, utils;
+   var Variable, Vector, utils;
 
    utils = require('./utils');
 
@@ -38,7 +38,7 @@ define(function(require) {
    Variable = function(values, options) {
       var ret;
       if (values instanceof Variable) { return values.clone(); }
-      if (values instanceof Variable.Vector) { values = values.toArray(); }
+      if (values instanceof Vector) { values = values.toArray(); }
       values = normalizeValue(values);
       if (options == null) { options = {}; }
       options.mode = utils.getOption(options.mode, Object.keys(Variable.modes)) ||
@@ -52,6 +52,7 @@ define(function(require) {
    Variable.prototype = Object.create({});
 
    Variable.Vector      = require('linalg-panthr').Vector;
+   Vector = Variable.Vector;
    Variable.Matrix      = require('linalg-panthr').Matrix;
    Variable.ScalarVar   = require('./variable/scalar')(Variable);
    Variable.LogicalVar  = require('./variable/logical')(Variable);
@@ -135,7 +136,7 @@ define(function(require) {
       if (typeof args[args.length - 1] === 'object') {
          options = args.pop();
       }
-      v = Variable.Vector.seq.apply(null, args);
+      v = Vector.seq.apply(null, args);
       return new Variable(v, options);
    };
 
@@ -163,7 +164,7 @@ define(function(require) {
             vNames = v.names();
             if (utils.isMissing(vNames)) {
                // create an appropriate vector
-               vNames = Variable.Vector.const(utils.missing, v.length());
+               vNames = Vector.const(utils.missing, v.length());
             }
             return vNames.toArray();
          }));
@@ -178,7 +179,7 @@ define(function(require) {
    // returns an array with missing values normalized to utils.missing
    Variable.ensureArray = function ensureArray(val) {
       if (val instanceof Variable) { val = val.toVector(); }
-      if (val instanceof Variable.Vector) { val = val.toArray(); }
+      if (val instanceof Vector) { val = val.toArray(); }
       if (!Array.isArray(val)) { val = [val]; }
       return normalizeValue(val);
    };
@@ -278,7 +279,7 @@ define(function(require) {
     * mode, and label.
     */
    Variable.prototype.clone = function clone() {
-      return this.select(Variable.Vector.seq(this.length()));
+      return this.select(Vector.seq(this.length()));
    };
 
    /**
@@ -324,7 +325,7 @@ define(function(require) {
     */
    Variable.prototype.rep = function rep(times) {
       if (times instanceof Variable) { times = times.values; }
-      return this.select(Variable.Vector.seq(this.length()).rep(times));
+      return this.select(Vector.seq(this.length()).rep(times));
    };
 
    /**
@@ -440,7 +441,7 @@ define(function(require) {
          }
          ind = ind.values;        // to vector
       }
-      if (ind instanceof Variable.Vector) { ind = ind.get(); } // to array
+      if (ind instanceof Vector) { ind = ind.get(); } // to array
       ind = normalizeValue(ind);
       // single numbers fall through to end
       if (Array.isArray(ind)) {
