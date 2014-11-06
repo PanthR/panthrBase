@@ -32,6 +32,8 @@ define(function(require) {
          List.prototype.set.call(this, i, new Variable(val));
       }.bind(this));
       validateLengths(this);
+      this.ncol = this.length();
+      this.nrow = this.ncol === 0 ? 0 : this.values[1].length();
       return this;
    }
 
@@ -140,16 +142,17 @@ define(function(require) {
     * corresponding array of column indices. See `Dataset#get`.
     */
    function getColumns(cols, that) {
+      if (cols instanceof Variable.Vector) { cols = cols.get(); }
+      if (Array.isArray(cols)) { cols = new Variable(cols); }
       if (cols instanceof Variable) {
          if (cols.mode() === 'logical') {
-            if (that.nCol() !== cols.length()) {
+            if (that.ncol !== cols.length()) {
                throw new Error('Logical vector does not match nCol');
             }
             cols = cols.which();    // to scalar variable
          }
-         return cols.get();
+         return cols.get();         // to array
       }
-      if (cols instanceof Variable.Vector) { return cols.get(); }
       if (cols === true) { return utils.seq(that.length()); }
       if (typeof cols === 'function') {
          return utils.seq(that.length()).filter(function(j) {
@@ -164,26 +167,27 @@ define(function(require) {
     * corresponding array of row indices. See `Dataset#get`.
     */
    function getRows(rows, that) {
+      if (rows instanceof Variable.Vector) { rows = rows.get(); }
+      if (Array.isArray(rows)) { rows = new Variable(rows); }
       if (rows instanceof Variable) {
          if (rows.mode() === 'logical') {
-            if (that.nRow() !== rows.length()) {
+            if (that.nrow !== rows.length()) {
                throw new Error('Logical vector does not match nRow');
             }
             rows = rows.which();    // to scalar variable
          }
          return rows.get();
       }
-      if (rows instanceof Variable.Vector) { return rows.get(); }
-      if (rows === true) { return utils.seq(that.nRow()); }
+      if (rows === true) { return utils.seq(that.nrow); }
       if (typeof rows === 'function') {
-         return utils.seq(that.nRow()).filter(function(i) {
+         return utils.seq(that.nrow).filter(function(i) {
             // rows here meant to be rows(row, i)
             return rows(function(j) {
                return that.get(j).get(i);
             }, i);
          });
       }
-      return rows;
+      return [rows];
    }
    /* eslint-enable complexity */
 
