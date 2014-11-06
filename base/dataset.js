@@ -120,13 +120,15 @@ define(function(require) {
    }
 
    function normalizeList(list) {
+      var listSet;
+      listSet = List.prototype.set;
       list.each(function(val, i, name) {
          if (val instanceof List) {
             normalizeList(val);
          } else if (val instanceof Variable.Matrix) {
-            list.set(i, normalizeList(List.call({}, val.toArray())));
+            listSet.call(list, i, normalizeList(List.call({}, val.toArray())));
          } else if (! (val instanceof Variable)) {
-            list.set(i, new Variable(val));
+            listSet.call(list, i, new Variable(val));
          }
       });
       return list;
