@@ -133,9 +133,9 @@ define(function(require) {
          values = rows;
          rows = values.nrow == null ? 1 : values.nrow;
       }
-      if (Array.isArray(values)) { values = Variable.Vector(values); }
+      if (Array.isArray(values)) { values = new Variable.Vector(values); }
       if (values instanceof Variable.Vector) {
-         values = Variable.Matrix(values.get(), { byRow: true, nrow: 1 });
+         values = new Variable.Matrix(values.get(), { byRow: true, nrow: 1 });
       }
       if (values.ncol != null && values.ncol !== this.ncol) {
          throw new Error('Incompatible dimensions for appendRows.');
