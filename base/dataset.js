@@ -40,12 +40,12 @@ define(function(require) {
    /**
     * If only one argument, it is interpreted as columns
     * `cols` can be:
-    *    - A string/number or array/variable/vector of strings/numbers
+    *    - A string/number or array/variable/vector of strings/numbers/bools
     *    - A predicate that has form `pred(colName, j)`, and must return true for
     *      those columns that are to be included in the get.
     *    - The boolean `true`, indicating all columns should be used.
     * `rows` can be:
-    *    - A number or array of numbers
+    *    - A number or array/variable/vector of numbers/bools
     *    - A predicate that has form `pred(row, i)`, where `row` is a function such
     *      that `row(j)` returns the entry in the i-th row and the j-th column, while
     *      `row(colName)` returns the entry in the i-th row and the column named `colName`.
@@ -53,7 +53,7 @@ define(function(require) {
     * then the function returns a variable that is a clone of that column.
     * If given two single values, returns the corresponding single value at the i-th row/j-th column.
     * Otherwise the function returns a dataset that contains copies of the appropriate entries.
-    * Called with no arguments, the function return an array of arrays representing the columns.
+    * Called with no arguments, the function returns an array of arrays representing the columns.
     */
    Dataset.prototype.get = function get(rows, cols) {
       var that = this;
@@ -62,15 +62,15 @@ define(function(require) {
          cols = rows;
          rows = true;
       }
-      cols = getColumns(cols, that);
-      rows = getRows(rows, that);
-
+      // return single value
       if (typeof cols === 'string' || typeof cols === 'number') {
          if (typeof rows === 'number') {
             return List.prototype.get.call(that, cols).get(rows);
          }
-         return List.prototype.get.call(that, cols).select(rows);
+         return List.prototype.get.call(that, cols).select(getRows(rows, that));
       }
+      cols = getColumns(cols, that);
+      rows = getRows(rows, that);
       // At this point: cols and rows are both arrays of the ones to be
       // gotten.
       return (new Dataset(cols.map(function(col) {
