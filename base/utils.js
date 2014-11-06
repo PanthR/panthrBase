@@ -75,6 +75,11 @@ define(function(require) {
       return obj;
    };
 
+   // test if v is one of some list of types (an array)
+   utils.isOfType = function isOfType(v, types) {
+      return types.some(function(t) { return v instanceof t; });
+   };
+
    utils.seq = function seq(from, to, step) {
       var arr = [];
       if (arguments.length === 1) { to = from; from = 1; }

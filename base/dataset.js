@@ -22,7 +22,7 @@ define(function(require) {
     */
    function Dataset(values) {
       if (arguments.length > 1 ||
-          isOfType(values, [List, Variable, Variable.Vector, Variable.Matrix])) {
+          utils.isOfType(values, [List, Variable, Variable.Vector, Variable.Matrix])) {
          values = [].slice.call(arguments);
       }
       List.call(this, values);
@@ -172,10 +172,6 @@ define(function(require) {
       });
    };
 
-   // test if v is one of some list of types (an array)
-   function isOfType(v, types) {
-      return types.some(function(t) { return v instanceof t; });
-   }
    // Throw error if there are variables of unequal length
    function validateLengths(dSet) {
       dSet.reduce(function(acc, val) {
