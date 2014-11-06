@@ -178,10 +178,25 @@ define(function(require) {
    // val can be a single number / missing / array / Variable / Vector
    // returns an array with missing values normalized to utils.missing
    Variable.ensureArray = function ensureArray(val) {
-      if (val instanceof Variable) { val = val.toVector(); }
-      if (val instanceof Vector) { val = val.toArray(); }
+      val = Variable.oneDimToArray(val);
       if (!Array.isArray(val)) { val = [val]; }
       return normalizeValue(val);
+   };
+
+   // The following methods used to simplify other methods
+   /** Convert Variable/Vector to Array. Preserve otherwise. */
+   Variable.oneDimToArray = function oneDimToArray(val) {
+      return utils.isOfType(val, [Variable, Vector]) ? val.get() : val;
+   };
+   /** Convert Variable/Array to Vector. Preserve otherwise. */
+   Variable.oneDimToVector = function oneDimToVector(val) {
+      if (val instanceof Variable) { val = val.get(); }
+      return Array.isArray(val) ? new Vector(val) : val;
+   };
+   /** Convert Vector/Array to Variable. Preserve otherwise. */
+   Variable.oneDimToVariable = function oneDimToVariable(val) {
+      if (Array.isArray(val)) { return new Variable(val); }
+      return val instanceof Vector ? new Variable(val) : val;
    };
 
    Variable.prototype.asScalar = function asScalar() {
@@ -426,7 +441,6 @@ define(function(require) {
       return val;
    }
 
-   /* eslint-disable complexity */
    /* `v` is the Variable that these indices are meant to index.
     * `ind` can be: single value, array, vector, logical variable,
     * scalar variable (other variables turned scalar). Returns the indices as an array of
@@ -434,15 +448,11 @@ define(function(require) {
     */
    function normalizeIndices(v, ind) {
       var allNonPos, allNonNeg;
-      if (ind instanceof Variable) {
-         if (ind.mode() === 'logical') {
-            if (!v.sameLength(ind)) { throw new Error('incompatible lengths'); }
-            ind = ind.which();    // to scalar variable
-         }
-         ind = ind.values;        // to vector
+      if (ind instanceof Variable && ind.mode() === 'logical') {
+         if (!v.sameLength(ind)) { throw new Error('incompatible lengths'); }
+         ind = ind.which();    // to scalar variable
       }
-      if (ind instanceof Vector) { ind = ind.get(); } // to array
-      ind = normalizeValue(ind);
+      ind = normalizeValue(Variable.oneDimToArray(ind));
       // single numbers fall through to end
       if (Array.isArray(ind)) {
          allNonPos = ind.every(function(v) { return !(v > 0); });
@@ -459,7 +469,6 @@ define(function(require) {
       }
       return ind;
    }
-   /* eslint-enable */
 
    // values is an array!
    function inferMode(values) {
