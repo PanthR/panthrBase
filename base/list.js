@@ -196,7 +196,9 @@ define(function(require) {
       this.each(function(val, i, name) {
          arr.push(f(val, i, name));
       });
-      return (new List(arr)).names(this.names().toArray());
+      return (new List(arr)).names(
+         utils.isMissing(this.names()) ? utils.missing : this.names().toArray()
+      );
    };
 
  /**
