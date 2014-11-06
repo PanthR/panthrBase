@@ -133,6 +133,7 @@ define(function(require) {
          values = rows;
          rows = values.nrow == null ? 1 : values.nrow;
       }
+      if (this === values) { values = values.clone(); }
       if (Array.isArray(values)) { values = new Variable.Vector(values); }
       if (values instanceof Variable.Vector) {
          values = new Variable.Matrix(values.get(), { byRow: true, nrow: 1 });
@@ -156,6 +157,11 @@ define(function(require) {
    };
 
    /**
+   /** Clone the dataset */
+   Dataset.prototype.clone = function clone() {
+      return new Dataset(this);
+   };
+
     * Return an array of arrays representing the columns.
     */
    Dataset.prototype.toArray = function toArray() {

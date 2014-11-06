@@ -129,3 +129,14 @@ describe('Dataset constructor', function() {
       expect(D.get(4).get(3)).to.equal(3);
    });
 });
+describe("Dataset clone", function() {
+   it('actually clones', function() {
+      var dSet = new Dataset({ a: new Variable([1,2,3]), b: new Variable.Vector([5,6,7]) });
+      var dSet2 = dSet.clone();
+      expect(dSet2.nrow).to.equal(dSet.nrow);
+      expect(dSet2.ncol).to.equal(dSet.ncol);
+      expect(dSet2.get('b').toArray()).to.deep.equal(dSet.get(2).toArray());
+      dSet2.set(2,2,Math.random());
+      expect(dSet2.get(2,2)).to.not.equal(dSet.get(2,2));
+   });
+});

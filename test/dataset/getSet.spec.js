@@ -150,7 +150,7 @@ describe('Dataset', function() {
          dSet2 = new Dataset({ a: [1,2,3], b: [5,6,7], c: new Variable(['A', 'B', 'B']) });
       });
       it('by another dataset/matrix', function() {
-         dSet.appendRows(dSet2);
+         dSet.appendRows(dSet);
          expect(dSet.get(1).toArray()).to.deep.equal([1,2,3,1,2,3]);
          expect(dSet.get(3).toArray()).to.deep.equal(['A','B','B','A','B','B']);
          dSet.appendRows(new Variable.Matrix([[4,4], [1,1], ['A', 'A']]));
