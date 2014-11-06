@@ -143,4 +143,43 @@ describe('Dataset', function() {
          expect(dSet.get(3).toArray()).to.deep.equal(['A', 'B', 'B']); 
       });
    });
+   describe('appendRows', function() {
+      var dSet;
+      beforeEach(function() {
+         dSet = new Dataset({ a: [1,2,3], b: [5,6,7], c: new Variable(['A', 'B', 'B']) });
+         dSet2 = new Dataset({ a: [1,2,3], b: [5,6,7], c: new Variable(['A', 'B', 'B']) });
+      });
+      it('by another dataset/matrix', function() {
+         dSet.appendRows(dSet2);
+         expect(dSet.get(1).toArray()).to.deep.equal([1,2,3,1,2,3]);
+         expect(dSet.get(3).toArray()).to.deep.equal(['A','B','B','A','B','B']);
+         dSet.appendRows(new Variable.Matrix([[4,4], [1,1], ['A', 'A']]));
+         expect(dSet.get(1).toArray()).to.deep.equal([1,2,3,1,2,3,4,4]);
+         expect(dSet.get(3).toArray()).to.deep.equal(['A','B','B','A','B','B','A','A']);
+         expect(function() { dSet.appendRows(new Variable.Matrix([[4,4], ['A', 'A']])); })
+            .to.throw(Error);
+      });
+      it('by a vector/array', function() {
+         dSet.appendRows(new Variable.Vector([2,1,'A']));
+         expect(dSet.get(1).toArray()).to.deep.equal([1,2,3,2]);
+         expect(dSet.get(3).toArray()).to.deep.equal(['A','B','B','A']);
+         dSet.appendRows([4,4,'B']);
+         expect(dSet.get(1).toArray()).to.deep.equal([1,2,3,2,4]);
+         expect(dSet.get(3).toArray()).to.deep.equal(['A','B','B','A','B']);
+         expect(function() { dSet.appendRows([4,4,'A',2]); }).to.throw(Error);
+         expect(function() { dSet.appendRows([4,4]); }).to.throw(Error);
+         expect(dSet.nrow).to.equal(5);
+         expect(dSet.get(1).length()).to.equal(5);
+      });
+      it('by single value/function', function() {
+         dSet.appendRows(2, utils.missing);
+         expect(dSet.nrow).to.equal(5);
+         expect(utils.isMissing(dSet.get(4, 2))).to.be.true;
+         expect(utils.isMissing(dSet.get(5, 3))).to.be.true;
+         dSet.appendRows(2, function(i, j) { return dSet2.get(i, j); });
+         expect(dSet.nrow).to.equal(7);
+         expect(dSet.get(6, 2)).to.equal(dSet2.get(1, 2));
+         expect(dSet.get(7, 3)).to.equal(dSet2.get(2, 3));
+      });
+   });
 })

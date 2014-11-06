@@ -121,6 +121,41 @@ define(function(require) {
    };
 
    /**
+    * Called with one argument: It needs to be a (2-dimensional) matrix/dataset or
+    * a (1-dimensional) array/vector, and then number rows will be inferred.
+    * Called with two arguments: The first is the number of rows to add. The second is
+    * a single value or a function.
+    * function form: `f(i, j, colName)`
+    */
+   Dataset.prototype.appendRows = function appendRows(rows, values) {
+      var oldnrow;
+      if (arguments.length === 1) {
+         values = rows;
+         rows = values.nrow == null ? 1 : values.nrow;
+      }
+      if (Array.isArray(values)) { values = Variable.Vector(values); }
+      if (values instanceof Variable.Vector) {
+         values = Variable.Matrix(values.get(), { byRow: true, nrow: 1 });
+      }
+      if (values.ncol != null && values.ncol !== this.ncol) {
+         throw new Error('Incompatible dimensions for appendRows.');
+      }
+      oldnrow = this.nrow;
+      if (typeof values === 'function') {
+         values = (function(oldValues) {
+            return function (i, j, colName) {
+               return oldValues(i - oldnrow, j, colName);
+            };
+         }(values));
+      }
+      this.nrow += rows;
+      this.each(function(val, j) {
+         val.resize(oldnrow + rows, false);
+      });
+      return this.set(function(row, i) { return i > oldnrow; }, true, values);
+   };
+
+   /**
     * Return an array of arrays representing the columns.
     */
    Dataset.prototype.toArray = function toArray() {
