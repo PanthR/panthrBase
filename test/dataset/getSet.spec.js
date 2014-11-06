@@ -134,5 +134,13 @@ describe('Dataset', function() {
          expect(dSet.set(2, [1,2], dSet.get(1, [1,2])).get(2).toArray())
             .to.deep.equal([7,7,7]);
       });
+      it('errors when setting out of current dims', function() {
+         expect(function() { dSet.set(4, [1,4,5]); }).to.throw(Error);
+         expect(function() { dSet.set(4, true, [1,4,5]); }).to.throw(Error);
+         expect(function() { dSet.set(4, 1, 2); }).to.throw(Error);
+         expect(dSet.get(1).toArray()).to.deep.equal([1,2,3]);
+         expect(dSet.get(2).toArray()).to.deep.equal([5,6,7]);
+         expect(dSet.get(3).toArray()).to.deep.equal(['A', 'B', 'B']); 
+      });
    });
 })
