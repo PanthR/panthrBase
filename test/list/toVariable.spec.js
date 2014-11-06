@@ -108,3 +108,19 @@ describe('unnest', function() {
       expect(newList.unnest(Infinity).names().toArray()).to.deep.equal(['a','b','x']);
    });
 });
+describe('List#clone', function() {
+   it('top-level variables are cloned', function() {
+      var l1 = new List({ a: new Variable([1,2,3]), b: new Variable(['a', 'b', 'c']) });
+      var l2 = l1.clone();
+      expect(l2.get('a')).to.not.equal(l1.get('a'));
+      l2.get('a').set(2, 4);
+      expect(l1.get('a').get(2)).to.not.equal(4);
+   });
+   it('lists within lists are cloned', function() {
+      var l1 = new List({ a: new List([new Variable([1,2,3]), 56]), b: new Variable(['a', 'b', 'c']) });
+      var l2 = l1.clone();
+      expect(l2.get('a').get(1)).to.not.equal(l1.get('a').get(1));
+      expect(l2.get('a').get(2)).to.equal(l1.get('a').get(2));
+      expect(utils.isMissing(l2.get('a').names())).to.be.true;
+   });
+});

@@ -201,7 +201,15 @@ define(function(require) {
       );
    };
 
- /**
+   /**
+    * Clones a list. Calls clone on any top-level values in the list that have
+    * a clone method.
+    */
+   List.prototype.clone = function clone() {
+      return this.map(function(val) { return val.clone ? val.clone() : val; });
+   };
+
+   /**
     * Returns a new Variable without changing this List.
     * Works for values which are among the following (mixed ok):
     * - single value
