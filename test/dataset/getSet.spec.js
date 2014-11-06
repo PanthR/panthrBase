@@ -30,9 +30,9 @@ describe('Dataset', function() {
       it('allows logical variable for row/col specification', function() {
          expect(dSet.get(new Variable.logical([true, false, true]),true))
             .to.be.instanceof(Dataset);
-         expect(dSet.get(new Variable.logical([true, false, true]),true).nRow()).to.equal(2);
-         expect(dSet.get([true, false, true],true).nRow()).to.equal(2);
-         expect(dSet.get(new Variable.logical([true, false, true]),true).nCol()).to.equal(3);
+         expect(dSet.get(new Variable.logical([true, false, true]),true).nrow).to.equal(2);
+         expect(dSet.get([true, false, true],true).nrow).to.equal(2);
+         expect(dSet.get(new Variable.logical([true, false, true]),true).ncol).to.equal(3);
          expect(dSet.get(new Variable.logical([true, false, true]),true).get(1).get())
                .to.deep.equal([1,3]);
          expect(dSet.get(true, new Variable.logical([true, false, true])))
@@ -67,16 +67,16 @@ describe('Dataset', function() {
             expect(row(3)).to.equal(dSet.get(3).get(i));
             return i % 2 === 1;
          }, true);
-         expect(c).to.equal(dSet.nRow());
-         expect(newSet.nCol()).to.equal(3);
-         expect(newSet.nRow()).to.equal(2);
+         expect(c).to.equal(dSet.nrow);
+         expect(newSet.ncol).to.equal(3);
+         expect(newSet.nrow).to.equal(2);
          expect(newSet.get(2).get()).to.deep.equal([5,7]);
       });
       it('allows vectors for both row and column', function() {
          var v = new Variable.Vector([1,3]);
          var newSet = dSet.get(v, v);
-         expect(newSet.nRow()).to.equal(2);
-         expect(newSet.nCol()).to.equal(2);
+         expect(newSet.nrow).to.equal(2);
+         expect(newSet.ncol).to.equal(2);
          expect(newSet.get(2,1)).to.equal(3);
          expect(newSet.get(2,2)).to.equal("B");
       });

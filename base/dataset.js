@@ -129,20 +129,6 @@ define(function(require) {
       });
    };
 
-   /**
-    * Get the number of rows
-    */
-   Dataset.prototype.nRow = function nRow() {
-      return this.length() === 0 ? 0 : this.values[1].length();
-   };
-
-   /**
-    * Get the number of columns
-    */
-   Dataset.prototype.nCol = function nCol() {
-      return this.length();
-   };
-
    // test if v is one of some list of types (an array)
    function isOfType(v, types) {
       return types.some(function(t) { return v instanceof t; });
