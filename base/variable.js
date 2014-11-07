@@ -260,11 +260,7 @@ define(function(require) {
      */
    Variable.prototype.set = function set(i, val) {
       i = normalizeIndices(this, i);
-      if (val instanceof Variable) {
-         val = val.get();
-      } else {
-         val = normalizeValue(val, i); // Values from Variable#get already normalized
-      }
+      val = val instanceof Variable ? val.get() : normalizeValue(val, i);
       /* eslint-disable no-extra-parens */
       if (utils.isMissing(i) || (Array.isArray(i) && utils.hasMissing(i))) {
       /* eslint-enable */

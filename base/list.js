@@ -51,6 +51,7 @@ define(function(require) {
     * this.names(i);
     * this.names(i, newName);  // newName is a string or null (or evals to missing)
     * this.names(newNames);    // Array or Variable of strings/nulls
+    * this.names(null);        // resets names
     */
    List.prototype.names = function names(i, newNames) {
       if (arguments.length === 0) {
@@ -229,10 +230,8 @@ define(function(require) {
       resolvedEntries = this.get().map(function(val, i) {
          if (val instanceof List) { return val.toVariable(); }
          if (val instanceof Variable) { return val.clone(); }
-         if (val instanceof Variable.Vector ||
-             Array.isArray(val)) { return new Variable(val); }
-         // Single value. turn into a Variable
-         return new Variable([val]);
+         val = Variable.oneDimToVariable(val);
+         return val instanceof Variable ? val : new Variable([val]);
       });
       resolvedEntries.forEach(function(val, i) {
          val.names(joinNames(this.names(i + 1),
