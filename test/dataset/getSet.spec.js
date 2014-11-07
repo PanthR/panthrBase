@@ -94,18 +94,20 @@ describe('Dataset', function() {
          expect(function() {dSet.set(4, 1, 2); }).to.throw(Error);
       });
       it('can set a whole column', function() {
-         expect(dSet.set('a', new Variable(['e', 'e', 'f']))
+         expect(dSet.setVar('a', new Variable(['e', 'e', 'f']))
             .get('a').toArray()).to.deep.equal(['e', 'e', 'f']);
-         expect(dSet.set('a', new Variable([4, 5, 6]))
+         expect(dSet.setVar('a', new Variable([4, 5, 6]))
             .get('a').toArray()).to.deep.equal([4, 5, 6]);
-         expect(dSet.set(1,[14, 15, 16]).get('a').toArray()).to.deep.equal([14,15,16]);
-         expect(dSet.set(2, function(i) { return i*i; }).get('b').toArray()).to.deep.equal([1, 4, 9]);
-         expect(dSet.set(2, new Variable(['x','y','z']))
+         expect(dSet.setVar(1,[14, 15, 16]).get('a').toArray()).to.deep.equal([14,15,16]);
+         expect(dSet.set(true, 2, function(i) { return i*i; }).get('b').toArray()).to.deep.equal([1, 4, 9]);
+         expect(dSet.setVar(2, new Variable(['x','y','z']))
             .get('b').toArray()).to.deep.equal(['x','y','z']);
          // can't set two columns with one Variable
-         expect(function() {dSet.set([1, 2], new Variable([1, 2, 3])); }).to.throw(Error);
-         expect(function() {dSet.set(1, new Variable([1, 2, 3, 4])); }).to.throw(Error);
-         expect(function() {dSet.set(1, [1, 2, 3, 4]); }).to.throw(Error);
+         expect(function() {dSet.set(true, [1, 2], new Variable([1, 2, 3])); }).to.throw(Error);
+         expect(function() {dSet.setVar(1, new Variable([1, 2, 3, 4])); }).to.throw(Error);
+         expect(function() {dSet.set(true, 1, new Variable([1, 2, 3, 4])); }).to.throw(Error);
+         expect(function() {dSet.setVar(1, [1, 2, 3, 4]); }).to.throw(Error);
+         expect(function() {dSet.set(true, 1, [1, 2, 3, 4]); }).to.throw(Error);
       });
       it('can set part of a column', function() {
          expect(dSet.set([2, 3], 'a', [5, 6]).get('a').toArray()).to.deep.equal([1,5,6]);

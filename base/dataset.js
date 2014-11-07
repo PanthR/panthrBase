@@ -82,37 +82,35 @@ define(function(require) {
       }));
    };
 
+   /** Used to replace a single variable */
+   Dataset.prototype.setVar = function setVar(col, val) {
+      val = Variable.oneDimToVariable(val);
+      if (!(val instanceof Variable)) {
+         throw new Error('Can only setVar with one-dimensional value');
+      }
+      if (val.length() !== this.nrow) {
+         throw new Error('Attempting to setVar with variable of wrong length');
+      }
+      return List.prototype.set.call(this, col, val.clone());
+   };
+
    /**
     * See `Dataset#get` for how to use `rows` and `cols` to specify the positions to
-    * be set.  If only two arguments are provided, `rows` defaults to true.
+    * be set. You are required to provide all 3 arguments.
     * `vals` is used to specify new values in one of the following ways:
     *   - a single value (to be used in all specified positions)
-    *   - a `Variable` / `Vector` / array (can only be used to set in a single column)
+    *   - a `Variable` / `Vector` / array (only works within one row or one column)
     *   - a `Dataset` / `Matrix` (whose dims match those of the selected region)
     *   - a function `f(i, j, name)` where `i` is a row number, `j` is a column number,
     *     and `name` is a column name.
-    * This method should be called with at least 2 arguments.
-    * Note: If called with 2 arguments where the first is a number and the
-    * second is a variable, `set` with replace the old column variable with the
-    * one being provided.
     */
    Dataset.prototype.set = function set(rows, cols, vals) {
       var that = this;
-      if (arguments.length === 2) {
-         vals = cols;
-         cols = rows;
-         rows = true;
-         if (vals instanceof Variable &&
-            (typeof cols === 'number' || typeof cols === 'string') &&
-            vals.length() === this.nrow) {
-            List.prototype.set.call(that, cols, vals.clone());
-         }
-      }
-      cols = getColumns(cols, that);
-      rows = getRows(rows, that);
-      vals = getValsFunction(vals, that, rows, cols);
+      cols = getColumns(cols, this);
+      rows = getRows(rows, this);
+      vals = getValsFunction(vals, this, rows, cols);
       // From this point on, `vals` is a function: `vals(i, j, name)`.
-      (Array.isArray(cols) ? cols : [cols]).forEach(function(j) {
+      cols.forEach(function(j) {
          List.prototype.get.call(that, j).set(rows, function(i) {
             return vals(i, j, that.names(j));
          });
@@ -120,7 +118,6 @@ define(function(require) {
       return this;
    };
 
-   /* eslint-disable complexity */
    /**
     * Called with one argument: It needs to be a (2-dimensional) matrix/dataset or
     * a (1-dimensional) array/vector, and then number rows will be inferred.
@@ -134,8 +131,8 @@ define(function(require) {
          values = rows;
          rows = values.nrow == null ? 1 : values.nrow;
       }
-      if (this === values) { values = values.clone(); }
-      if (Array.isArray(values)) { values = new Variable.Vector(values); }
+      values = this === values ? values.clone()
+                               : Variable.oneDimToVector(values);
       if (values instanceof Variable.Vector) {
          values = new Variable.Matrix(values.get(), { byRow: true, nrow: 1 });
       }
@@ -151,12 +148,9 @@ define(function(require) {
          }(values));
       }
       this.nrow += rows;
-      this.each(function(val, j) {
-         val.resize(oldnrow + rows, false);
-      });
+      this.each(function(val, j) { val.resize(oldnrow + rows, false); });
       return this.set(function(row, i) { return i > oldnrow; }, true, values);
    };
-   /* eslint-enable complexity */
 
    /** Clone the dataset */
    Dataset.prototype.clone = function clone() {
@@ -199,48 +193,38 @@ define(function(require) {
       return list;
    }
 
-   /* eslint-disable complexity */
-   /**
+   /*
     * Given a columns specification, and a dataset `that`, returns the
     * corresponding array of column indices. See `Dataset#get`.
+    *
+    * getColumns will assume it is not given a single number/string.
+    * Its callers must have handled that case earlier.
     */
    function getColumns(cols, that) {
-      if (cols instanceof Variable.Vector) { cols = cols.get(); }
-      if (Array.isArray(cols)) { cols = new Variable(cols); }
-      if (cols instanceof Variable) {
-         if (cols.mode() === 'logical') {
-            if (that.ncol !== cols.length()) {
-               throw new Error('Logical vector does not match nCol');
-            }
-            cols = cols.which();    // to scalar variable
-         }
-         return cols.get();         // to array
-      }
       if (cols === true) { return utils.seq(that.length()); }
+      if (typeof cols === 'number' || typeof cols === 'string') { return [cols]; }
       if (typeof cols === 'function') {
          return utils.seq(that.length()).filter(function(j) {
             return cols(that._names[j], j);
          });
       }
-      return cols;
+      cols = Variable.oneDimToVariable(cols);
+      if (cols.mode() === 'logical') {
+         if (that.ncol !== cols.length()) {
+            throw new Error('Logical vector does not match nCol');
+         }
+         cols = cols.which();    // to scalar variable
+      }
+      return cols.get();         // to array
    }
 
-   /**
+   /*
     * Given a row specification, and a dataset `that`, returns the
     * corresponding array of row indices. See `Dataset#get`.
+    *
+    * getRows may be given a single number, and should be able to handle it
     */
    function getRows(rows, that) {
-      if (rows instanceof Variable.Vector) { rows = rows.get(); }
-      if (Array.isArray(rows)) { rows = new Variable(rows); }
-      if (rows instanceof Variable) {
-         if (rows.mode() === 'logical') {
-            if (that.nrow !== rows.length()) {
-               throw new Error('Logical vector does not match nRow');
-            }
-            rows = rows.which();    // to scalar variable
-         }
-         return rows.get();
-      }
       if (rows === true) { return utils.seq(that.nrow); }
       if (typeof rows === 'function') {
          return utils.seq(that.nrow).filter(function(i) {
@@ -250,44 +234,39 @@ define(function(require) {
             }, i);
          });
       }
-      return [rows];
+      if (typeof rows === 'number') { return [rows]; }
+      rows = Variable.oneDimToVariable(rows);
+      if (rows.mode() === 'logical') {
+         if (that.nrow !== rows.length()) {
+            throw new Error('Logical vector does not match nRow');
+         }
+         rows = rows.which();    // to scalar variable
+      }
+      return rows.get();
    }
 
    // Given a vals specification (for #set), returns a function
    // Also validates dimensions for the region and the values
+   // Both rows and cols are arrays at this point.
    function getValsFunction(vals, that, rows, cols) {
       if (typeof vals === 'function') { return vals; }
-      if (vals instanceof Variable.Matrix || vals instanceof Dataset) {
-         if (!Array.isArray(cols)) {
-            throw new Error('two-dimensional set requires multiple columns');
-         }
+      vals = Variable.oneDimToArray(vals);
+      if (Array.isArray(vals)) {
+         vals = new Variable.Matrix(vals,
+            rows.length === 1 ? { nrow: 1 } : { ncol: 1 }
+         );
+      }
+      if (utils.isOfType(vals, [Variable.Matrix, Dataset])) {
          if (rows.length !== vals.nrow || cols.length !== vals.ncol) {
             throw new Error('incompatible dims in two-dimensional Dataset set');
+         } else {
+            rows = utils.arrayToObject(rows);
+            cols = utils.arrayToObject(cols);
+            return function(i, j) { return vals.get(rows[i], cols[j]); };
          }
-         rows = utils.arrayToObject(rows);
-         cols = utils.arrayToObject(cols);
-         return function(i, j) {
-            return vals.get(rows[i], cols[j]);
-         };
       }
-      if (Array.isArray(vals)) { vals = new Variable.Vector(vals); }
-      if (vals instanceof Variable) { vals = vals.toVector(); }
-      if (vals instanceof Variable.Vector) {
-         if (Array.isArray(cols)) {
-            throw new Error('one-dimensional set requires single column');
-         }
-         if (rows.length !== vals.length) {
-            throw new Error('incompatible lengths in one-dimensional Dataset set');
-         }
-         rows = utils.arrayToObject(rows);
-         return function(i) {
-            return vals.get(rows[i]);
-         };
-      }
-      // single value
       return function() { return vals; };
    }
-   /* eslint-enable complexity */
 
    return Dataset;
 
