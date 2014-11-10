@@ -40,7 +40,14 @@ define(function(require) {
    Dataset.prototype = Object.create(List.prototype);
 
    /**
-    * If only one argument, it is interpreted as columns
+    * Used to get a single column (variable).
+    */
+   Dataset.prototype.getVar = function getVar(col) {
+      return List.prototype.get.call(this, col).clone();
+   };
+
+   /**
+    * Can be called with two arguments, or no arguments.
     * `cols` can be:
     *    - A string/number or array/variable/vector of strings/numbers/bools
     *    - A predicate that has form `pred(colName, j)`, and must return true for
@@ -51,25 +58,20 @@ define(function(require) {
     *    - A predicate that has form `pred(row, i)`, where `row` is a function such
     *      that `row(j)` returns the entry in the i-th row and the j-th column, while
     *      `row(colName)` returns the entry in the i-th row and the column named `colName`.
-    * If called with only a column specification, and that column being a single number or name
-    * then the function returns a variable that is a clone of that column.
+    *    - The boolean `true`, indicating all rows should be used.
     * If given two single values, returns the corresponding single value at the i-th row/j-th column.
     * Otherwise the function returns a dataset that contains copies of the appropriate entries.
     * Called with no arguments, the function returns an array of arrays representing the columns.
     */
    Dataset.prototype.get = function get(rows, cols) {
       var that = this;
-      if (arguments.length === 0) { return this.toArray(); }
-      if (arguments.length === 1) {
-         cols = rows;
-         rows = true;
-      }
+      if (arguments.length === 0) { return that.toArray(); }
       // return single value
       if (typeof cols === 'string' || typeof cols === 'number') {
          if (typeof rows === 'number') {
-            return List.prototype.get.call(that, cols).get(rows);
+            return that.getVar(cols).get(rows);
          }
-         return List.prototype.get.call(that, cols).select(getRows(rows, that));
+         return that.getVar(cols).select(getRows(rows, that));
       }
       cols = getColumns(cols, that);
       rows = getRows(rows, that);
@@ -111,7 +113,8 @@ define(function(require) {
       vals = getValsFunction(vals, this, rows, cols);
       // From this point on, `vals` is a function: `vals(i, j, name)`.
       cols.forEach(function(j) {
-         List.prototype.get.call(that, j).set(rows, function(i) {
+         var myVar = List.prototype.get.call(that, j);
+         myVar.set(rows, function(i) {
             return vals(i, j, that.names(j));
          });
       });
@@ -230,7 +233,7 @@ define(function(require) {
          return utils.seq(that.nrow).filter(function(i) {
             // rows here meant to be rows(row, i)
             return rows(function(j) {
-               return that.get(j).get(i);
+               return that.getVar(j).get(i);
             }, i);
          });
       }
