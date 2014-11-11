@@ -184,17 +184,13 @@ define(function(require) {
       List.prototype.each.call(values, function(val, i, name) {
          List.prototype.set.call(that, len + i, val).names(len + i, name);
       });
-      this.ncol += values.ncol;
+      that.ncol += values.ncol;
       if (!utils.isMissing(names)) {
-         if (typeof names === 'string') {
-            that.names(len + 1, names);
-         } else {
-            Variable.oneDimToVector(names).each(function(name, i) {
-               if (len + i <= that.length()) {
-                  that.names(len + i, name);
-               }
-            });
-         }
+         Variable.ensureArray(names).forEach(function(name, i) {
+            if (len + i + 1 <= that.length()) {
+               that.names(len + i + 1, name);
+            }
+         });
       }
       return that;
    };
