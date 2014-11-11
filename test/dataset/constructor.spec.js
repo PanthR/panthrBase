@@ -10,7 +10,6 @@ describe('Dataset constructor', function() {
       var dSet = new Dataset([[1,2,3], [5,6,7]]);
       expect(dSet).to.be.instanceof(Dataset);
       expect(dSet.length()).to.equal(2);
-      expect(utils.isMissing(dSet.names())).to.be.ok;
       expect(dSet.getVar(1).toArray()).to.deep.equal([1,2,3]);
       expect(dSet.getVar(2).toArray()).to.deep.equal([5,6,7]);
    });
@@ -79,7 +78,6 @@ describe('Dataset constructor', function() {
       expect(D.length()).to.equal(2);
       expect(D.getVar(1).toArray()).to.deep.equal([2, 4, 6]);
       expect(D.getVar(2).toArray()).to.deep.equal([1, 2, 3]);
-      expect(utils.isMissing(D.names())).to.be.true;
    });
    it('accepts a nested list of variable-like things', function() {
       var L;
@@ -138,5 +136,34 @@ describe("Dataset clone", function() {
       expect(dSet2.getVar('b').toArray()).to.deep.equal(dSet.getVar(2).toArray());
       dSet2.set(2,2,Math.random());
       expect(dSet2.get(2,2)).to.not.equal(dSet.get(2,2));
+   });
+});
+describe("Dataset names", function() {
+   it('preserved if possible', function() {
+      var dSet = new Dataset({ a: new Variable([1,2,3]), b: new Variable.Vector([5,6,7]) });
+      expect(dSet.names().toArray()).to.deep.equal(['a', 'b']);
+      expect(dSet.appendCols('c', Math.random).names().toArray()).to.deep.equal(['a', 'b', 'c']);
+   });
+   it('sanitized on creation', function() {
+      var dSet = new Dataset({ 'a.b': new Variable([1,2,3]),
+                                 a: new List({ b: new Variable.Vector([5,6,7]) }) })
+                        .appendCols(Math.random)
+                        .appendCols('a.b', Math.random);
+      expect(dSet.names().toArray()).to.deep.equal(['a.b', 'a.b.1', 'X1', 'a.b.2']);
+   });
+   it('sanitized on calls to names', function() {
+      var dSet = new Dataset(new Variable.Matrix(Math.random, { nrow: 3, ncol: 6 }));
+      expect(dSet.names().toArray()).to.deep.equal(["X1","X2","X3","X4","X5","X6"]);
+      expect(dSet.names(["a","a","a","a","a","a"]).names().toArray())
+                .to.deep.equal(["a", "a.1","a.2","a.3","a.4","a.5"]);
+      expect(dSet.names(["a","b","b","a","a.1","a"]).names().toArray())
+                .to.deep.equal(["a", "b","b.1","a.1","a.1.1","a.2"]);
+   });
+   it('sanitized on appendCols', function() {
+      var dSet = new Dataset({ 'a.b': new Variable([1,2,3]),
+                                 a: new List({ b: new Variable.Vector([5,6,7]) }) })
+                        .appendCols(['a', 'a'], Variable.Matrix(Math.random, { nrow: 3, ncol: 2 }))
+                        .appendCols(Variable.Matrix(Math.random, { nrow: 3, ncol: 2 }));
+      expect(dSet.names().toArray()).to.deep.equal(['a.b', 'a.b.1', 'a', 'a.1', 'X1', 'X2']);
    });
 });

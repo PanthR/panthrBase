@@ -34,10 +34,18 @@ define(function(require) {
       validateLengths(this);
       this.ncol = this.length();
       this.nrow = this.ncol === 0 ? 0 : this.values[1].length();
-      return this;
+      return sanitizeNames(this);
    }
 
    Dataset.prototype = Object.create(List.prototype);
+
+   Dataset.prototype.names = function names(i, newNames) {
+      var res;
+      res = List.prototype.names.apply(this, [].slice.call(arguments));
+      if (res !== this) { return res; }
+      return sanitizeNames(this);
+   };
+
 
    /**
     * Used to get a single column (variable).
@@ -192,7 +200,7 @@ define(function(require) {
             }
          });
       }
-      return that;
+      return sanitizeNames(that);
    };
 
    /** Given predicate pred(row, i) return the corresponding variable of row numbers */
@@ -345,6 +353,26 @@ define(function(require) {
          }
       }
       return function() { return vals; };
+   }
+
+   // Ensures that names for all variables exist and are unique.
+   // Will add a .1, .2 etc as needed, and an X1, X2, X3 as needed
+   function sanitizeNames(that) {
+      var cache = {};
+      function makeName(name, i) { return utils.isMissing(name) ? 'X' + i : name; }
+      function ensureUnique(name) {
+         var j = 1;
+         if (cache[name]) {
+            while (cache[name + '.' + j]) { j += 1; }
+            name = name + '.' + j;
+         }
+         cache[name] = true;
+         return name;
+      }
+      that.values.forEach(function(val, i) {
+         if (i > 0) { that._names[i] = ensureUnique(makeName(that._names[i], i)); }
+      });
+      return that;
    }
 
    return Dataset;
