@@ -81,6 +81,21 @@ define(function(require) {
    };
 
    /**
+    * Given a name, returns the index of the corresponding column
+    * or utils.missing if there isn't one.
+    * Can also handle a number, or an array of mixed values
+    */
+   List.prototype.getIndexOf = function getIndexOf(name) {
+      var names;
+      names = this._names;
+      function tester(n) {
+         if (typeof n === 'number') { return n; }
+         n = names.indexOf(n);
+         return n === -1 ? utils.missing : n;
+      }
+      return Array.isArray(name) ? name.map(tester) : tester(name);
+   };
+   /**
     * i can be:
     * - index
     * - string name
@@ -88,11 +103,7 @@ define(function(require) {
     */
    List.prototype.get = function get(i) {
       if (utils.isMissing(i)) { return this.values.slice(1); }
-      if (typeof i !== 'number') {
-         i = this._names.indexOf(i);
-         if (i === -1) { return utils.missing; }
-      }
-      return this.values[i];
+      return this.values[this.getIndexOf(i)];
    };
 
    /**
@@ -151,7 +162,7 @@ define(function(require) {
     */
    List.prototype.delete = function _delete(i) {
     if (utils.isMissing(i)) { return this; }
-    if (typeof i !== 'number') { i = this._names.indexOf(i); }
+    i = this.getIndexOf(i);
     if (i >= 1) {
       this.values.splice(i, 1);
       this._names.splice(i, 1);
