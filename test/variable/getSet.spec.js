@@ -141,6 +141,7 @@ describe('Variable select', function() {
    var w1 = v1.select(new Variable.Vector([2, 3, 4, 2, 3, 4]));
    var v2= new Variable(["yes","no","yes","yes"]);
    var w2 = v2.select([4,1,2]);
+   var w2 = v2.select(new Variable([4,1,2]));
    it('works when called with a vector', function() {
       expect(w1.get()).to.deep.equal([-12.2, 3, 23, -12.2, 3, 23]);
       expect(w1.names().toArray()).to.deep.equal(["b","c","d","b","c","d"]);

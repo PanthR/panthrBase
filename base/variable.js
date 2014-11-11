@@ -318,6 +318,7 @@ define(function(require) {
     * values of `this` corresponding to those indices.
     */
    Variable.prototype.select = function select(indices) {
+      indices = Variable.oneDimToArray(indices);
       return !utils.isMissing(this._names) ?
          this.reproduce(this.values.get(indices), this.names().get(indices)) :
          this.reproduce(this.values.get(indices));
