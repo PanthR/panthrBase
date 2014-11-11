@@ -155,6 +155,50 @@ define(function(require) {
       return this.set(function(row, i) { return i > oldnrow; }, true, values);
    };
 
+   /**
+    * If called with only one argument, arg will interpreted as `values`.
+    * If `names` is present (single string, or one-dimensional collection), it will
+    *  be used to provide names for the new columns.
+    * `values` needs to be one of the following:
+    *  - a (2-dimensional) matrix/dataset
+    *  - a (1-dimensional) array/vector/variable
+    *  - a List of columns (in some reasonable form) to be appended. Corresponding
+    *    names will be copied over. In this case, the provided list will be fed into
+    *    the dataset constructor in order to deduce the new variables to be appended.
+    *  - a function `f(i)` for computing the values in the new column
+    */
+   Dataset.prototype.appendCols = function appendCols(names, values) {
+      var that = this;
+      var len = that.length();
+      if (arguments.length === 1) {
+         values = names;
+         names = utils.missing; // TO DO supply default names
+      }
+      if (typeof values === 'function') {
+         values = new Variable(new Variable.Vector(values, that.nrow));
+      }
+      values = new Dataset(Variable.oneDimToVariable(values));
+      if (values.nrow !== this.nrow) {
+         throw new Error('mismatch -- Dataset.nrow and num rows in new columns');
+      }
+      List.prototype.each.call(values, function(val, i, name) {
+         List.prototype.set.call(that, len + i, val).names(len + i, name);
+      });
+      this.ncol += values.ncol;
+      if (!utils.isMissing(names)) {
+         if (typeof names === 'string') {
+            that.names(len + 1, names);
+         } else {
+            Variable.oneDimToVector(names).each(function(name, i) {
+               if (len + i <= that.length()) {
+                  that.names(len + i, name);
+               }
+            });
+         }
+      }
+      return that;
+   };
+
    /** Clone the dataset */
    Dataset.prototype.clone = function clone() {
       return new Dataset(this);

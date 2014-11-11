@@ -146,7 +146,7 @@ describe('Dataset', function() {
       });
    });
    describe('appendRows', function() {
-      var dSet;
+      var dSet, dSet2;
       beforeEach(function() {
          dSet = new Dataset({ a: [1,2,3], b: [5,6,7], c: new Variable(['A', 'B', 'B']) });
          dSet2 = new Dataset({ a: [1,2,3], b: [5,6,7], c: new Variable(['A', 'B', 'B']) });
@@ -182,6 +182,54 @@ describe('Dataset', function() {
          expect(dSet.nrow).to.equal(7);
          expect(dSet.get(6, 2)).to.equal(dSet2.get(1, 2));
          expect(dSet.get(7, 3)).to.equal(dSet2.get(2, 3));
+      });
+   });
+   describe('appendCols', function() {
+      var dSet, dSet2;
+      beforeEach(function() {
+         dSet = new Dataset({ a: [1,2,3], b: [5,6,7], c: new Variable(['A', 'B', 'B']) });
+         dSet2 = new Dataset({ x: [5, 10, 15], y: [8, 9, 10], z: new Variable(['A', 'B', 'B']) });
+      });
+      it('with matrix/dataset', function() {
+         expect(dSet.appendCols(dSet2).ncol).to.equal(6);
+         expect(dSet.names().toArray()).to.deep.equal(['a','b','c','x','y','z']);
+         expect(dSet.getVar(4).toArray()).to.deep.equal([5, 10, 15]);
+         expect(dSet.getVar('y').toArray()).to.deep.equal([8, 9, 10]);
+         expect(dSet.getVar(6).toArray()).to.deep.equal(['A','B','B']);
+         expect(dSet.getVar(2).toArray()).to.deep.equal([5,6,7]);
+         var M = new Variable.Matrix(Math.random, {nrow: 3, ncol: 2});
+         expect(dSet.appendCols(M).ncol).to.equal(8);
+         expect(dSet.getVar(7).toArray()).to.deep.equal(M.colView(1).toArray());
+         M = new Variable.Matrix(Math.random, {nrow: 2, ncol: 2});
+         expect(function() { dSet.appendCols(M);}).to.throw(Error);
+      });
+      it('with vector/array/variable', function() {
+         expect(dSet.appendCols(dSet2.getVar(1)).ncol).to.equal(4);
+         expect(dSet.getVar(4).toArray()).to.deep.equal([5, 10, 15]);
+         expect(dSet.appendCols(dSet2.getVar(2).values).ncol).to.equal(5);
+         expect(dSet.getVar(5).toArray()).to.deep.equal([8,9,10]);
+         expect(dSet.appendCols(dSet2.getVar(2).toArray()).ncol).to.equal(6);
+         expect(dSet.getVar(5).toArray()).to.deep.equal([8,9,10]);
+         expect(function() { dSet.appendCols([1, 2, 3, 4]); }).to.throw(Error);
+      });
+      it('with List of variables to append', function() {
+         // list of list of one variable -- works?
+         expect(dSet.appendCols(new List({a: new List({b: new Variable([0, 1, 2])})}))
+            .ncol).to.equal(4);
+         expect(dSet.names(4)).to.equal('a.b');
+         expect(dSet.getVar(4).toArray()).to.deep.equal([0, 1, 2]);
+      });
+      it('with a function', function() {
+         expect(dSet.appendCols(function(i) { return i*i; }).ncol).to.equal(4);
+         expect(dSet.getVar(4).toArray()).to.deep.equal([1, 4, 9]);
+      });
+      it('can be used with supplied names for new columns', function() {
+         expect(dSet.appendCols('X', function(i) { return i*i; }).ncol).to.equal(4);
+         expect(dSet.getVar(4).toArray()).to.deep.equal([1, 4, 9]);
+         expect(dSet.names(4)).to.equal('X');
+         var M = new Variable.Matrix(Math.random, {nrow: 3, ncol: 2});
+         expect(dSet.appendCols(['p','q','extra'],M).ncol).to.equal(6);
+         expect(dSet.names().toArray()).to.deep.equal(['a','b','c','X','p','q']);
       });
    });
 })
