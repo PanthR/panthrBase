@@ -195,6 +195,42 @@ define(function(require) {
       return that;
    };
 
+   /** Given predicate pred(row, i) return the corresponding variable of row numbers */
+   Dataset.prototype.which = function which(pred) {
+      return new Variable(getRows(pred, this));
+   };
+
+   /**
+    * Rows is single number or one-dimensional, or a predicate function f(row, i)
+    * to select rows to delete
+    */
+   Dataset.prototype.deleteRows = function deleteRows(rows) {
+      var that = this;
+      var indices;
+      if (typeof rows === 'function') { rows = that.which(rows); }
+      rows = Variable.ensureArray(rows);
+      indices = that.which(function(row, i) { return rows.indexOf(i) === -1; });
+      that.nrow = indices.length();
+      that.each(function(col, i) { List.prototype.set.call(that, i, col.select(indices)); });
+      return that;
+   };
+
+   /**
+    * `cols` may be: Single number or string, array/variable/vector thereof
+    */
+   Dataset.prototype.deleteCols = function deleteCols(cols) {
+      var del;
+      del = List.prototype.delete.bind(this);
+      cols = List.prototype.getIndexOf.call(this, cols);
+      if (!Array.isArray(cols)) {
+         del(cols);
+      } else {
+         cols.sort(function (a, b) { return a < b; }).forEach(del);
+      }
+      this.ncol = this.length();
+      return this;
+   };
+
    /** Clone the dataset */
    Dataset.prototype.clone = function clone() {
       return new Dataset(this);

@@ -232,4 +232,43 @@ describe('Dataset', function() {
          expect(dSet.names().toArray()).to.deep.equal(['a','b','c','X','p','q']);
       });
    });
+   describe('deleteRows', function() {
+      var dSet;
+      beforeEach(function() {
+         dSet = new Dataset({ a: [1,2,3], b: [5,6,7], c: new Variable(['A', 'B', 'B']) });
+      });
+      it('works with single row', function() {
+         expect(dSet.deleteRows(2).nrow).to.equal(2);
+         expect(dSet.getVar(1).toArray()).to.deep.equal([1, 3]);
+         expect(dSet.getVar(2).toArray()).to.deep.equal([5, 7]);
+      });
+      it('works with array of rows', function() {
+         expect(dSet.deleteRows([1,3]).nrow).to.equal(1);
+         expect(dSet.getVar(1).toArray()).to.deep.equal([2]);
+         expect(dSet.getVar(2).toArray()).to.deep.equal([6]);
+      });
+      it('works with a function', function() {
+         expect(dSet.deleteRows(function(row, i) { return row(2) > 5; }).nrow).to.equal(1);
+         expect(dSet.getVar(1).toArray()).to.deep.equal([1]);
+      });
+   });
+   describe('deleteCols', function() {
+      var dSet;
+      beforeEach(function() {
+         dSet = new Dataset({ a: [1,2,3], b: [5,6,7], c: new Variable(['A', 'B', 'B']) });
+      });
+      it('works with single col', function() {
+         expect(dSet.deleteCols(2).ncol).to.equal(2);
+         expect(dSet.getVar(2).toArray()).to.deep.equal(['A', 'B', 'B']);
+         expect(dSet.getVar('c').toArray()).to.deep.equal(['A', 'B', 'B']);
+         expect(dSet.deleteCols('a').ncol).to.equal(1);
+         expect(dSet.getVar(1).toArray()).to.deep.equal(['A', 'B', 'B']);
+         expect(dSet.getVar('c').toArray()).to.deep.equal(['A', 'B', 'B']);
+      });
+      it('works with array of rows', function() {
+         expect(dSet.deleteCols(['a',3, 'gergr', 5]).ncol).to.equal(1);
+         expect(dSet.getVar(1).toArray()).to.deep.equal([5, 6, 7]);
+         expect(dSet.getVar('b').toArray()).to.deep.equal([5, 6, 7]);
+      });
+   });
 })
