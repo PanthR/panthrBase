@@ -9,7 +9,7 @@ define(function(require) {
     * Barb Wahl <wahl@hanover.edu>
     * Bill Altermatt <altermattw@hanover.edu>
     */
-   
+
 return function(loader) {
    var Base;
 
@@ -29,6 +29,7 @@ return function(loader) {
    loader.addClass('List', Base.List);
    loader.addClass('Dataset', Base.Dataset);
    loader.loadModule(require('./base/fun'));
+   loader.loadModule(require('./base/base'));
    loader.loadModule(require('./base/stats'));
 
    return Base;
