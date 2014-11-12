@@ -54,6 +54,12 @@ define(function(require) {
       return List.prototype.get.call(this, col).clone();
    };
 
+   /** Returns a function `f(j)` which simulates row i. */
+   Dataset.prototype.rowFun = function rowFun(i) {
+      var that = this;
+      return function(j) { return that.getVar(j).get(i); };
+   };
+
    /**
     * Can be called with two arguments, or no arguments.
     * `cols` can be:
@@ -316,9 +322,7 @@ define(function(require) {
       if (typeof rows === 'function') {
          return utils.seq(that.nrow).filter(function(i) {
             // rows here meant to be rows(row, i)
-            return rows(function(j) {
-               return that.getVar(j).get(i);
-            }, i);
+            return rows(that.rowFun(i), i);
          });
       }
       if (typeof rows === 'number') { return [rows]; }
