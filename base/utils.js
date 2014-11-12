@@ -50,6 +50,11 @@ define(function(require) {
     return arr.every(utils.isMissing);
   };
 
+  /** If `val` is a missing value, return `deflt`, else return `val` */
+  utils.getDefault = function getDefault(val, deflt) {
+    return utils.isMissing(val) ? deflt : val;
+  };
+
    utils.equal = function equal(a, b) {
       return utils.isMissing(a) ? utils.isMissing(b)
                                 : utils.isNotMissing(b) && a === b;
