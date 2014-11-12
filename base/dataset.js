@@ -183,7 +183,7 @@ define(function(require) {
          names = utils.missing; // TO DO supply default names
       }
       if (typeof values === 'function') {
-         values = new Variable(new Variable.Vector(values, that.nrow));
+         values = new Variable(values, {length: that.nrow});
       }
       values = new Dataset(Variable.oneDimToVariable(values));
       if (values.nrow !== this.nrow) {

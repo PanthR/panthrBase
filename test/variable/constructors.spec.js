@@ -87,4 +87,16 @@ describe('Variables can be ', function() {
       expect(new Variable([, , 23])).to.be.instanceof(Variable.ScalarVar);
       expect(new Variable([, , "23"])).to.be.instanceof(Variable.FactorVar);
    });
+   it('created from a function', function() {
+      var V1, V2;
+      V1 = new Variable(function(i) { return i*i; }, {length: 4});
+      expect(V1.get()).to.deep.equal([1, 4, 9, 16]);
+      expect(V1.mode()).to.equal('scalar');
+      V2 = new Variable(function(i) { return i%2 === 1 ? "a" : "b"}, {length: 4});
+      expect(V2.get()).to.deep.equal(['a','b','a','b']);
+      expect(V2.mode()).to.equal('factor');
+      // fails with no length specified
+      expect(function() { return new Variable(function(i) { return i*i; })})
+         .to.throw(Error);
+   });
 });

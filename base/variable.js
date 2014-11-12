@@ -8,14 +8,18 @@
 (function(define) {'use strict';
 define(function(require) {
 
-   var Variable, Vector, utils;
+   var Vector, utils;
 
    utils = require('./utils');
 
    /**
-    * Create a new variable. `values` is an array with the desired values.
-    * If given a variable instead of an array, use `get`.
+    * Create a new variable. `values` is one of the following:
+    * - an array or vector with the desired values,
+    * - a variable (which is simply cloned)
+    * - a function `f(i)` for generating the values, in which case `length` is
+    *   a required option.
     * `options` is an object indicating properties of the variable:
+    *  - `length`: Will be ignored if `values` is not a function
     *  - `label`: The label to use in graphs/tables/descriptions.
     *  - `mode`: A string describing what type of variable to create. If `mode` is missing
     * it will be determined based on the first non-missing entry in `values`.
@@ -35,19 +39,24 @@ define(function(require) {
     *
     * If `values` is a `Variable` it will simply be cloned (`options` will be ignored).
     */
-   Variable = function(values, options) {
+   function Variable(values, options) {
       var ret;
       if (values instanceof Variable) { return values.clone(); }
-      if (values instanceof Vector) { values = values.toArray(); }
-      values = normalizeValue(values);
-      if (options == null) { options = {}; }
+      options = utils.getDefault(options, {});
+      if (typeof values === 'function') {
+         if (utils.isMissing(options.length)) {
+            throw new Error('Variable definition via function requires length option');
+         }
+         values = new Vector(values, options.length);
+      }
+      values = Variable.ensureArray(values);
       options.mode = utils.getOption(options.mode, Object.keys(Variable.modes)) ||
                      inferMode(values);
       ret = new Variable.modes[options.mode](values, options);
       ret._names = utils.missing;
       ret.label = options.label || '';
       return ret;
-   };
+   }
 
    Variable.prototype = Object.create({});
 
