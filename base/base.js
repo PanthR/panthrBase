@@ -5,6 +5,7 @@ return function(loader) {
    // create and populate the stats module
    loader.addModule('base', {});
    loader.loadModule(require('./base/restructure'));
+   loader.loadModule(require('./base/read-write'));
 };
 
 });
