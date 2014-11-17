@@ -55,6 +55,14 @@ define(function(require) {
      return utils.isMissing(val) ? deflt : val;
    };
 
+   /**
+    * if `val` is a missing value, return it. Otherwise return the result of
+    * applying `f` to `val`.
+    */
+   utils.optionMap = function optionMap(val, f) {
+     return utils.isMissing(val) ? utils.missing : f(val);
+   };
+
    utils.equal = function equal(a, b) {
       return utils.isMissing(a) ? utils.isMissing(b)
                                 : utils.isNotMissing(b) && a === b;

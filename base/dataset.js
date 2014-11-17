@@ -363,7 +363,6 @@ define(function(require) {
    // Will add a .1, .2 etc as needed, and an X1, X2, X3 as needed
    function sanitizeNames(that) {
       var cache = {};
-      function makeName(name, i) { return utils.isMissing(name) ? 'X' + i : name; }
       function ensureUnique(name) {
          var j = 1;
          if (cache[name]) {
@@ -374,7 +373,9 @@ define(function(require) {
          return name;
       }
       that.values.forEach(function(val, i) {
-         if (i > 0) { that._names[i] = ensureUnique(makeName(that._names[i], i)); }
+         if (i > 0) {
+            that._names[i] = ensureUnique(utils.getDefault(that._names[i], 'X' + i));
+         }
       });
       return that;
    }

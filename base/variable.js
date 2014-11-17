@@ -169,13 +169,9 @@ define(function(require) {
          return utils.isMissing(v.names());
       })) {
          names = [].concat.apply([], vars.map(function(v) {
-            var vNames;
-            vNames = v.names();
-            if (utils.isMissing(vNames)) {
-               // create an appropriate vector
-               vNames = Vector.const(utils.missing, v.length());
-            }
-            return vNames.toArray();
+            return utils.getDefault(v.names(),
+              Vector.const(utils.missing, v.length())
+            ).toArray();
          }));
       }
       if (converters[commonMode]) { vars = vars.map(converters[commonMode]); }
@@ -288,9 +284,11 @@ define(function(require) {
    };
 
    Variable.prototype.names = function names(newNames) {
+      var len = this.length();
       if (arguments.length === 0) { return this._names; }
-      this._names = utils.isMissing(newNames) || !newNames ?
-                        utils.missing : Variable.string(newNames).resize(this.length());
+      this._names = utils.optionMap(newNames,
+         function(names) { return Variable.string(names).resize(len); }
+      );
       return this;
    };
 

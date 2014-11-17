@@ -56,9 +56,8 @@ describe('Name labels', function() {
       expect(names.get()).to.deep.equal(['A', 'B', 'C', 'X']);
    });
    it('can be cleared via names(null/missing)', function() {
-      expect(function() { v.names(null); }).to.not.throw(Error);   
+      expect(function() { v.names(null); }).to.not.throw(Error);
       expect(utils.isMissing(v.names())).to.be.ok;
-      expect(utils.isMissing(v.names(['A', 'B', 'C', 'X']).names(false).names())).to.be.ok;
       expect(utils.isMissing(v.names(['A', 'B', 'C', 'X']).names(utils.missing).names())).to.be.ok;
    });
 });

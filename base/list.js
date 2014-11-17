@@ -38,7 +38,7 @@ define(function(require) {
          // Given an object. Need to populate array based on it
          this._names = [utils.missing].concat(Object.keys(values || {}));
          this.values = this._names.map(function(key) {
-            return utils.isMissing(key) ? key : values[key];
+            return utils.optionMap(key, function(key) { return values[key]; });
          });
       }
    }
@@ -209,7 +209,7 @@ define(function(require) {
          arr.push(f(val, i, name));
       });
       return (new List(arr)).names(
-         utils.isMissing(this.names()) ? utils.missing : this.names().toArray()
+         utils.optionMap(this.names(), function(nms) { return nms.toArray(); })
       );
    };
 

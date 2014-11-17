@@ -121,7 +121,7 @@ return function(loader) {
       }.bind(this.asScalar().sort());
       quantiles = probs.map(utils.makePreserveMissing(getQuant));
       names = probs.map(function(p) {
-         return utils.isMissing(p) ? utils.missing : p * 100 + '%';
+         return utils.optionMap(p, function(p) { return p * 100 + '%'; });
       });
       return Variable.scalar(quantiles).names(names);
    });
