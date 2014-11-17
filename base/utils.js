@@ -45,15 +45,15 @@ define(function(require) {
       };
    };
 
-  /** Return true if all entries in the array are missing */
-  utils.allMissing = function allMissing(arr) {
-    return arr.every(utils.isMissing);
-  };
+   /** Return true if all entries in the array are missing */
+   utils.allMissing = function allMissing(arr) {
+     return arr.every(utils.isMissing);
+   };
 
-  /** If `val` is a missing value, return `deflt`, else return `val` */
-  utils.getDefault = function getDefault(val, deflt) {
-    return utils.isMissing(val) ? deflt : val;
-  };
+   /** If `val` is a missing value, return `deflt`, else return `val` */
+   utils.getDefault = function getDefault(val, deflt) {
+     return utils.isMissing(val) ? deflt : val;
+   };
 
    utils.equal = function equal(a, b) {
       return utils.isMissing(a) ? utils.isMissing(b)
