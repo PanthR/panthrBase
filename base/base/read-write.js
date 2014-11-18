@@ -3,7 +3,7 @@ define(function(require) {
 
 // Module that contains methods for reading and writing datasets and variables
 return function(loader) {
-   var Variable, List, Dataset, regexp;
+   var Variable, List, Dataset, regexp, quoteUnescape;
 
    Variable = loader.getClass('Variable');
    List     = loader.getClass('List');
@@ -14,9 +14,15 @@ return function(loader) {
    regexp = {};
    regexp.doubleQuoteContent = '(?:""|\\\\"|\\\\\\\\|[^"])+';
    regexp.singleQuoteContent = "(?:''|\\\\'|\\\\\\\\|[^'])+";
-   regexp.separators = '(?:^|[\\s\\n;,]+)';
+   regexp.variableSeparators = '(?:^|[\\s\\n;,]+)';
+   regexp.datasetSeparators = '[\\t;,]| +';  // tab, semicolon, comma, or spaces
    regexp.regularTerm = '[^\\s\\n;,]+';
-   regexp.variableTerm = regexp.separators + '(' +
+   regexp.variableTerm = regexp.variableSeparators + '(' +
+                           '"(' + regexp.doubleQuoteContent + ')"' + '|' +
+                           "'(" + regexp.singleQuoteContent + ")'" + '|' +
+                           regexp.regularTerm +
+                         ')';
+   regexp.datasetTerm  = '(' +
                            '"(' + regexp.doubleQuoteContent + ')"' + '|' +
                            "'(" + regexp.singleQuoteContent + ")'" + '|' +
                            regexp.regularTerm +
@@ -48,13 +54,9 @@ return function(loader) {
       var terms;
       terms = tokenize(regexp.variableTerm, vals, function(m) {
          if (typeof m[2] !== 'undefined') {
-            return m[2].replace(/\\(.)|""/g, function(match, c) {
-               return c || '"';
-            });
+            return quoteUnescape(m[2], '"');
          } else if (typeof m[3] !== 'undefined') {
-            return m[3].replace(/\\(.)|''/g, function(match, c) {
-               return c || '\'';
-            });
+            return quoteUnescape(m[3], '\'');
          }
          return m[1];
       });
@@ -80,6 +82,17 @@ return function(loader) {
       while ((m = re.exec(s)) !== null) { arr.push(f(m)); }
       return arr;
    }
+
+   /*
+    * Cleans up contents of quoted string.  `q` is the quote type.
+    */
+   quoteUnescape = (function(dict) {
+      return function(s, q) {
+         return s.replace(dict[q], function(match, c) {
+            return c || q;
+         });
+      };
+   }({ '"': /\\(.)|""/g, '\'': /\\(.)|""/g }));
 
 };
 
