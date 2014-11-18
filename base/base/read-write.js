@@ -52,14 +52,7 @@ return function(loader) {
     */
    loader.addClassMethod('Variable', 'read', function read(vals, mode) {
       var terms;
-      terms = tokenize(regexp.variableTerm, vals, function(m) {
-         if (typeof m[2] !== 'undefined') {
-            return quoteUnescape(m[2], '"');
-         } else if (typeof m[3] !== 'undefined') {
-            return quoteUnescape(m[3], '\'');
-         }
-         return m[1];
-      });
+      terms = tokenize(regexp.variableTerm, vals, cleanMatch);
       if (!mode) { mode = variableInferMode(terms); }
       if (mode === 'scalar') { terms = terms.map(parseFloat); }
       return new Variable(terms, { mode: mode });
@@ -81,6 +74,16 @@ return function(loader) {
       if (typeof f === 'undefined') { f = function(x) { return x; }; }
       while ((m = re.exec(s)) !== null) { arr.push(f(m)); }
       return arr;
+   }
+
+   // m is the match
+   function cleanMatch(m) {
+      if (typeof m[2] !== 'undefined') {
+         return quoteUnescape(m[2], '"');
+      } else if (typeof m[3] !== 'undefined') {
+         return quoteUnescape(m[3], '\'');
+      }
+      return m[1];
    }
 
    /*
