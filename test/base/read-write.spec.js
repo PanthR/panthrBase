@@ -3,6 +3,8 @@ var Dataset  = require('../../index').Dataset;
 var Variable  = require('../../index').Variable;
 var utils  = require('../../base/utils');
 var expect = require('chai').expect;
+var fs = require('fs');  // filesystem
+var path = require('path');
 
 describe('Variable read', function() {
    it('string result with mode specified', function() {
@@ -25,5 +27,66 @@ describe('Variable read', function() {
       expect(Variable.read('2.34,1.23e,"4.52e1"').mode()).to.equal('factor');
       expect(Variable.read('-.').mode()).to.equal('factor');
       expect(Variable.read('-1.,12,+12,-12').mode()).to.equal('scalar');
+   });
+});
+describe('Dataset read', function() {
+   function readFile(file) {
+      return fs.readFileSync(path.join(__dirname, 'datafiles', file), {encoding: 'utf8'});
+   }
+   it('reads standard csv format', function() {
+      var d = Dataset.read(readFile('sampleData.csv'), {header: true});
+      expect(d.ncol).to.equal(2);
+      expect(d.nrow).to.equal(7);
+      expect(d.names().toArray()).to.deep.equal(['Name', 'Age']);
+      expect(utils.areEqualArrays(
+         d.getVar(1).toArray(),
+         ['Jo;e', "Be\"tty", "S\"am", "Ka\tr''en", 'Andy', NaN, "Zac\nh"]
+      )).to.be.true;
+      expect(utils.areEqualArrays(
+         d.getVar(2).toArray(),
+         [10.005, -15.32, -23E-5, 4.4e10, +.17, 22., NaN]
+      )).to.be.true;
+   });
+   it('reads standard csv2 format', function() {
+      var d = Dataset.read(readFile('sampleData.csv2'), {header: true});
+      expect(d.ncol).to.equal(2);
+      expect(d.nrow).to.equal(7);
+      expect(d.names().toArray()).to.deep.equal(['Name', 'Age']);
+      expect(utils.areEqualArrays(
+         d.getVar(1).toArray(),
+         ['Jo,e', "Be\"tty", "S\"am", "Ka\tr''en", 'Andy', NaN, "Zac\nh"]
+      )).to.be.true;
+      expect(utils.areEqualArrays(
+         d.getVar(2).toArray(),
+         [10.005, -15.32, -23E-5, 4.4e10, +.17, 22., NaN]
+      )).to.be.true;
+   });
+   it('reads standard tab-separated format', function() {
+      var d = Dataset.read(readFile('sampleDataTabs.txt'), {header: true});
+      expect(d.ncol).to.equal(2);
+      expect(d.nrow).to.equal(7);
+      expect(d.names().toArray()).to.deep.equal(['Name', 'Age']);
+      expect(utils.areEqualArrays(
+         d.getVar(1).toArray(),
+         ['Jo,e', "Be\"tty", "S\"am", "Ka\tr''en", 'Andy', NaN, "Zac\nh"]
+      )).to.be.true;
+      expect(utils.areEqualArrays(
+         d.getVar(2).toArray(),
+         [10.005, -15.32, -23E-5, 4.4e10, +.17, 22., NaN]
+      )).to.be.true;
+   });
+   it('reads standard space-separated format', function() {
+      var d = Dataset.read(readFile('sampleDataSpaces.txt'), {header: true});
+      expect(d.ncol).to.equal(2);
+      expect(d.nrow).to.equal(7);
+      expect(d.names().toArray()).to.deep.equal(['Name', 'Age']);
+      expect(utils.areEqualArrays(
+         d.getVar(1).toArray(),
+         ['Jo,e', "Be\"tty", "S\"am", "Ka\tr''en", 'Andy', NaN, "Zac\nh"]
+      )).to.be.true;
+      expect(utils.areEqualArrays(
+         d.getVar(2).toArray(),
+         [10.005, -15.32, -23E-5, 4.4e10, +.17, 22., NaN]
+      )).to.be.true;
    });
 });
