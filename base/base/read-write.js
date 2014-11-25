@@ -119,6 +119,19 @@ return function(loader) {
       return rows.join('\n') + '\n';
    });
 
+   /**
+    * Write variable to a string.
+    * Options is an object that can include:
+    *   - sep: Character/string to use as separator. Defaults to `,`.
+    *   - quote: Boolean whether to quote string values/names. Defaults to `false`.
+    *   - qescape: Boolean whether to escape embedded quotes via a backslash. Defaults
+    * to false, meaning escape via an extra double quote
+    */
+   loader.addInstanceMethod('Variable', 'write', function write(options) {
+      options = utils.mixin({}, options, writeDefaults);
+      return prepareVar(this, options).join(options.sep);
+   });
+
    function quote(options) {
       var replacements;
       replacements = {
@@ -138,7 +151,7 @@ return function(loader) {
       function killMissing(v) {
          return v.map(function(str) { return utils.getDefault(str, ''); });
       }
-      if (!options.quote || v.mode === 'scalar') {
+      if (v.mode === 'scalar') {
          return killMissing(v.asString()).toArray();
       }
       return killMissing(v.asString()).toArray().map(quote(options));
@@ -270,7 +283,7 @@ return function(loader) {
       } else if (typeof m[2] !== 'undefined') {
          return quoteUnescape(m[2], '\'');
       }
-      return m[3];
+      return quoteUnescape(m[3], '');
    }
 
    /*
@@ -290,7 +303,7 @@ return function(loader) {
       return function(s, q) {
          return s.replace(dict[q], lookup);
       };
-   }({ '"': /\\.|""/g, '\'': /\\.|''/g }));
+   }({ '"': /\\.|""/g, '\'': /\\.|''/g, '': /\\./g }));
 
 };
 

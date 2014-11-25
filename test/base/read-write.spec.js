@@ -33,6 +33,39 @@ describe('Variable read', function() {
       expect(Variable.read('-1.,12,+12,-12').mode()).to.equal('scalar');
    });
 });
+describe('Variable write', function() {
+   it('plays nicely with variable read (basic examples)', function() {
+      var vars = [];
+      vars.push(new Variable([1.3, -2.5, 17, 5]));
+      vars.push(new Variable(['b', 'a', 'a', 'c']));
+      vars.forEach(function(var1) {
+         var var2 = Variable.read(var1.write());
+         expect(var1.toArray()).to.deep.equal(var2.toArray());
+      });
+   });
+   it('deals with weird characters', function() {
+      var vars = [];
+      vars.push(new Variable(['x','\'y','\nz','z']));
+      vars.push(new Variable(['b', 'a\t', 'a', 'c']));
+      vars.forEach(function(var1) {
+         var var2 = Variable.read(var1.write());
+         expect(var1.toArray()).to.deep.equal(var2.toArray());
+         var2 = Variable.read(var1.write({quote: true}));
+         expect(var1.toArray()).to.deep.equal(var2.toArray());
+      });
+   });
+      it('can use spaces or tabs for separators', function() {
+      var vars = [];
+      vars.push(new Variable(['x','\'y','\nz','z']));
+      vars.push(new Variable(['b', 'a\t', 'a', 'c']));
+      vars.forEach(function(var1) {
+         var var2 = Variable.read(var1.write({quote: true, sep: ' '}));
+         expect(var1.toArray()).to.deep.equal(var2.toArray());
+         var2 = Variable.read(var1.write({quote: true, sep: '\t'}));
+         expect(var1.toArray()).to.deep.equal(var2.toArray());
+      });
+   });
+});
 describe('Dataset read', function() {
    it('reads standard csv format', function() {
       var d = Dataset.read(readFile('sampleData.csv'), {header: true});
