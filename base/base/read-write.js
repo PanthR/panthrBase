@@ -100,32 +100,14 @@ return function(loader) {
     * to false, meaning escape via an extra double quote
     */
    loader.addInstanceMethod('Dataset', 'write', function write(options) {
-      var i, rows, row, cols, replacements;
+      var i, rows, row, cols;
       options = utils.mixin({}, options, writeDefaults);
-      replacements = {
-         '\\' : '\\\\',
-         '\t' : '\\t',
-         '\n' : '\\n',
-         '\r' : '\\r'
-      };
-      function quote(str) {
-         str = str.replace(/[\\\t\n\r]/g, function(m) { return replacements[m]; });
-         if (!options.quote) { return str; }
-         return '"' + str.replace(/"/g, options.qescape ? '\\"' : '""') + '"';
-      }
       function addHeader(arr, name) {
-         if (options.header) { arr.unshift(quote(name)); }
+         if (options.header) { arr.unshift(quote(options)(name)); }
          return arr;
       }
-      function killMissing(v) {
-         return v.map(function(str) { return utils.getDefault(str, ''); });
-      }
       function prepVar(v, i, name) {
-         // Will include headers
-         if (!options.quote || v.mode === 'scalar') {
-            return addHeader(killMissing(v.asString()).toArray(), name);
-         }
-         return addHeader(killMissing(v.asString()).toArray().map(quote), name);
+         return addHeader(prepareVar(v, options), name);
       }
       cols = this.map(prepVar); // cols is a list of string arrays, one for each column
       rows = [];
@@ -136,6 +118,31 @@ return function(loader) {
       });
       return rows.join('\n') + '\n';
    });
+
+   function quote(options) {
+      var replacements;
+      replacements = {
+         '\\' : '\\\\',
+         '\t' : '\\t',
+         '\n' : '\\n',
+         '\r' : '\\r'
+      };
+      return function(str) {
+         str = str.replace(/[\\\t\n\r]/g, function(m) { return replacements[m]; });
+         if (!options.quote) { return str; }
+         return '"' + str.replace(/"/g, options.qescape ? '\\"' : '""') + '"';
+      };
+   }
+
+   function prepareVar(v, options) {
+      function killMissing(v) {
+         return v.map(function(str) { return utils.getDefault(str, ''); });
+      }
+      if (!options.quote || v.mode === 'scalar') {
+         return killMissing(v.asString()).toArray();
+      }
+      return killMissing(v.asString()).toArray().map(quote(options));
+   }
 
    // `terms` is an array of strings (tokens)
    function variableInferMode(terms) {
