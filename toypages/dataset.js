@@ -1,4 +1,6 @@
 var fileInput;
+var downloadLink;
+var downloadUrl;
 var Dataset = Base.Dataset
 
 function taggify(tag) {
@@ -13,6 +15,15 @@ function processResults(str) {
     contents.push(taggify('tr')(row.map(taggify('td')).toArray().join('\n')));
   });
   $('#theTable').html(contents.join('\n'));
+  makeLinkToDataset(dSet);
+}
+
+function makeLinkToDataset(dSet) {
+  var written = dSet.write({ quote: true, sep: ',' });
+  var blob = new Blob([written], {type : 'text/csv'});
+  if (downloadUrl) { window.URL.revokeObjectURL(downloadUrl); }
+  downloadUrl = window.URL.createObjectURL(blob);
+  downloadLink.attr('href', downloadUrl).show();
 }
 
 function readFile() {
@@ -26,6 +37,6 @@ function readFile() {
 
 $(document).ready(function() {
    fileInput = $('input[type=file]');
-   // console.log(new Base.Variable([1,2,5,6]).toArray());
+   downloadLink = $('#download').hide();
    fileInput.change(readFile);
 });
