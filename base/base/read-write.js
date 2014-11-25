@@ -3,7 +3,7 @@ define(function(require) {
 
 // Module that contains methods for reading and writing datasets and variables
 return function(loader) {
-   var Variable, List, Dataset, reString, regexp, quoteUnescape, utils;
+   var Variable, List, Dataset, reString, regexp, quoteUnescape, utils, writeDefaults;
 
    Variable = loader.getClass('Variable');
    List     = loader.getClass('List');
@@ -11,11 +11,18 @@ return function(loader) {
 
    utils    = require('../utils');
 
+   writeDefaults = {
+      sep: ',',
+      header: true,
+      quote: false,
+      qescape: false
+   };
+
    /* eslint-disable quotes */
    /* Strings for regular expressions used by the various functions */
    reString = {};
-   reString.doubleQuoteContent = '(?:""|\\\\"|\\\\\\\\|[^"])+';
-   reString.singleQuoteContent = "(?:''|\\\\'|\\\\\\\\|[^'])+";
+   reString.doubleQuoteContent = '(?:""|\\\\"|\\\\\\\\|[^"])*';
+   reString.singleQuoteContent = "(?:''|\\\\'|\\\\\\\\|[^'])*";
    reString.variableSeparators = '(?:^|[\\s\\n;,]+)';
    reString.datasetSeparators = '[\\t;,]| +';  // tab, semicolon, comma, or spaces
    reString.regularTerm = '[^\\s\\n;,]+';
@@ -81,6 +88,53 @@ return function(loader) {
          return new Dataset(terms.map(makeVar)).names(headings);
       }
       return new Dataset(terms.map(makeVar));
+   });
+
+   /**
+    * Write dataset to a string.
+    * Options is an object that can include:
+    *   - sep: Character/string to use as separator. Defaults to `,`.
+    *   - header: Boolean whether to include headers or not. Defaults to `true`.
+    *   - quote: Boolean whether to quote string values/names. Defaults to `false`.
+    *   - qescape: Boolean whether to escape embedded quotes via a backslash. Defaults
+    * to false, meaning escape via an extra double quote
+    */
+   loader.addInstanceMethod('Dataset', 'write', function write(options) {
+      var i, rows, row, cols, replacements;
+      options = utils.mixin({}, options, writeDefaults);
+      replacements = {
+         '\\' : '\\\\',
+         '\t' : '\\t',
+         '\n' : '\\n',
+         '\r' : '\\r'
+      };
+      function quote(str) {
+         str = str.replace(/[\\\t\n\r]/g, function(m) { return replacements[m]; });
+         if (!options.quote) { return str; }
+         return '"' + str.replace(/"/g, options.qescape ? '\\"' : '""') + '"';
+      }
+      function addHeader(arr, name) {
+         if (options.header) { arr.unshift(quote(name)); }
+         return arr;
+      }
+      function killMissing(v) {
+         return v.map(function(str) { return utils.getDefault(str, ''); });
+      }
+      function prepVar(v, i, name) {
+         // Will include headers
+         if (!options.quote || v.mode === 'scalar') {
+            return addHeader(killMissing(v.asString()).toArray(), name);
+         }
+         return addHeader(killMissing(v.asString()).toArray().map(quote), name);
+      }
+      cols = this.map(prepVar); // cols is a list of string arrays, one for each column
+      rows = [];
+      cols.get(1).forEach(function(col, i) {
+         row = [];
+         cols.each(function(col) { row.push(col[i]); });
+         rows.push(row.join(options.sep));
+      });
+      return rows.join('\n') + '\n';
    });
 
    // `terms` is an array of strings (tokens)

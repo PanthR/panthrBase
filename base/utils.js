@@ -11,6 +11,19 @@ define(function(require) {
     */
    var utils = {};
 
+   /** Mixes into the first object the key-value pairs from the other objects. Shallow copy */
+   utils.mixin = function(target) {
+      var rest = [].slice.call(arguments, 1);
+      rest.forEach(function(o) {
+         if (o) {
+            Object.keys(o).forEach(function(key) {
+               if (!target.hasOwnProperty(key)) { target[key] = o[key]; }
+            });
+         }
+      });
+      return target;
+   };
+
    /** Value to be used for missing */
    utils.missing = NaN;
 

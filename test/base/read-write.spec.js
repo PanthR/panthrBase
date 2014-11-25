@@ -6,6 +6,10 @@ var expect = require('chai').expect;
 var fs = require('fs');  // filesystem
 var path = require('path');
 
+function readFile(file) {
+   return fs.readFileSync(path.join(__dirname, 'datafiles', file), {encoding: 'utf8'});
+}
+
 describe('Variable read', function() {
    it('string result with mode specified', function() {
       expect(Variable).itself.to.respondTo('read');
@@ -30,9 +34,6 @@ describe('Variable read', function() {
    });
 });
 describe('Dataset read', function() {
-   function readFile(file) {
-      return fs.readFileSync(path.join(__dirname, 'datafiles', file), {encoding: 'utf8'});
-   }
    it('reads standard csv format', function() {
       var d = Dataset.read(readFile('sampleData.csv'), {header: true});
       expect(d.ncol).to.equal(2);
@@ -88,5 +89,24 @@ describe('Dataset read', function() {
          d.getVar(2).toArray(),
          [10.005, -15.32, -23E-5, 4.4e10, +.17, 22., NaN]
       )).to.be.true;
+   });
+});
+describe('Dataset write', function() {
+   it('agrees with read', function() {
+      var dSet1 = Dataset.read(readFile('sampleData.csv'), { header: true });
+      var dSet2;
+      ['\t', ',', ';'].forEach(function(sep) {
+         dSet2 = Dataset.read(dSet1.write({ quote: true, sep: sep }), { header: true });
+         expect(dSet1.names().toArray()).to.deep.equal(dSet2.names().toArray());
+         dSet1.each(function(col, j) {
+            expect(utils.areEqualArrays(col.toArray(), dSet2.getVar(j).toArray())).to.be.ok;
+         });
+      });
+      dSet1 = dSet1.deleteRows(dSet1.nrow);
+      dSet2 = Dataset.read(dSet1.write({ quote: false, sep: ',' }), { header: true });
+      expect(dSet1.names().toArray()).to.deep.equal(dSet2.names().toArray());
+      dSet1.each(function(col, j) {
+         expect(utils.areEqualArrays(col.toArray(), dSet2.getVar(j).toArray())).to.be.ok;
+      });
    });
 });
