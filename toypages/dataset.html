@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <link rel="stylesheet" type="text/css" href="base.css">
+      <title>Load and view a dataset</title>
+   </head>
+   <body>
+      <h1>Load and view a dataset</h1>
+      <p>Upload a dataset to view it (csv/csv2/tab/space). Expects the files to have a header line.</p>
+      <form id="aform">
+         <input type="file" />
+      </form>
+      <br />
+      <table id="theTable">
+         <tr><th>Name</th><th>Age</th></tr>
+         <tr><td>Foo</td><td>45</td></tr>
+         <tr><td>Foo</td><td>45</td></tr>
+         <tr><td>Foo</td><td>45</td></tr>
+         <tr><td>Foo</td><td>45</td></tr>
+      </table>
+      <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+      <script src="../bundle.js"></script>
+      <script src="dataset.js"></script>
+   </body>
+</html>
