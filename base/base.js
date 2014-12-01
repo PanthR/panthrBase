@@ -6,6 +6,7 @@ return function(loader) {
    loader.addModule('base', {});
    loader.loadModule(require('./base/restructure'));
    loader.loadModule(require('./base/read-write'));
+   loader.loadModule(require('./base/format'));
 };
 
 });
