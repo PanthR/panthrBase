@@ -84,6 +84,39 @@ return function(loader) {
       }).map(wrap(options.row)).join('\n');
    });
 
+   // Returns a string variable for displaying the given variable with
+   // specified numerical formatting. `options` is an object and may
+   // include the following properties:
+   //  - type:  has a string value 'scientific' or 'fixed
+   //  - decimals:  indicates fixed number of decimal digits to the right of
+   //       the decimal point; has a non-negative integer value; defaults to 4 in
+   //       the case of scientific notation, and to 2 otherwise
+   loader.addInstanceMethod('Variable', 'format', function format(options) {
+      var v, f, maxDigits;
+      v = this.asScalar();
+      function nDigits(x) {
+         return x === 0 ? 1 : Math.abs(Math.log(Math.abs(x)) / Math.LN10);
+      }
+      options = options || {};
+      if (!options.type) {
+         maxDigits = Math.floor(v.map(nDigits).max());
+         options.type = maxDigits > 4 ? 'scientific' : 'fixed';
+      }
+      if (!options.decimals) {
+         options.decimals = options.type === 'scientific' ? 4 : 2;
+      }
+      // f takes a number value or utils.missing and returns the formatted
+      // string (or 'NaN') according to the options specified above
+      f = options.type === 'scientific' ?
+         function(x) {
+            return x.toExponential(options.decimals);
+         } :
+         function(x) {
+            return x.toFixed(options.decimals);
+         };
+      return v.map(f, false, 'string');
+   });
+
 // boilerplate below here
 };
 

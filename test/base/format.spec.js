@@ -23,3 +23,26 @@ describe('Variable#toHTML', function() {
 
    })
 });
+
+describe('Variable#format', function() {
+   it('creates fixed-point numbers with specified number of decimals', function() {
+      var v = Variable.tabulate(function() { return 1 + Math.random(); }, 50);
+      v.format({type: 'fixed', decimals: 6}).each(function(str) {
+         expect(str).to.match(/^1\.\d{6}$/);
+      });
+      v.format({decimals: 6}).each(function(str) {
+         expect(str).to.match(/^1\.\d{6}$/);
+      });
+      expect(new Variable([5, 2.501,,3.3]).format().get(3)).to.equal('NaN');
+   });
+   it('creates scientific notation with specified number of decimals', function() {
+      var v = Variable.tabulate(function() { return 1 + Math.random(); }, 50);
+      v.format({type: 'scientific', decimals: 6}).each(function(str) {
+         expect(str).to.match(/^1\.\d{6}e+0$/);
+      });
+      v.map(function(x) { return x - 1; })
+      .format({type: 'scientific', decimals: 6}).each(function(str) {
+         expect(str).to.match(/^\d\.\d{6}e-1$/);
+      });
+   });
+});
