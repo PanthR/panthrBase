@@ -19,6 +19,7 @@ return function(loader) {
       currentRow = [];
       for (i = 1; i <= this.length(); i += 1) {
          currentRow.push({
+            index: i,
             value: utils.getDefault(stringVar.get(i), ''),
             name:  utils.isMissing(names) ? '' : names.get(i)
          });
@@ -46,8 +47,9 @@ return function(loader) {
    loader.addInstanceMethod('Variable', 'toHTML', function toHTML(options) {
       var arr, defaults, makeRow;
       function wrap(params) {
-         return function(str) {
-            return '<' + params.tag + ' class="' + params.class + '">' + str +
+         return function(str, others) {
+            return '<' + params.tag + ' class="' + params.class + '" ' +
+                  (others || '') + '>' + str +
                   '</' + params.tag + '>';
          };
       }
@@ -66,12 +68,13 @@ return function(loader) {
          function(row) {
             // entries include names and values
             return row.map(function(obj) {
-               return wrap(options.name)(obj.name) + wrap(options.value)(obj.value);
+               return wrap(options.name)(obj.name  , 'data-relIndex="' + obj.index + '"') +
+                      wrap(options.value)(obj.value, 'data-relIndex="' + obj.index + '"');
             }).join('');
          } :
          function(row) {
             return row.map(function(obj) {
-               return wrap(options.value)(obj.value);
+               return wrap(options.value)(obj.value, 'data-relIndex="' + obj.index + '"');
             }).join('');
          };
       arr = this.layOut(options.ncol);
