@@ -160,6 +160,15 @@ define(function(require) {
       return null;
    };
 
+   utils.format = {
+      scientific: function(decimals) {
+         return function(x) { return x.toExponential(decimals); };
+      },
+      fixed: function(decimals) {
+         return function(x) { return x.toFixed(decimals); };
+      }
+   };
+
    return utils;
 
 });

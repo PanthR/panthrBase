@@ -92,7 +92,7 @@ return function(loader) {
    //       the decimal point; has a non-negative integer value; defaults to 4 in
    //       the case of scientific notation, and to 2 otherwise
    loader.addInstanceMethod('Variable', 'format', function format(options) {
-      var v, f, maxDigits;
+      var v, maxDigits;
       v = this.asScalar();
       function nDigits(x) {
          return x === 0 ? 1 : Math.abs(Math.log(Math.abs(x)) / Math.LN10);
@@ -105,16 +105,7 @@ return function(loader) {
       if (!options.decimals) {
          options.decimals = options.type === 'scientific' ? 4 : 2;
       }
-      // f takes a number value or utils.missing and returns the formatted
-      // string (or 'NaN') according to the options specified above
-      f = options.type === 'scientific' ?
-         function(x) {
-            return x.toExponential(options.decimals);
-         } :
-         function(x) {
-            return x.toFixed(options.decimals);
-         };
-      return v.map(f, false, 'string');
+      return v.map(utils.format[options.type](options.decimals), false, 'string');
    });
 
 // boilerplate below here
