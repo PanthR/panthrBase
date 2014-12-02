@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <link rel="stylesheet" type="text/css" href="base.css">
+      <title>Working with a variable</title>
+   </head>
+   <body>
+      <h1>Working with a variable</h1>
+      <p>Various ways to manipulate a variable. Click on a cell to "select". Click "Delete" to delete the cell, or "Update" to edit it. The "create new variable" button will use the contents of the textarea, if any, to initialize the variable.</p>
+      <div id="main">
+         <div id="results"></div>
+         <div id="varView">
+            <form id="aform">
+               <select id="varList">
+               </select>
+               <br />
+               <textarea rows="5">
+               </textarea><span id="mess"></span>
+               <br />
+               <input id="addVar" type="button" value="Create new variable" />
+            </form>
+            <br />
+            <label>Name: <input type="text" id="varName" /></label>
+            <table id="theTable">
+            </table>
+            <label>Add/update value: <input id="newValue" type="input" /></label>
+            <input id="delValue" type="button" value="Delete selected value" />
+         </div>
+      </div>
+      <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+      <script src="../bundle.js"></script>
+      <script src="variable.js"></script>
+   </body>
+</html>

@@ -18,3 +18,19 @@ td, th {
    padding: 0.2em 0.5em;
    margin: 0;
 }
+
+.selectedCell {
+   background-color: #6f6;
+}
+
+.var-name {
+   background-color: #DDD;
+}
+
+#results {
+   float: right;
+   width: 40%;
+}
+#varView {
+   width: 58%;
+}
