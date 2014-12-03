@@ -111,4 +111,20 @@ describe('Basic statistics', function() {
       expect(L.get('center')).to.equal(center);
       expect(L.get('scale')).to.equal(scale);
    });
+   it('correlate', function() {
+      var v1 = Variable.tabulate(Math.random, 1, 10).set(5, NaN);
+      expect(Variable.correlate(v1, v1, true)).to.be.closeTo(1, .000001);
+   });
+      var v1 = new Variable([1,2,3,4,5]);
+      var v2 = new Variable([5,4,3,2,1]);
+      expect(Variable.correlate(v1, v2, false)).to.be.closeTo(-1, .000001);
+      v1.set(1, NaN);
+      v2.set(5, NaN);
+      expect(Variable.correlate(v1, v2, true)).to.be.closeTo(-1, .000001);
+      v1 = Variable.tabulate(Math.random, 1, 10000);
+      v2 = Variable.tabulate(Math.random, 1, 10000);
+      expect(Math.abs(Variable.correlate(v1, v2))).to.be.below(.025);
+      var v1 = new Variable([1,2,3,4,5]);
+      var v2 = new Variable([2.2, 1.4, 3, 3, 2]);
+      expect(Variable.correlate(v1, v2)).to.be.closeTo(.27617, .00001);
 });

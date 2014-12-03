@@ -180,6 +180,34 @@ return function(loader) {
       return this.scale(this.mean(true), this.sd(true));
    });
 
+   /**
+    * Returns the Pearson correlation coefficient between two variables, `xs` and `ys`.
+    * By default, uses all values.  If `skipMissing` is not set to true and missing
+    * values exist, result will be missing.  The two variables need to have the same
+    * (positive) length.
+    */
+   loader.addClassMethod('Variable', 'correlate', function correlate(xs, ys, skipMissing) {
+      var M, MTM, V, validIndices; // V is vector [sumX, sumY]
+      // calculate M, the cleaned-up 2-col matrix of xs & ys
+      if (!xs.sameLength(ys)) {
+         throw new Error('correlate requires same-length variables');
+      }
+      validIndices = Variable.seq(xs.length())
+         .filter(function(i) {
+            return utils.isNotMissing(xs.get(i)) && utils.isNotMissing(ys.get(i));
+         });
+      if (validIndices.length() !== xs.length()) {
+         if (skipMissing !== true) { return utils.missing; }
+         xs = xs.get(validIndices);
+         ys = ys.get(validIndices);
+      }
+      M = new Variable.Matrix([Variable.ensureArray(xs), Variable.ensureArray(ys)]);
+      MTM = M.transpose().mult(M);
+      V = M.mapCol(function(col) { return col.reduce(utils.op.add, 0); });
+      M = MTM.pAdd(V.outer(V).sMult(-1 / M.nrow));  // really, -VVT / n
+      return M.get(1, 2) / Math.sqrt(M.get(1, 1) * M.get(2, 2));
+   });
+
    // helper methods
 
    // Takes a variable `v` and a boolean `skipMissing`.
