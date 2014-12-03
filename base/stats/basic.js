@@ -186,7 +186,7 @@ return function(loader) {
     * values exist, result will be missing.  The two variables need to have the same
     * (positive) length.
     */
-   loader.addClassMethod('Variable', 'correlate', function correlate(xs, ys, skipMissing) {
+   loader.addModuleMethod('stats', 'correlate', function correlate(xs, ys, skipMissing) {
       var M, MTM, V, validIndices; // V is vector [sumX, sumY]
       // calculate M, the cleaned-up 2-col matrix of xs & ys
       if (!xs.sameLength(ys)) {
