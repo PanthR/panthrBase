@@ -82,7 +82,7 @@ var appState = Object.create({
       } else {
          currVar.set(this.selectedIndex, newVal);
       }
-      this.trigger('currentValuesChanged', currVar);
+      this.trigger('currentValuesChanged');
    },
 	deleteValue: function deleteValue() {
       var currVar = this.variableList._current;
@@ -90,13 +90,23 @@ var appState = Object.create({
       newValues.splice(this.selectedIndex - 1, 1);
       this.variableList[currVar] = this.variableList[currVar].reproduce(newValues);
       this.trigger('listUpdated', this.variableList);
-      this.trigger('currentValuesChanged', this.variableList[currVar]);
+      this.trigger('currentValuesChanged');
+   },
+   setFormat: function setFormat(newValues) {
+      if (newValues.decimals != null) {
+         this.format.decimals = newValues.decimals >= 0 ? newValues.decimals : 4;
+      }
+      if (newValues.type != null) {
+         this.format.type = newValues.type === 'auto' ? undefined : newValues.type;
+      }
+      this.trigger('formatChanged', this.format);
    }
 });
 
 appState.variableList = {};
 appState.selectedIndex = 0;
 appState.textProcessResult = null;
+appState.format = { decimals: 4, type: null };
 
 Object.defineProperty(appState.variableList, '_current', {
    writable: true,
@@ -132,9 +142,11 @@ function changeVarName(ev) {
    alert('A variable with that name already exists!');
 }
 
-function updateValueTable(newValues) {
+function updateValueTable() {
+   var newValues = appState.variableList[appState.variableList._current];
    appState.setIndex(0);  // TODO
-   $('#theTable').html(newValues.toHTML({ ncol: 3 }));
+   if (!newValues) { return; }
+   $('#theTable').html(newValues.format(appState.format).toHTML({ ncol: 3 }));
 }
 
 function setCurrentVariable() { appState.setCurrent(this.value); }
@@ -170,7 +182,8 @@ function parseTextArea() {
    $('#mess').html(l + ' number(s) read');   // TODO
 }
 
-function updateResults(newValues) {
+function updateResults() {
+   var newValues = appState.variableList[appState.variableList._current];
    function makeTable(values, heading) {
       return taggify('div')(
          taggify('h3')(heading) +
@@ -185,10 +198,11 @@ function updateResults(newValues) {
       );
    }
    var resultsDiv = $('#results').html('');
-   var fiveNum = newValues.fiveNum().map(roundn(DIGITS));
+   if (!newValues) { return; }
+   var fiveNum = newValues.fiveNum().format(appState.format);
    var others = new Variable([
       newValues.sum(), newValues.mean(), newValues.var(), newValues.sd(), newValues.length()
-   ]).map(roundn(DIGITS)).names(['Sum', 'Mean', 'Variance', 'Std. Dev.', 'N']);
+   ]).format(appState.format).names(['Sum', 'Mean', 'Variance', 'Std. Dev.', 'N']);
    resultsDiv
       .append(makeTable(fiveNum, 'Five Number Summary'))
       .append(makeTable(others, 'Other Statistics'))
@@ -203,14 +217,18 @@ function updateResults(newValues) {
 
 appState.register('newCurrentVar', function() {
    this.trigger('varNameChanged', this.variableList._current);
-   this.trigger('currentValuesChanged', this.variableList[this.variableList._current]);
+   this.trigger('currentValuesChanged');
    parseTextArea.call($('textarea')[0]);
 }, appState);
 appState.register('listUpdated', populateSelect);
 appState.register('varNameChanged', updateVarName, $('#varName'));
 appState.register('currentValuesChanged', updateValueTable);
 appState.register('currentValuesChanged', updateResults);
-
+appState.register('formatChanged', function(newValue) {
+   $('#decimals').val(newValue.decimals);
+});
+appState.register('formatChanged', updateValueTable);
+appState.register('formatChanged', updateResults);
 $(document).ready(function() {
    $('#addVar').click(newVariable);
    $('#varName').on('change', changeVarName);
@@ -219,6 +237,14 @@ $(document).ready(function() {
    $('#newValue').on('change', addNewValue);
    $('#theTable').on('click', 'td', selectValue);
    $('#delValue').on('click', deleteValue);
+   $('#decimals').on('change', function() {
+      appState.setFormat({ decimals: parseInt(this.value) });
+   });
+   $('input[name="type"]').on('change', function() {
+      appState.setFormat({ type: this.value });
+   });
    appState.setIndex(0);
+   appState.setFormat({ decimals: 4 });
    parseTextArea.call($('textarea')[0]);
+
 });

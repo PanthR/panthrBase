@@ -8,7 +8,16 @@
       <h1>Working with a variable</h1>
       <p>Various ways to manipulate a variable. Click on a cell to "select". Click "Delete" to delete the cell, or "Update" to edit it. The "create new variable" button will use the contents of the textarea, if any, to initialize the variable.</p>
       <div id="main">
-         <div id="results"></div>
+         <div id="rightside">
+            <label>Number of decimals: <input id="decimals" type="input" value="4" /></label>
+            <br />
+            <label>Format type:
+               <label>auto<input type="radio" name="type" value="auto" checked /></label>
+               <label>fixed<input type="radio" name="type" value="fixed" /></label>
+               <label>scientific<input type="radio" name="type" value="scientific" /></label>
+            </label>
+            <div id="results"></div>
+         </div>
          <div id="varView">
             <form id="aform">
                <select id="varList">
