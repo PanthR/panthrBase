@@ -102,7 +102,7 @@ return function(loader) {
          maxDigits = Math.floor(v.map(nDigits).max());
          options.type = maxDigits > 4 ? 'scientific' : 'fixed';
       }
-      if (!options.decimals) {
+      if (!(options.decimals >= 0)) {
          options.decimals = options.type === 'scientific' ? 4 : 2;
       }
       return v.map(utils.format[options.type](options.decimals), false, 'string');
