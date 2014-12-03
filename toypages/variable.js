@@ -1,8 +1,31 @@
-var variableList = {};
-var currentVariable;
-var selectedIndex;
-var textProcessResult;
-var Variable = Base.Variable;
+var Event = (function(){
+
+   function createHandlers(obj) {
+      Object.defineProperty(obj, '_handlers', { value: {} });
+   }
+   var register = function(event, handler, context) {
+      if (!this._handlers) { createHandlers(this); }
+      if (!this._handlers[event]) { this._handlers[event] = []; }
+      this._handlers[event].push({ handler: handler, context: context || null });
+      return this;
+   };
+   var trigger = function(event, data) {
+      ((this._handlers && this._handlers[event]) || []).forEach(function(obj) {
+         obj.handler.call(obj.context, data);
+      });
+   };
+
+   var Event = {
+      mixin: function(obj) {
+         Object.defineProperty(obj, 'register', { value: register });
+         Object.defineProperty(obj, 'trigger', { value: trigger });
+      }
+   };
+
+   Event.mixin(Event);
+
+   return Event;
+}());
 
 var DIGITS = 4;
 
@@ -10,88 +33,124 @@ function roundn(d) {
    var p = Math.pow(10, d);
    return function(x) { return Math.round(x * p) / p; };
 }
-
 function taggify(tag) {
   return function(str) { return '<' + tag + '>' + str + '</' + tag + '>'; }
 }
 
-function setIndex(v) {
-   selectedIndex = v;
-   checkDeleteStatus();
-}
+var Variable = Base.Variable;
 
-function createNewVariable() {
-   var id = 0, name;
-   do {
-      id += 1;
-      name = 'Variable ' + id;
-   } while (variableList.hasOwnProperty(name));
-   variableList[name] = textProcessResult || new Variable([]);
-   $('textarea').val('');
-   textProcessResult = null;
-   currentVariable = name;
-   updateVarList();
-   showCurrentVariable();
-}
+var appState = Object.create({
+   setIndex: function setIndex(v) {
+      this.selectedIndex = v;
+      this.trigger('newIndex', v);
+      // checkDeleteStatus();
+   },
+   newVariable: function newVariable() {
+      var id = 0, name;
+      do {
+         id += 1;
+         name = 'Variable ' + id;
+      } while (this.variableList.hasOwnProperty(name));
+      this.variableList[name] = this.textProcessResult || new Variable([]);
+      this.textProcessResult = null;
+      this.variableList._current = name;
+      this.trigger('listUpdated', this.variableList);
+      this.trigger('newCurrentVar', this);
+   },
+	changeVarName: function changeVarName(newName) {
+      var currVar = this.variableList._current;
+      if (this.variableList.hasOwnProperty(newName)) { return false; }
+      this.variableList[newName] = this.variableList[currVar];
+      delete this.variableList[currVar];
+      this.variableList._current = newName;
+      this.trigger('listUpdated', this.variableList);
+      this.trigger('varNameChanged', newName);
+      return true;
+   },
+	setCurrent: function setCurrent(newVar) {
+      this.variableList._current = newVar;
+      this.trigger('newCurrentVar', this);
+   },
+   updateProcessResult: function updateProcessResult(v) {
+      this.textProcessResult = v;
+   },
+	newValue: function newValue(newVal) {
+      var currVar = this.variableList[this.variableList._current];
+      if (this.selectedIndex === 0) {
+         currVar.resize(currVar.length() + 1).set(currVar.length(), newVal);
+         this.trigger('listUpdated', this.variableList);
+      } else {
+         currVar.set(this.selectedIndex, newVal);
+      }
+      this.trigger('currentValuesChanged', currVar);
+   },
+	deleteValue: function deleteValue() {
+      var currVar = this.variableList._current;
+      var newValues = this.variableList[currVar].toArray();
+      newValues.splice(this.selectedIndex - 1, 1);
+      this.variableList[currVar] = this.variableList[currVar].reproduce(newValues);
+      this.trigger('listUpdated', this.variableList);
+      this.trigger('currentValuesChanged', this.variableList[currVar]);
+   }
+});
 
-function updateVarList() {
+appState.variableList = {};
+appState.selectedIndex = 0;
+appState.textProcessResult = null;
+
+Object.defineProperty(appState.variableList, '_current', {
+   writable: true,
+   value: null
+});
+
+Event.mixin(appState);
+
+
+
+function populateSelect(variableList) {
    var select = $('#varList').html('');
    $.each(variableList, function(key, value) {
      select
-         .append($('<option' + (key === currentVariable ? ' selected' : '' ) + '></option>')
+         .append($('<option' + (key === variableList._current ? ' selected' : '' ) + '></option>')
          .attr('value', key)
          .text(key + ' (' + value.length() + ' values)'));
    });
 }
 
+// In reaction to change in the appState
+function updateVarName(newName) {
+   this.val(newName);
+   this.data('old-value', newName);
+}
+
+// In reaction to a DOM change
 function changeVarName(ev) {
-   var newName = $(this).val();
-   if (newName != currentVariable) {
-      if (variableList.hasOwnProperty(newName)) {
-         $(this).val(currentVariable);
-         alert('A variable with that name already exists!');
-      } else {
-         variableList[newName] = variableList[currentVariable];
-         delete variableList[currentVariable];
-         currentVariable = newName;
-         updateVarList();
-      }
-   }
+   if ($(this).val() === $(this).data('old-value')) { return; }
+   if (appState.changeVarName($(this).val())) { return; }
+   // failure in changing value
+   $(this).val($(this).data('old-value'));
+   alert('A variable with that name already exists!');
 }
 
-function showCurrentVariable() {
-   setIndex(0);
-   $('#varName').val(currentVariable);
-   $('#theTable').html(variableList[currentVariable].toHTML({ ncol: 3 }));
-   computeResults();
+function updateValueTable(newValues) {
+   appState.setIndex(0);  // TODO
+   $('#theTable').html(newValues.toHTML({ ncol: 3 }));
 }
 
-function setCurrentVariable() {
-   currentVariable = this.value;
-   showCurrentVariable();
-}
+function setCurrentVariable() { appState.setCurrent(this.value); }
 
-function updateProcessResult(v) {
-   textProcessResult = v;
-   var l = v ? v.length() : 0;
-   $('#mess').html(l + ' number(s) read');
+function newVariable() {
+   $('textarea').val('');
+   appState.newVariable();
 }
-
 function addNewValue() {
-   var newVal = parseFloat($(this).val());
-   var currVar = variableList[currentVariable];
-   if (selectedIndex === 0) {
-      currVar.resize(currVar.length() + 1).set(currVar.length(), newVal);
-   } else {
-      currVar.set(selectedIndex, newVal);
-   }
+   appState.newValue(parseFloat($(this).val()));
    $(this).val('');
-   showCurrentVariable();
-   updateVarList();
+
 }
 
 function selectValue() {
-   setIndex($(this).data('relindex'));
+   appState.setIndex($(this).data('relindex'));
    $('.selectedCell').toggleClass('selectedCell');
    $(this).toggleClass('selectedCell');
 }
@@ -101,19 +160,17 @@ function checkDeleteStatus() {
 }
 
 function deleteValue() {
-   var newValues = variableList[currentVariable].toArray();
-   newValues.splice(selectedIndex - 1, 1);
-   variableList[currentVariable] = variableList[currentVariable].reproduce(newValues);
-   setIndex(0);
-   showCurrentVariable();
-   updateVarList();
+   appState.deleteValue();
 }
 
 function parseTextArea() {
-   updateProcessResult(Variable.read(this.value));
+   var v = Variable.read(this.value);
+   var l = v ? v.length() : 0;
+   appState.updateProcessResult(v);
+   $('#mess').html(l + ' number(s) read');   // TODO
 }
 
-function computeResults() {
+function updateResults(newValues) {
    function makeTable(values, heading) {
       return taggify('div')(
          taggify('h3')(heading) +
@@ -128,10 +185,9 @@ function computeResults() {
       );
    }
    var resultsDiv = $('#results').html('');
-   var currVar = variableList[currentVariable];
-   var fiveNum = currVar.fiveNum().map(roundn(DIGITS));
+   var fiveNum = newValues.fiveNum().map(roundn(DIGITS));
    var others = new Variable([
-      currVar.sum(), currVar.mean(), currVar.var(), currVar.sd(), currVar.length()
+      newValues.sum(), newValues.mean(), newValues.var(), newValues.sd(), newValues.length()
    ]).map(roundn(DIGITS)).names(['Sum', 'Mean', 'Variance', 'Std. Dev.', 'N']);
    resultsDiv
       .append(makeTable(fiveNum, 'Five Number Summary'))
@@ -140,19 +196,29 @@ function computeResults() {
          taggify('h3')('Frequency Table') +
          taggify('table')(
             taggify('thead')(taggify('tr')(taggify('th')('Values') + taggify('th')('Frequencies'))) +
-            taggify('tbody')(currVar.table().toHTML({ withNames: true }))
+            taggify('tbody')(newValues.table().toHTML({ withNames: true }))
          )
       ));
 }
 
+appState.register('newCurrentVar', function() {
+   this.trigger('varNameChanged', this.variableList._current);
+   this.trigger('currentValuesChanged', this.variableList[this.variableList._current]);
+   parseTextArea.call($('textarea')[0]);
+}, appState);
+appState.register('listUpdated', populateSelect);
+appState.register('varNameChanged', updateVarName, $('#varName'));
+appState.register('currentValuesChanged', updateValueTable);
+appState.register('currentValuesChanged', updateResults);
+
 $(document).ready(function() {
-   $('#addVar').click(createNewVariable);
+   $('#addVar').click(newVariable);
    $('#varName').on('change', changeVarName);
    $('#varList').on('change', setCurrentVariable);
    $('textarea').on('input', parseTextArea);
    $('#newValue').on('change', addNewValue);
    $('#theTable').on('click', 'td', selectValue);
    $('#delValue').on('click', deleteValue);
-   setIndex(0);
+   appState.setIndex(0);
    parseTextArea.call($('textarea')[0]);
 });
