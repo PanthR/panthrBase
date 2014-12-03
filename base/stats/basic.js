@@ -2,11 +2,12 @@
 define(function(require) {
 
 return function(loader) {
-   var utils, Variable;
+   var utils, Variable, List;
 
    utils = require('../utils');
 
    Variable = loader.getClass('Variable');
+   List     = loader.getClass('List');
 
    /**
     * Return the sum of the values.
@@ -155,6 +156,30 @@ return function(loader) {
       if (missing > 0) { freqs.push(missing); names.push(utils.missing); }
       return Variable.scalar(freqs).names(names);
    });
+
+   /**
+    * Returns a `List` holding the center, the scale, and a variable for a rescaled
+    * version of this variable, retaining the names (if any).
+    * `center` specifies the translation and `scale` specifies the scaling factor.
+    * Must be called with 2 arguments.
+    */
+   loader.addInstanceMethod('Variable', 'scale', function scale(center, scale) {
+      return new List({
+         center: center,
+         scale: scale,
+         values: this.map(function(x) { return (x - center) / scale; })
+      });
+   });
+
+   /**
+    * Returns a `List` holding the mean, the standard deviation, and a variable
+    * for the z-scores (retaining the original names).
+    * Missing values are preserved, but ignored in the computation.
+    */
+   loader.addInstanceMethod('Variable', 'zscore', function zscore() {
+      return this.scale(this.mean(true), this.sd(true));
+   });
+
    // helper methods
 
    // Takes a variable `v` and a boolean `skipMissing`.

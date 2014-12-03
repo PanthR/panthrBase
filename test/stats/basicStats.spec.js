@@ -1,4 +1,5 @@
 var Variable  = require('../../index').Variable;
+var List      = require('../../index').List;
 var utils  = require('../../base/utils');
 var expect = require('chai').expect;
 var A = [
@@ -16,7 +17,7 @@ describe('Basic statistics', function() {
       expect(Variable).to.respondTo('sum');
       A.forEach(function(v) {
          expect(utils.isMissing(v.sum())).to.be.true;
-         if (v.length() > 0) { 
+         if (v.length() > 0) {
             expect(v.nonMissing().sum()).to.exist;
             expect(v.sum(true)).to.exist;
          }
@@ -35,7 +36,7 @@ describe('Basic statistics', function() {
       expect(Variable).to.respondTo('mean');
       A.forEach(function(v) {
          expect(utils.isMissing(v.sum())).to.be.true;
-         if (v.length() > 0) { 
+         if (v.length() > 0) {
             expect(v.nonMissing().sum()).to.exist;
             expect(v.sum(true)).to.exist;
          }
@@ -91,5 +92,23 @@ describe('Basic statistics', function() {
       expect(utils.isMissing(A2.sd())).to.be.true;
       expect(utils.isMissing(Variable([1]).sd())).to.be.true;
       expect(utils.isMissing(Variable([]).sd())).to.be.true;
+   });
+   it('scale', function() {
+      var v1 = Variable.tabulate(Math.random, 1, 10).set(5, NaN);
+      var center = Math.random();
+      var scale = Math.random();
+      v1.scale(center, scale).get('values').each(function(val, i) {
+         expect(utils.equal(val, (v1.get(i) - center) / scale)).to.be.true;
+      });
+      expect(v1.scale(center, scale).get('center')).to.equal(center);
+      expect(v1.scale(center, scale).get('scale')).to.equal(scale);
+   });
+   it('zscore', function() {
+      var v1 = Variable.tabulate(Math.random, 1, 10).set(5, NaN);
+      var center = v1.mean(true);
+      var scale = v1.sd(true);
+      var L = v1.zscore();
+      expect(L.get('center')).to.equal(center);
+      expect(L.get('scale')).to.equal(scale);
    });
 });
