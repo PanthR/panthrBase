@@ -93,7 +93,7 @@ return function(loader) {
    //       the case of scientific notation, and to 2 otherwise
    loader.addInstanceMethod('Variable', 'format', function format(options) {
       var v, maxDigits;
-      v = this.asScalar();
+      v = this.asScalar().names(this.names());
       function nDigits(x) {
          return x === 0 ? 1 : Math.abs(Math.log(Math.abs(x)) / Math.LN10);
       }
