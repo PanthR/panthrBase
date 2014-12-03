@@ -97,7 +97,7 @@ return function(loader) {
       function nDigits(x) {
          return x === 0 ? 1 : Math.abs(Math.log(Math.abs(x)) / Math.LN10);
       }
-      options = options || {};
+      options = utils.mixin({}, options);
       if (!options.type) {
          maxDigits = Math.floor(v.map(nDigits).max());
          options.type = maxDigits > 4 ? 'scientific' : 'fixed';
