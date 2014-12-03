@@ -45,4 +45,9 @@ describe('Variable#format', function() {
          expect(str).to.match(/^\d\.\d{6}e-1$/);
       });
    });
+   it('keeps the names of the variable intact', function() {
+      var v = new Variable([1.2, 3.4, -5.6]).names(['a','b','c']);
+      expect(utils.isMissing(v.format().names())).to.be.false;
+      expect(v.format().names().toArray()).to.deep.equal(v.names().toArray());
+   });
 });
