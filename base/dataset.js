@@ -14,11 +14,18 @@ define(function(require) {
    Variable = require('./variable');
    utils    = require('./utils');
    /**
-    * See `List` for options for `values`.
-    * An extra requirement is that all "variables" should have same length.
-    * If `values` is a `List`,`Vector`, or `Matrix`, it will be
-    * 'unpacked' to create the columns of the `Dataset`.
-    * If multiple arguments are provided, they are wrapped in an array.
+    * Create a dataset out of the provided `values`. A dataset is a `List` whose items
+    * are variables of the same length. Unlike lists, datasets are required to have names
+    * for all their "columns", and those names are unique.
+    *
+    * `values` is one more more arguments of the following types:
+    * - An object, a `List`, or `Matrix`; in this case it will be 'unpacked' to create
+    * the columns of the dataset.
+    * - A `Variable` or `Vector`.
+    *
+    * Properties:
+    *   - `nrow`: The number of rows in the dataset (the length of each variable)
+    *   - `ncol`: The number of columns in the dataset (the number of variables)
     */
    function Dataset(values) {
       if (arguments.length > 1 ||
@@ -39,6 +46,10 @@ define(function(require) {
 
    Dataset.prototype = Object.create(List.prototype);
 
+   /**
+    * Get or set the names of the dataset's columns. See `List#names` for
+    * details. This method enforces uniqueness of names.
+    */
    Dataset.prototype.names = function names(i, newNames) {
       var res;
       res = List.prototype.names.apply(this, [].slice.call(arguments));
@@ -46,36 +57,46 @@ define(function(require) {
       return sanitizeNames(this);
    };
 
-
    /**
-    * Used to get a single column (variable).
+    * Get a single column (variable). `col` is a positive number or string name.
     */
    Dataset.prototype.getVar = function getVar(col) {
       return List.prototype.get.call(this, col).clone();
    };
 
-   /** Returns a function `f(j)` which simulates row i. */
+   /**
+    * Given a row index `i`, return a function `f(col)` which "simulates" row `i`.
+    *
+    *     l.rowFun(2)('a') // Returns the second value in column 'a'.
+    *     l.rowFun(2)(2)   // Returns the second value in the second column.
+    */
    Dataset.prototype.rowFun = function rowFun(i) {
       var that = this;
       return function(j) { return that.getVar(j).get(i); };
    };
 
    /**
-    * Can be called with two arguments, or no arguments.
-    * `cols` can be:
-    *    - A string/number or array/variable/vector of strings/numbers/bools
-    *    - A predicate that has form `pred(colName, j)`, and must return true for
-    *      those columns that are to be included in the get.
-    *    - The boolean `true`, indicating all columns should be used.
-    * `rows` can be:
-    *    - A number or array/variable/vector of numbers/bools
-    *    - A predicate that has form `pred(row, i)`, where `row` is a function such
-    *      that `row(j)` returns the entry in the i-th row and the j-th column, while
-    *      `row(colName)` returns the entry in the i-th row and the column named `colName`.
+    * Return a subset of the values in the dataset. This method may be called with
+    * no arguments, in which case an array of arrays of the columns is returned.
+    * Otherwise, the method requires two arguments, `rows` and `cols`, specifying
+    * respectively the rows and columns to be used.
+    * - `cols` can be:
+    *    - A single number or string. In this case a single column is used.
+    *    - The boolean `true`, indicating that all columns should be used.
+    *    - A one-dimensional object (`Array`, `Variable`, `Vector`) of numbers, strings
+    *      or booleans. In the case where the values are booleans, the length of the
+    *      object must match `ncol`.
+    *    - A predicate of the form `pred(colName, j)`, which returns true for
+    *      those columns that are to be used.
+    * - `rows` can be:
+    *    - A single number. In this case a single row is used.
     *    - The boolean `true`, indicating all rows should be used.
-    * If given two single values, returns the corresponding single value at the i-th row/j-th column.
-    * Otherwise the function returns a dataset that contains copies of the appropriate entries.
-    * Called with no arguments, the function returns an array of arrays representing the columns.
+    *    - An `Array`, `Variable` or `Vector` of numbers or booleans (similar to `cols`)
+    *    - A predicate that has form `pred(row, i)`, where `row` is a function as returned
+    *      by `Dataset#rowFun`, giving access to the `i`-th row.
+    * If given two single values, returns the corresponding single value at the
+    * i-th row/j-th column. Otherwise returns a dataset that contains copies of the
+    * appropriate entries.
     */
    Dataset.prototype.get = function get(rows, cols) {
       var that = this;
@@ -98,7 +119,10 @@ define(function(require) {
       }));
    };
 
-   /** Used to replace a single variable */
+   /**
+    * Replace the variable at column `col` with the variable `val`. The length
+    * of `val` must match `nrow`.
+    */
    Dataset.prototype.setVar = function setVar(col, val) {
       val = Variable.oneDimToVariable(val);
       if (!(val instanceof Variable)) {
@@ -111,13 +135,15 @@ define(function(require) {
    };
 
    /**
-    * See `Dataset#get` for how to use `rows` and `cols` to specify the positions to
-    * be set. You are required to provide all 3 arguments.
+    * Set the values at specified rows and columns, using the values specified by
+    * `vals`. See `Dataset#get` for how to use `rows` and `cols` to specify the
+    * positions to be set. All 3 arguments are required.
     * `vals` is used to specify new values in one of the following ways:
-    *   - a single value (to be used in all specified positions)
-    *   - a `Variable` / `Vector` / array (only works within one row or one column)
-    *   - a `Dataset` / `Matrix` (whose dims match those of the selected region)
-    *   - a function `f(i, j, name)` where `i` is a row number, `j` is a column number,
+    *   - A single value (to be used in all specified positions)
+    *   - A `Variable`, `Vector` or `Array` (only valid when setting within a single
+    *   row or column)
+    *   - A `Dataset` or `Matrix` (whose dims match those of the selected region)
+    *   - A function `f(i, j, name)` where `i` is a row number, `j` is a column number,
     *     and `name` is a column name.
     */
    Dataset.prototype.set = function set(rows, cols, vals) {
@@ -136,11 +162,19 @@ define(function(require) {
    };
 
    /**
-    * Called with one argument: It needs to be a (2-dimensional) matrix/dataset or
-    * a (1-dimensional) array/vector, and then number rows will be inferred.
-    * Called with two arguments: The first is the number of rows to add. The second is
-    * a single value or a function.
-    * function form: `f(i, j, colName)`
+    * Append to the rows of the dataset.
+    * When called with one argument, the argument needs to be 2-dimensional
+    * (`Matrix` or dataset) or 1-dimensional (`Array`, `Variable` or `Vector`) and then
+    * the number rows to be appended will be inferred.
+    * When called with two arguments, `rows` is the number of rows to append, and `values`
+    * is a single value or a function `f(i, j, colName)` to be used for filling the rows.
+    * In the case of a function, the index `i` is relative to the new rows to be added
+    * (so `i` is 1 for the first row to be added, 2 for the second row to be added, etc.).
+    *
+    *     // dSet assumed to be a 2x3 dataset
+    *     dSet.appendRows([1, 2, 3]) // Add a single row at row index 3
+    *     dSet.appendRows(dSet)      // Add duplicates of the 3 rows
+    *     dSet.appendRows(2, function(i, j) { return i + j }); // Adds rows [2,3,4], [3,4,5]
     */
    Dataset.prototype.appendRows = function appendRows(rows, values) {
       var oldnrow;
@@ -170,16 +204,18 @@ define(function(require) {
    };
 
    /**
-    * If called with only one argument, arg will interpreted as `values`.
-    * If `names` is present (single string, or one-dimensional collection), it will
-    *  be used to provide names for the new columns.
-    * `values` needs to be one of the following:
-    *  - a (2-dimensional) matrix/dataset
-    *  - a (1-dimensional) array/vector/variable
-    *  - a List of columns (in some reasonable form) to be appended. Corresponding
-    *    names will be copied over. In this case, the provided list will be fed into
-    *    the dataset constructor in order to deduce the new variables to be appended.
-    *  - a function `f(i)` for computing the values in the new column
+    * Append to the columns of the dataset.
+    * If called with two arguments, then the first argument is the names for the
+    * new columns. If called with only one argument, names will be generated
+    * automatically.
+    *
+    * The `values` argument needs to be one of the following:
+    *  - A 2-dimensional object (`Matrix` or `Dataset`).
+    *  - A 1-dimensional object (`Array`, `Vector` or `Variable`).
+    *  - A `List` of columns to be appended. Corresponding names will be copied over.
+    *    In this case, the provided list will be fed into the dataset constructor in
+    *    order to deduce the new variables to be appended.
+    *  - A function `f(i)` for computing the values in the new column.
     */
    Dataset.prototype.appendCols = function appendCols(names, values) {
       var that = this;
@@ -209,14 +245,19 @@ define(function(require) {
       return sanitizeNames(that);
    };
 
-   /** Given predicate pred(row, i) return the corresponding variable of row numbers */
+   /**
+    * Given a predicate `pred(row, i)`, return a `Variable` of the row numbers of the
+    * rows for which the predicate is `true`.
+    */
    Dataset.prototype.which = function which(pred) {
       return new Variable(getRows(pred, this));
    };
 
    /**
-    * Rows is single number or one-dimensional, or a predicate function f(row, i)
-    * to select rows to delete
+    * Delete the specified rows from the dataset. `rows` may be:
+    * - A single number.
+    * - A 1-dimensional object.
+    * - A predicate function `f(row, i)`.
     */
    Dataset.prototype.deleteRows = function deleteRows(rows) {
       var that = this;
@@ -230,7 +271,9 @@ define(function(require) {
    };
 
    /**
-    * `cols` may be: Single number or string, array/variable/vector thereof
+    * Delete the specified columns from the dataset. `cols` may be:
+    * - A single number or string name.
+    * - A 1-dimensional object of single numbers or string names.
     */
    Dataset.prototype.deleteCols = function deleteCols(cols) {
       var del;
@@ -245,13 +288,15 @@ define(function(require) {
       return this;
    };
 
-   /** Clone the dataset */
+   /**
+    * Clone the dataset.
+    */
    Dataset.prototype.clone = function clone() {
       return new Dataset(this);
    };
 
    /**
-    * Return an array of arrays representing the columns.
+    * Return an array of arrays representing the columns of the dataset.
     */
    Dataset.prototype.toArray = function toArray() {
       return this.values.slice(1).map(function(val) {
