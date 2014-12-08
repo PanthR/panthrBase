@@ -8,10 +8,11 @@ return function(loader) {
 
    loader.addModule('fun', {});
 
-   /** Return a function g(x) whose graph is piecewise linear with vertices
-    * specified by the pairs created by the vectors/arrays/variables `xs`, `ys`
+   /**
+    * Return a function g(x) whose graph is piecewise linear with vertices
+    * specified by the pairs created by the vectors/arrays/variables `xs`, `ys`.
     * The `xs` will be assumed to be in increasing order.
-    * The value for `x` outside the range of `xs` is unspecified.
+    * The result of `g(x)` for `x` outside the range of `xs` is unspecified.
     *
     * Example: `fun.interpolate([1, 3, 4], [0, 1, 2])` has as graph the line segments
     * joining `(1, 0)` to `(3, 1)` and then to `(4, 2)`.
