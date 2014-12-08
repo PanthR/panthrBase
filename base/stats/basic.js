@@ -10,18 +10,18 @@ return function(loader) {
    List     = loader.getClass('List');
 
    /**
-    * Return the sum of the values.
-    * `skipMissing` defaults to false.  If `skipMissing` is false and
-    * `this` has missing values, result is null.
+    * Return the sum of the values of the variable.
+    * `skipMissing` defaults to `false`.  If `skipMissing` is `false` and
+    * the variable has missing values, return `utils.missing`.
     */
    loader.addInstanceMethod('Variable', 'sum', function sum(skipMissing) {
       return this.asScalar().reduce(utils.op.add, 0, skipMissing);
    });
 
    /**
-    * Return the mean of the values.
-    * `skipMissing` defaults to false.  If `skipMissing` is false and
-    * `this` has missing values, result is null.
+    * Return the mean of the values of the variable.
+    * `skipMissing` defaults to `false`.  If `skipMissing` is `false` and
+    * the variable has missing values, return `utils.missing`.
     */
    loader.addInstanceMethod('Variable', 'mean', function mean(skipMissing) {
      var v;  // the variable whose mean we will return
@@ -29,6 +29,11 @@ return function(loader) {
      return utils.singleMissing(v.sum() / v.length());
    });
 
+   /**
+    * Return the variance of the values of the variable.
+    * `skipMissing` defaults to `false`.  If `skipMissing` is `false` and
+    * the variable has missing values, return `utils.missing`.
+    */
    loader.addInstanceMethod('Variable', 'var', function variance(skipMissing) {
       var res, K;
       res = this.reduce(function(acc, val) {
@@ -44,59 +49,67 @@ return function(loader) {
       );
    });
 
+   /**
+    * Return the standard deviation of the values of the variable.
+    * `skipMissing` defaults to `false`.  If `skipMissing` is `false` and
+    * the variable has missing values, return `utils.missing`.
+    */
    loader.addInstanceMethod('Variable', 'sd', function sd(skipMissing) {
       return utils.singleMissing(Math.sqrt(this.var(skipMissing)));
    });
 
    /**
-    * Return the minimum of the values.
-    * `skipMissing` defaults to false.  If `skipMissing` is false and
-    * `this` has missing values, result is missing.
+    * Return the minimum of the values of the variable.
+    * `skipMissing` defaults to `false`.  If `skipMissing` is `false` and
+    * the variable has missing values, return `utils.missing`.
     */
    loader.addInstanceMethod('Variable', 'min', function min(skipMissing) {
       return this.asScalar().reduce(utils.op.min2, Infinity, skipMissing);
    });
 
    /**
-    * Return the maximum of the values.
-    * `skipMissing` defaults to false.  If `skipMissing` is false and
-    * `this` has missing values, result is missing.
+    * Return the maximum of the values of the variable.
+    * `skipMissing` defaults to `false`.  If `skipMissing` is `false` and
+    * the variable has missing values, return `utils.missing`.
     */
    loader.addInstanceMethod('Variable', 'max', function max(skipMissing) {
       return this.asScalar().reduce(utils.op.max2, -Infinity, skipMissing);
    });
 
    /**
-    * Return the permutation that sorts the elements in the variable according
-    * to the order specified by `desc`.
-    * - If `desc` is a boolean, then `false` indicates ascending order, `true`
+    * Return a `Variable` representing the permutation that sorts the values of the
+    * original variable according to the order specified by `desc`.
+    * - If `desc` is a boolean value, then `false` indicates ascending order, `true`
     * indicates descending order.
     * - If `desc` is a function `f(a, b)`, then it is interpreted as the comparator
     * for sorting, and must return `-1` if `a` precedes `b`, `0` if `a` and `b` are "equal"
     * in order, and `1` if `b` precedes `a`.
-    * - If `desc` is omitted, it defaults to `false`.
+    * - If `desc` is omitted, it defaults to `false` (ascending order).
     */
    loader.addInstanceMethod('Variable', 'order', function order(desc) {
       return Variable.scalar(this.toVector().order(desc));
    });
 
    /**
-    * Return a new variable with the values sorted in the order specified by `desc`.
-    * See `Variable.order`.
+    * Return a new `Variable` with the values sorted in the order specified by `desc`.
+    * See `Variable#order`.
     */
    loader.addInstanceMethod('Variable', 'sort', function sort(desc) {
       return this.select(this.toVector().order(desc).toArray());
    });
 
    /**
-    * Return the requested quantiles for the values of `this`.
-    * `probs` can be a single number or array/Vector/Variable, and is
-    * used to specify the desired quantiles.  Each value in `probs`
-    * should be in the range [0, 1].  If a value in `probs` is missing
-    * then the corresponding quantile will be recorded as missing.
-    * `skipMissing` defaults to false.  If `skipMissing` is false and
-    * `this` has missing values, an error is thrown.
-    * The quantile results are returned in a 'named' scalar variable.
+    * Return a 'named' scalar variable of the requested quantiles for the values
+    * of the variable.
+    *
+    * `probs` can be a single number or a one-dimensional object (`Array`,
+    * `Vector` or `Variable`) and is used to specify the desired quantiles.
+    * Each value in `probs` should be in the range [0, 1].  If a value in `probs`
+    * is 'utils.isMissing' then the corresponding quantile will be recorded as
+    * `utils.missing`.
+    *
+    * `skipMissing` defaults to `false`.  If `skipMissing` is `false` and the variable
+    * has missing values, an error is thrown.
     */
    loader.addInstanceMethod('Variable', 'quantile',
    function quantile(probs, skipMissing) {
@@ -127,18 +140,30 @@ return function(loader) {
       return Variable.scalar(quantiles).names(names);
    });
 
+   /**
+    * Return the median of the values of the variable.
+    * `skipMissing` defaults to `false`.  If `skipMissing` is `false` and
+    * the variable has missing values, return `utils.missing`.
+    */
    loader.addInstanceMethod('Variable', 'median', function median(skipMissing) {
       return this.hasMissing() && skipMissing !== true ? utils.missing
          : this.quantile(0.5, true).get(1);
    });
 
+   /**
+    * Return a 'named' scalar variable of the five-number of the values of the variable.
+    * `skipMissing` defaults to `false`.  If `skipMissing` is `false` and
+    * the variable has missing values, return `utils.missing`.
+    */
    loader.addInstanceMethod('Variable', 'fiveNum', function fiveNum(skipMissing) {
       return this.quantile([0, 0.25, 0.5, 0.75, 1], skipMissing)
          .names(['Min', 'Q1', 'Median', 'Q3', 'Max']);
    });
 
    /**
-    * Frequency tables. Converts the variable to factor first.
+    * Return a frequency table for the variable, in the form of a 'named' scalar
+    * variable.  The variable is treated as a factor variable in order to
+    * accumulate the frequencies.
     */
    loader.addInstanceMethod('Variable', 'table', function table() {
       var factor, freqs, missing, names;
@@ -158,10 +183,13 @@ return function(loader) {
    });
 
    /**
-    * Returns a `List` holding the center, the scale, and a variable for a rescaled
-    * version of this variable, retaining the names (if any).
-    * `center` specifies the translation and `scale` specifies the scaling factor.
-    * Must be called with 2 arguments.
+    * Rescale the variable based on the provided `center` and `scale`.
+    * Return a `List` holding three items:
+    *  - `center`
+    *  - `scale`
+    *  - `values` (a `Variable` holding the rescaled values).
+    *
+    * Must be called with two arguments.
     */
    loader.addInstanceMethod('Variable', 'scale', function scale(center, scale) {
       return new List({
@@ -172,19 +200,21 @@ return function(loader) {
    });
 
    /**
-    * Returns a `List` holding the mean, the standard deviation, and a variable
-    * for the z-scores (retaining the original names).
-    * Missing values are preserved, but ignored in the computation.
+    * Return the standardized values using `Variable#rescale` where `center` is the
+    * mean of the variable and `scale` is the standard deviation.
+    *
+    * Missing values are preserved, but are ignored in the computation.
     */
    loader.addInstanceMethod('Variable', 'zscore', function zscore() {
       return this.scale(this.mean(true), this.sd(true));
    });
 
    /**
-    * Returns the Pearson correlation coefficient between two variables, `xs` and `ys`.
-    * By default, uses all values.  If `skipMissing` is not set to true and missing
-    * values exist, result will be missing.  The two variables need to have the same
-    * (positive) length.
+    * Return the Pearson correlation coefficient between two variables, `xs` and `ys`.
+    * By default, uses all the values of both variables.  If `skipMissing` is not set
+    * to `true` and missing values exist, return `utils.missing`.
+    *
+    * The two variables must have the same length.
     */
    loader.addModuleMethod('stats', 'correlate', function correlate(xs, ys, skipMissing) {
       var M, MTM, V, validIndices; // V is vector [sumX, sumY]
