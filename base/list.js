@@ -14,20 +14,17 @@ define(function(require) {
    Variable = require('./variable');
 
    /**
-    * Lists are essentially objects that can be accessed by array indexing as well.
-    * One can remove a "property" from a list, which results in the other properties
-    * shifting place.
+    * A list is a collection of Javascript entities that can be accessed by index
+    * or by name. One can remove an item from a list, which results in the other
+    * items shifting place. One can also insert at the end of a list, or alter the
+    * contents of the list.
     *
     * Indexing starts at 1.
     *
-    * List Properties:
-    * - Array of values.
-    * - Object that holds names as keys and array indices as values.
-    *
-    * To create a list:
-    * - object
-    * - array of unnamed values
-    * - with no argument, create empty list
+    * We can create a list by providing:
+    * - an object containing the items to be placed in the list along with their names
+    * - an array of items to be placed in the list, without names
+    * - no arguments, resulting in an empty list
     */
    function List(values) {
       if (!(this instanceof List)) { return new List(values); }
@@ -47,11 +44,26 @@ define(function(require) {
 
    /* eslint-disable complexity */
    /**
-    * this.names();
-    * this.names(i);
-    * this.names(i, newName);  // newName is a string or null (or evals to missing)
-    * this.names(newNames);    // Array or Variable of strings/nulls
-    * this.names(null);        // resets names
+    * Get or set the item names.
+    *
+    * - When called with no arguments, return a string `Variable` of all the names,
+    * with `utils.missing` in place of any missing names. If no names exist,
+    * returns `utils.missing`.
+    * - When called with a single numeric argument `i`, return the name at the
+    * given index.
+    * - When called with a single array or `Variable` argument, set the names of the
+    * list using the array/variable's elements.
+    * - When called with a single `null` or `utils.missing` argument, set the names
+    * to `utils.missing`.
+    * - When called with two arguments `i`, `newName`, set the name of the `i`-th item
+    * to `newName`.
+    *
+    *     var l = new List({ a: [1, 2], b: 3 });
+    *     l.names();           // Variable(['a', 'b'])
+    *     l.names(2);          // 'b'
+    *     l.names(2, 'c');     // `l` is now { a: [1,2], c: 3 }
+    *     l.names(['d', 'e']); // `l` is now { d: [1,2], e: 3 }
+    *     l.names(null);       // `l` now has no names
     */
    List.prototype.names = function names(i, newNames) {
       if (arguments.length === 0) {
@@ -76,14 +88,19 @@ define(function(require) {
    };
    /* eslint-enable */
 
+   /**
+    * Return the length of the list (number of items)
+    */
    List.prototype.length = function length() {
       return this.values.length - 1;
    };
 
    /**
-    * Given a name, returns the index of the corresponding column
+    * Given a name, return the index of the item with that name
     * or utils.missing if there isn't one.
-    * Can also handle a number, or an array of mixed values
+    * You may also instead pass a single number, or an array of names
+    * and numbers, in which case an array of indices is returned.
+    * Mostly meant as an internal method.
     */
    List.prototype.getIndexOf = function getIndexOf(name) {
       var names;
@@ -95,11 +112,13 @@ define(function(require) {
       }
       return Array.isArray(name) ? name.map(tester) : tester(name);
    };
+
    /**
-    * i can be:
-    * - index
-    * - string name
-    * - null/missing (return the array of values)
+    * Return a list item by index. The index `i` can be:
+    * - a positive number
+    * - a string name
+    * - `null` or `utils.missing`; in this case, an array of all the items
+    * is returned.
     */
    List.prototype.get = function get(i) {
       if (utils.isMissing(i)) { return this.values.slice(1); }
@@ -107,15 +126,18 @@ define(function(require) {
    };
 
    /**
-    * i can be:
-    * - index:  If i > length of list, create new item at index i and fill the
-    *           gap with missing
-    * - string (name):  If i is not already a name in the list, append new item
-    *                   with name `i`.  Else, update existing item with new value.
-    * - object of name-value pairs (update existing, append new)
-    * - array of values (append new)
-    * val can be any sort of thing.
-    * omit `val` if `i` is an object or array.
+    * Called with two arguments `i`, `val`. Set the list item at a given index `i`.
+    * `i` can be:
+    * - a positive number. If `i` is greater than the length of the list,
+    * create a new item at index `i` and fill the resulting gap with `utils.missing`.
+    * - a string name:  If the name `i` is not already a name in the list, append a
+    * new item with name `i`. Otherwise, update the existing item with the new value.
+    * - an object of name-value pairs, causing a series of updates or appends, one for
+    * each pair.
+    * - an array of values, causing a series of appends of these (unnamed) items.
+    *
+    * `val` can be any Javascript entity. If `i` is an object or array, then `val` is
+    * omitted.
     */
    List.prototype.set = function set(i, val) {
       if (utils.isMissing(i)) { return this; }
@@ -135,9 +157,10 @@ define(function(require) {
       return this;
    };
 
-   // for setting exactly one value
-   // `i` is a positive int or a name string
-   // val is a thing
+   /**
+    * Internal method used to set one item value. Requires two arguments,
+    * an integer or string name `i` and a value `val`.
+    */
    List.prototype._set = function _set(i, val) {
       var name;
       if (utils.isMissing(i)) { return this; }
@@ -158,7 +181,7 @@ define(function(require) {
    };
 
    /**
-    * Delete the item in the `i` position (i integer or string)
+    * Delete the item at index/name `i`. `i` may be a positive integer or string name.
     */
    List.prototype.delete = function _delete(i) {
     if (utils.isMissing(i)) { return this; }
@@ -171,9 +194,8 @@ define(function(require) {
    };
 
    /**
-   * Takes a function `f(val, i, name)` and applies it to each value in this
-   * list.  For any values with no associated name, `name` will be supplied as
-   * `undefined`.
+   * Apply the function `f(val, i, name)` to each item in the list.  For any
+   * items with no associated name, `name` will be `utils.missing`.
    */
    List.prototype.each = function each(f) {
       var i;
@@ -184,9 +206,13 @@ define(function(require) {
    };
 
    /**
-    * Takes a function `f(acc, val, i, name)` and accumulates a return value.
+    * Apply the function `f(acc, val, i, name)` to each item in the list,
+    * accumulating the result to be returned.
+    *
     * For any values with no associated name, `name` will be supplied as
-    * `undefined`.
+    * `utils.missing`.
+    *
+    * Similar to Javascript's `Array.prototype.reduce`.
     */
    List.prototype.reduce = function reduce(f, initial) {
       var i, acc;
@@ -198,9 +224,9 @@ define(function(require) {
    };
 
    /**
-    * Takes a function `f(val, i, name)` and applies it to each value in this
-    * list to create a new list.  For any values with no associated name,
-    * `name` will be supplied as `undefined`.
+    * Create a new list from the results of applying the function `f(val, i, name)`
+    * to the items of the original list. For any values with no associated name,
+    * `name` will be supplied as `utils.missing`.
     */
    List.prototype.map = function map(f) {
       var arr;
@@ -214,27 +240,29 @@ define(function(require) {
    };
 
    /**
-    * Clones a list. Calls clone on any top-level values in the list that have
-    * a clone method.
+    * Clone the list. This method will attempt to make a deep clone by calling `clone`
+    * on any top-level items in the list that have a clone method.
     */
    List.prototype.clone = function clone() {
       return this.map(function(val) { return val.clone ? val.clone() : val; });
    };
 
    /**
-    * Returns a new Variable without changing this List.
-    * Works for values which are among the following (mixed ok):
+    * Return a `Variable` by concatenating the values from the list's items.
+    * Works with items of any of the following types:
     * - single value
-    * - array
-    * - Vector
-    * - Variable
-    * - List
-    * Names are generated for the new Variable.  The general idea is
-    * to preserve any names in this list and/or in the values of this
-    * list in some reasonble way, wherever they exist.
-    * - If variable with names, and list entry also named, join the names
-    * - If variable with names, and list entry not named, use variable name
-    * - If variable without names, and list entry named, provide lname.1, ...
+    * - Array, `Vector`, `Variable`
+    * - `List`
+    *
+    * Names are generated for the new Variable base on the items' names in the list
+    * as well as their names (if any) as PanthR objects. The idea is to preserve any
+    * names in the list and/or in the values of the list in some reasonable way,
+    * wherever they exist.
+    * - If the item is a variable with names, and it is a named list item, join the names
+    * - If the item is a variable with names, and it is an unnamed list item,
+    * use the variable names
+    * - If the item is a variable without names, and it is a named list item, provide
+    * names of the form `itemName.1, itemName.2, ...`
     */
    List.prototype.toVariable = function toVariable() {
       var resolvedEntries;
@@ -253,11 +281,15 @@ define(function(require) {
    };
 
    /**
-    * Unnests a number of levels out of a nested list, starting at the
-    * top level. This operation changes the list in _in place_.
-    * `levels` is the number of levels it will attempt to unnest.
+    * Unnest a number of levels out of a nested list, starting at the
+    * top level. `levels` is the number of levels it will attempt to unnest.
     * Level 0 indicates no change. Default is 1.
-    * Level Infinity indicates complete unnesting.
+    * Level `Infinity` indicates complete unnesting.
+    *
+    * This method will only attempt to resolve nesting formed via `List` constructs,
+    * and will not recurse into Javascript Objects or Arrays.
+    *
+    * BEWARE: This operation changes the list(s) _in place_.
     */
    List.prototype.unnest = function unnest(levels) {
       var i;
