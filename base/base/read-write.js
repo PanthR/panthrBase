@@ -1,7 +1,7 @@
 (function(define) {'use strict';
 define(function(require) {
 
-// Module that contains methods for reading and writing datasets and variables
+// Module that contains methods for reading and writing datasets and variables.
 return function(loader) {
    var Variable, List, Dataset, reString, regexp, quoteUnescape, utils, writeDefaults;
 
@@ -46,27 +46,37 @@ return function(loader) {
    });
 
    /**
-    * Reads values from a "string" into a variable. `mode` will be inferred if not specified.
+    * Read values from a string (e.g., text file) into a `Variable`.
     *
-    * `Variable#read` breaks the string at any sequence of newlines, spaces
-    * commas and semicolons.
-    * - If the resulting token starts with a double quote,
-    * then it must end with a double-quote and its contents are interpreted as follows:
+    * `Variable#read` makes a sequence of tokens by breaking the string at any sequence
+    * of newlines, spaces, commas and semicolons.
+    * - If a token starts with a double quote, then it must also end with a
+    * double-quote, and its contents are interpreted as follows:
     *    - Consecutive double-quotes (`""`) are interpreted as a double-quote (`"`).
     *    - Escaped (backslashed) characters (`\c`) are interpreted as the character (`c`).
     *    - No unescaped un-doubled double-quotes are allowed in the term.
-    * - Analogous conditions for a term starting with a single quote (`'`).
+    * - Analogous conditions apply for a term starting with a single quote (`'`).
     * - If the token does not start with a quote, then it is interpreted literally.
     *
-    * If the mode is not specified, it will be inferred as 'scalar' or 'factor' depending
-    * on whether the "terms" can be interpreted as numbers.
+    * If the mode is not specified, it will be inferred as `scalar` if all the tokens
+    * can be interpreted as numbers, or as `factor` otherwise.
     */
    loader.addClassMethod('Variable', 'read', function read(vals, mode) {
       return makeVariable(tokenize(regexp.variableTerm, vals, cleanMatch), mode);
    });
 
-   // Dataset read
-   // assumes no \n within strings
+   /**
+    * Read a dataset from a string `vals` which is the contents of a delimited file.
+    *
+    * Quote-escaping rules are similar to `Variable#read`.
+    *
+    * `options` is an object that can include:
+    *   - `sep`: A character or string specifying the separator. If not provided, an attempt
+    *   to infer the separator will be made. Typical separators include `','`, `';'`, `'\t'`,
+    *   and `' '`. In this last case, any sequence of whitespace, including tabs, will be
+    *   treated as a single separator.
+    *   - `header`: A boolean value specifying whether headers are included. Defaults to `false`.
+    */
    loader.addClassMethod('Dataset', 'read', function read(vals, options) {
       var terms, headings;
       options = options || {};
@@ -91,13 +101,15 @@ return function(loader) {
    });
 
    /**
-    * Write dataset to a string.
-    * Options is an object that can include:
-    *   - sep: Character/string to use as separator. Defaults to `,`.
-    *   - header: Boolean whether to include headers or not. Defaults to `true`.
-    *   - quote: Boolean whether to quote string values/names. Defaults to `false`.
-    *   - qescape: Boolean whether to escape embedded quotes via a backslash. Defaults
-    * to false, meaning escape via an extra double quote
+    * Write the dataset to a string.
+    *
+    * `options` is an object that can include:
+    *   - `sep`: A character or string to use as separator. Defaults to `','`.
+    *   - `header`: A boolean value specifying whether to include headers. Defaults to `true`.
+    *   - `quote`: A boolean value specifying whether to quote string values/names. Defaults
+    *      to `false`.
+    *   - `qescape`: A boolean value specifying whether to escape embedded quotes via a
+    *      backslash. Defaults to `false`, meaning escape via an extra double-quote.
     */
    loader.addInstanceMethod('Dataset', 'write', function write(options) {
       var i, rows, row, cols;
@@ -120,18 +132,21 @@ return function(loader) {
    });
 
    /**
-    * Write variable to a string.
-    * Options is an object that can include:
-    *   - sep: Character/string to use as separator. Defaults to `,`.
-    *   - quote: Boolean whether to quote string values/names. Defaults to `false`.
-    *   - qescape: Boolean whether to escape embedded quotes via a backslash. Defaults
-    * to false, meaning escape via an extra double quote
+    * Write the variable to a string.
+    *
+    * `options` is an object that can include:
+    *   - `sep`: A character or string to use as separator. Defaults to `','`.
+    *   - `quote`: A boolean value specifying whether to quote string values/names. Defaults
+    *      to `false`.
+    *   - `qescape`: A boolean value specifying whether to escape embedded quotes via a
+    *      backslash. Defaults to `false`, meaning escape via an extra double-quote.
     */
    loader.addInstanceMethod('Variable', 'write', function write(options) {
       options = utils.mixin({}, options, writeDefaults);
       return prepareVar(this, options).join(options.sep);
    });
 
+   // helper methods
    function quote(options) {
       var replacements;
       replacements = {
