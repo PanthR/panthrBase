@@ -8,17 +8,15 @@ return function(loader) {
    List     = loader.getClass('List');
 
    /**
-    * Splits a `Dataset` into a `List` of sub-datasets, based on a set of
-    * subsets of the rows.  `select` can be
-    *  - a `List` whose elements are one-dimensional collections of row indices
-    *  - a factor `Variable` of the appropriate length.  Any rows with the same
-    *  value label will be grouped together.
-    *  used to select groups of rows
-    *  - a function `f(row, i)`.  Any rows with the same function value will be grouped
+    * Split a `Dataset` into a `List` of sub-datasets, based on the specified
+    * subsets of the rows.  `select` can be:
+    *  - A `List` whose elements are one-dimensional collections of row indices
+    *  - A factor `Variable` of length `nrow`.  Rows with the same corresponding
+    *  factor value will be grouped together.
+    *  - A function `f(row, i)`.  Rows with the same function value will be grouped
     *  together.
     *
-    * If an empty group of rows is created by `select`, it will generate a `Dataset` with
-    * zero rows.
+    * If an empty group of rows is created by `select`, it will generate an empty `Dataset`.
     */
    loader.addInstanceMethod('Dataset', 'split', function split(select) {
       var that = this;
@@ -31,7 +29,12 @@ return function(loader) {
       return select.map(function(val) { return that.get(val, true); });
    });
 
-   /** Creates a `List` of arrays of indices corresponding to the value labels. */
+   /**
+    * Return a `List` of arrays of indices corresponding to the distribution
+    * of the factor variable.
+    *
+    *     Variable.factor(['a','a','b']).which(); // { a: [1, 2], b: [3] }
+    */
    loader.addInstanceMethod('Variable.FactorVar', 'which', function which() {
       var arr, levels;
       levels = this.levels();
