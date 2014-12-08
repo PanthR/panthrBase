@@ -7,11 +7,19 @@
 define(function(require) {
 
    /**
-    * A collection of utilities used by panthrBase
+    * A collection of utilities used by panthrBase.
+    * Contains methods for:
+    *   - handling missing values,
+    *   - standard arithmetic operations,
+    *   - equality tests,
+    *   - number formatting.
     */
    var utils = {};
 
-   /** Mixes into the first object the key-value pairs from the other objects. Shallow copy */
+   /**
+    * Mixes into the first object the key-value pairs from the other objects.
+    * Shallow copy.
+    */
    utils.mixin = function(target) {
       var rest = [].slice.call(arguments, 1);
       rest.forEach(function(o) {
@@ -24,66 +32,71 @@ define(function(require) {
       return target;
    };
 
-   /** Value to be used for missing */
+   /** Value to be used for all missing values. */
    utils.missing = NaN;
 
-   /** Returns true iff `val` is undefined, null, or NaN. **/
+   /** Return true if `val` is `undefined`, `null`, or `NaN`. **/
    utils.isMissing = function isMissing(val) {
       /* eslint-disable no-self-compare */
       return val == null || val !== val;
       /* eslint-enable */
    };
 
+   /** Return true if `val` is not `undefined`, `null`, or `NaN`. **/
    utils.isNotMissing = function isNotMissing(val) {
       /* eslint-disable no-self-compare */
       return val != null && val === val;
       /* eslint-enable */
    };
 
-   /** For an array, returns whether the array has any "missing values" in it. */
+   /** For an array, return whether the array has any missing values in it. */
    utils.hasMissing = function hasMissing(arr) {
       return arr.some(utils.isMissing);
    };
 
+   /** Return `val` if it is non-missing; otherwise return `utils.missing`. */
    utils.singleMissing = function singleMissing(val) {
-      return utils.isMissing(val) ? NaN : val;
+      return utils.isMissing(val) ? utils.missing : val;
    };
 
-   /* Returns a new function `g` such that: `g(any missing)` is `null`, and `g(val)` is either `f(val)`
-    * or `null` if `f(val)` would be "isMissing". */
+   /**
+    * Return a new function `g` such that `g(any missing)` is `utils.missing`,
+    * and `g(val)` is either `f(val)` or `utils.missing`, depending on whether
+    * `f(val)` is a missing value.
+    */
    utils.makePreserveMissing = function makePreserveMissing(f) {
       return function(val) {
-         return utils.isMissing(val) ? NaN :
+         return utils.isMissing(val) ? utils.missing :
                utils.singleMissing(f.apply(null, [].slice.call(arguments)));
       };
    };
 
-   /** Return true if all entries in the array are missing */
+   /** Return true if all entries in the array are missing. */
    utils.allMissing = function allMissing(arr) {
      return arr.every(utils.isMissing);
    };
 
-   /** If `val` is a missing value, return `deflt`, else return `val` */
+   /** If `val` is a missing value, return `deflt`, else return `val`. */
    utils.getDefault = function getDefault(val, deflt) {
      return utils.isMissing(val) ? deflt : val;
    };
 
    /**
-    * if `val` is a missing value, return it. Otherwise return the result of
-    * applying `f` to `val`.
+    * If `val` is a missing value, return `utils.missing`. Otherwise return `f(val)`.
     */
    utils.optionMap = function optionMap(val, f) {
      return utils.isMissing(val) ? utils.missing : f(val);
    };
 
+   /** Test for equality that respects missing values. */
    utils.equal = function equal(a, b) {
       return utils.isMissing(a) ? utils.isMissing(b)
                                 : utils.isNotMissing(b) && a === b;
    };
 
    /**
-    * Checks for array element equality where NaN is considered equal to NaN. Does not
-    * recurse.
+    * Test for array element equality that respects missing values.
+    * Makes a shallow comparison.
     */
    utils.areEqualArrays = function areEqualArrays(A, B) {
       var i;
@@ -94,6 +107,7 @@ define(function(require) {
       return true;
    };
 
+   /* "Reverse lookup" for an array. */
    utils.arrayToObject = function arrayToObject(arr) {
       var obj;
       obj = {};
@@ -101,11 +115,16 @@ define(function(require) {
       return obj;
    };
 
-   // test if v is one of some list of types (an array)
+   /**
+    * Test if `v` is of one of the listed `types` (an array of strings).
+    */
    utils.isOfType = function isOfType(v, types) {
       return types.some(function(t) { return v instanceof t; });
    };
 
+   /**
+    * Create an array of sequential values. Similar options to `Variable.seq`.
+    */
    utils.seq = function seq(from, to, step) {
       var arr = [];
       if (arguments.length === 1) { to = from; from = 1; }
@@ -143,16 +162,15 @@ define(function(require) {
    utils.op.max2 = function max2(a, b) { return Math.max(a, b); };
 
    /**
-    * Take a user-provided option description `s` and a list of
-    * allowable option settings.  Return the first element of the list
-    * that has the string `s` as its initial substring.  Return `null`
-    * if no such match is found.
+    * Take a user-provided option description `s` (a string) and an array `optList`
+    * of allowable option settings.  Return the first element of the array that
+    * has `s` as its initial substring.  Return `null` if no such match is found.
     *
-    * If `s` is empty or `null` / undefined, return the default setting `def`.
+    * If `s` is empty, `null` or `undefined`, return the default setting `deflt`.
     */
-   utils.getOption = function getOption(s, optList, def) {
+   utils.getOption = function getOption(s, optList, deflt) {
       var i;
-      if (s == null || s === '') { return def; }
+      if (s == null || s === '') { return deflt; }
       s = s.toLowerCase();
       for (i = 0; i < optList.length; i += 1) {
          if (optList[i].toLowerCase().indexOf(s) === 0) { return optList[i]; }
@@ -160,6 +178,7 @@ define(function(require) {
       return null;
    };
 
+   /** An object containing formatting functions for numbers. */
    utils.format = {
       scientific: function(decimals) {
          return function(x) { return x.toExponential(decimals); };

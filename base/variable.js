@@ -119,8 +119,8 @@ define(function(require) {
    };
 
    /**
-    * Construct a variable from the function `f(i)`, using arguments
-    * i = from .. to
+    * Create a new variable with values `f(from), f(from+1), ..., f(to)`.
+    * The `options` parameter is passed to the `Variable` constructor.
     */
    Variable.tabulate = function tabulate(f, from, to, options) {
       var arr, i;
@@ -133,11 +133,19 @@ define(function(require) {
 
    /**
     * Construct a scalar variable from an arithmetic sequence.
-    * `step` defaults to 1 or -1 if omitted.
-    * `from` defaults to 1 (`to` is positive in this case)
-    * seq(5.1, 6.1, .5) would have values [5.1, 5.6, 6.1]
-    * seq(5, 7.5) would have values [5, 6, 7]
-    * `options` parameter is an optional options object
+    * Can be called as:
+    * - `seq(to[, options])` where `from` equals 1
+    * - `seq(from, to[, options])` where `step` equals -1 or +1
+    * - `seq(from, to, step[, options])`
+    * `step` must have the same sign as `to - from`.
+    * `options` parameter is an optional options object that is passed to the
+    * `Variable` constructor
+    *
+    *     seq(5)            // [1, 2, 3, 4, 5]
+    *     seq(5, 7.5)       // [5, 6, 7]
+    *     seq(4, 1.2)       // [4, 3, 2]
+    *     seq(5.1, 6.1, .5) // [5.1, 5.6, 6.1]
+    *     seq(4, 1.2, -2)   // [4, 2]
     */
    Variable.seq = function seq(from, to, step, options) {
       var args, v;
@@ -150,7 +158,12 @@ define(function(require) {
    };
 
    /**
-    * Takes 0 or more variables as arguments and concatenates them.
+    * Concatenate the inputs into a single variable. All inputs must be variables,
+    * and a common mode will be inferred based on the variable modes:
+    *   - Variables of mode ordinal are treated as having mode factor
+    *   - If one of the variables is of mode string, the result is of mode string
+    *   - If all variables have the same mode, the result is of that mode
+    *   - Otherwise the result is of mode scalar
     */
    Variable.concat = function concat(vars) {
       var commonMode, converters, names;
@@ -180,34 +193,62 @@ define(function(require) {
                              .names(names);
    };
 
-   // val can be a single number / missing / array / Variable / Vector
-   // returns an array with missing values normalized to utils.missing
+   // The following methods used to simplify other methods
+
+   /**
+    * Convert `val` into a (Javascript) array, with "missing values"
+    * replaced by `utils.missing`. The argument may be:
+    *   - A single number
+    *   - A value that is `utils.isMissing`  (`NaN`, `null`, `undefined`)
+    *   - An array, `Vector` or `Variable`
+    */
    Variable.ensureArray = function ensureArray(val) {
       val = Variable.oneDimToArray(val);
       if (!Array.isArray(val)) { val = [val]; }
       return normalizeValue(val);
    };
 
-   // The following methods used to simplify other methods
-   /** Convert Variable/Vector to Array. Preserve otherwise. */
+   /**
+    * Convert `val` into an array, if `val` is "one-dimensional"
+    * (`Variable`, `Vector`, array).
+    * Non-one-dimensional arguments are returned unchanged.
+    */
    Variable.oneDimToArray = function oneDimToArray(val) {
       return utils.isOfType(val, [Variable, Vector]) ? val.get() : val;
    };
-   /** Convert Variable/Array to Vector. Preserve otherwise. */
+   /**
+    * Convert `val` into a `Vector`, if `val` is "one-dimensional"
+    * (`Variable`, `Vector`, array).
+    * Non-one-dimensional arguments are returned unchanged.
+    */
    Variable.oneDimToVector = function oneDimToVector(val) {
       if (val instanceof Variable) { val = val.get(); }
       return Array.isArray(val) ? new Vector(val) : val;
    };
-   /** Convert Vector/Array to Variable. Preserve otherwise. */
+   /**
+    * Convert `val` into a `Variable`, if `val` is "one-dimensional"
+    * (`Variable`, `Vector`, array).
+    * Non-one-dimensional arguments are returned unchanged.
+    */
    Variable.oneDimToVariable = function oneDimToVariable(val) {
       if (Array.isArray(val)) { return new Variable(val); }
       return val instanceof Vector ? new Variable(val) : val;
    };
 
+   /**
+    * Convert the variable to scalar mode.
+    *
+    * For factor variables, the codes are used.
+    */
    Variable.prototype.asScalar = function asScalar() {
       return new Variable(this.values);
    };
 
+   /**
+    * Convert the variable to string mode.
+    *
+    * For factor variables, the values are used.
+    */
    Variable.prototype.asString = function asString() {
       return Variable.string(this.values.map(utils.makePreserveMissing(
          function(val) { return '' + val; }
@@ -215,18 +256,20 @@ define(function(require) {
    };
 
    /**
-    * Return the values(s) indicated by `i`.  (Keep in mind that Variables
-    * are indexed from 1.)
+    * Return the values(s) indicated by `i`.  (Keep in mind that variables
+    * are indexed starting from 1.)
     *
-    * - if `i` is a positive integer, return the value at index `i`.
-    * - if `i` is an array of non-negative integers, return an array of
+    * - If `i` is a positive integer, return the value at index `i`.
+    * - If `i` is an array of non-negative integers, return an array of
     * the corresponding values (skipping indices of value 0).
-    * - if `i` is an array of non-positive integers, return an array of
-    * all values of `this` except those indicated by the negative indices.
-    * - if `i` is a scalar variable, it is converted into an array.
-    * - if `i` is a logical variable, it must have the same length as `this`, in
-    * which case, return an array of the values which correspond to the `true`
-    * values in `i`.
+    * - If `i` is an array of non-positive integers, return an array of
+    * all values of the variable except those indicated by the negative indices.
+    * - If `i` is a scalar variable, it is converted into an array.
+    * - If `i` is a logical variable, it must have the same length as the original
+    * variable, in which case, return an array of the values which correspond to the
+    * `true` values in `i`.
+    *
+    * For factor variables, the values are returned, not the codes.
     */
    Variable.prototype.get = function get(i) {
       return this._get(normalizeIndices(this, i));
@@ -236,32 +279,45 @@ define(function(require) {
       return utils.isMissing(i) ? this.values.toArray() : this.values.get(i);
    };
 
+   /**
+    * Return a Javascript array of the values of the variable.
+    *
+    * For factor variables, the values are returned.
+    */
    Variable.prototype.toArray = function toArray() {
       return this.get();
    };
 
+   /**
+    * Return a `Vector` of the values of the variable.
+    *
+    * For factor variables, the codes are returned.
+    */
    Variable.prototype.toVector = function toVector() {
       return this.values;
    };
+
    /**
      * Set the entries indicated by `i` to the values indicated by `val`.
-     * (Keep in mind that Variables are indexed from 1.)
+     * (Keep in mind that Variables are indexed starting from 1.)
      *
      * `val` may be a single value, or a `Variable` or array of values of
      * the appropriate length.
      *
-     * - if `i` is a positive integer, set the value at index `i`.
-     * - if `i` is an array of non-negative integers, set
+     * - If `i` is a positive integer, set the value at index `i`.
+     * - If `i` is an array of non-negative integers, set
      * the corresponding values (skipping indices of value 0).
-     * - if `i` is an array of non-positive integers, set
-     * all values of `this` except those indicated by the negative indices.
-     * - if `i` is a scalar variable, it is converted into an array.
-     * - if `i` is a logical variable, it must have the same length as `this`, in
-     * which case, we set the values which correspond to the `true` values in `i`.
+     * - If `i` is an array of non-positive integers, set
+     * all values of the variable except those indicated by the negative indices.
+     * - If `i` is a scalar variable, it is converted into an array.
+     * - If `i` is a logical variable, it must have the same length as the original
+     * variable, in which case set the values which correspond to the `true`
+     * values in `i`.
      *
      * In all cases, if there are any null/undefined/NaN indices, an error occurs.
      *
-     * To set values out of bounds, you are required to call resize first.
+     * This method cannot be used to append values. To set values out of bounds,
+     * call `Variable#resize` first.
      */
    Variable.prototype.set = function set(i, val) {
       i = normalizeIndices(this, i);
@@ -279,10 +335,21 @@ define(function(require) {
       return this;
    };
 
+   /** Return the length of the variable. */
    Variable.prototype.length = function length() {
       return this.values.length;
    };
 
+   /**
+    * Called with no arguments, return the names associated with the variable's
+    * entries.
+    *
+    * Otherwise `newNames` is passed to the `Variable` constructor to create a
+    * string variable of the new names.
+    *
+    * If the provided names do not have the correct length, `Variable#resize`
+    * will be used on the names.
+    */
    Variable.prototype.names = function names(newNames) {
       var len = this.length();
       if (arguments.length === 0) { return this._names; }
@@ -293,24 +360,23 @@ define(function(require) {
    };
 
    /**
-    * Clone `this`, creating a new variable with the same values,
-    * mode, and label.
+    * Clone the variable, creating a new variable with the same values and mode.
     */
    Variable.prototype.clone = function clone() {
       return this.select(Vector.seq(this.length()));
    };
 
    /**
-    * Return a new variable with all the same settings as `this`
+    * Return a new variable with all the same settings as the original
     * but with values taken from `newValues`, which may be
-    * a `Vector`, or an array.
+    * a `Vector` or an array.
     *
-    * Note: If `this` is a factor or an ordinal variable, it is
+    * Note: If the variable is a factor or an ordinal variable, it is
     * assumed that the new values are codes which are in agreement
-    * with the system of codes for `this`.
+    * with the codes used by the variable.
     *
-    * If newNames is provided (variable/vector/array), it is used as the
-    * names for the new variable.
+    * If `newNames` is provided, it must be one-dimensional (`Variable`, `Vector`
+    * or array) and it is used to set names for the new variable.
     */
    Variable.prototype.reproduce = function reproduce(newValues, newNames) {
       var newVar;
@@ -321,8 +387,8 @@ define(function(require) {
    };
 
    /**
-    * From a given array or a Vector of indices, create a new Variable based off the
-    * values of `this` corresponding to those indices.
+    * From a given array or `Vector` of indices, create a new variable based on the
+    * values of the original variable corresponding to those indices.
     */
    Variable.prototype.select = function select(indices) {
       indices = Variable.oneDimToArray(indices);
@@ -332,15 +398,15 @@ define(function(require) {
    };
 
    /**
-    * Repeats a variable according to a pattern to make a new variable.
-    * `times` can be used in several different ways, depending on its type.
-    * - `times` is a number: repeat the variable that many times
-    * - `times` is a variable or array: use the values as frequencies for
-    * corresponding entries.  `times` must have same length as `this`
-    * - `times` is an object with a `length` property: cycle the values in `this`
-    * until length `length` is filled
-    * - `times` is an object with an `each` property: repeats each value that
-    * many times (before going on to the next value)
+    * Repeat a variable according to a pattern to make a new variable.
+    * `times` can be used in several different ways, depending on its type:
+    * - If `times` is a number, repeat the variable that many times.
+    * - If `times` is a variable or array, use the values as frequencies for
+    * corresponding entries. `times` must have same length as the original variable.
+    * - If `times` is an object with a `length` property, cycle the values in the
+    * variable up to the specified length.
+    * - If `times` is an object with an `each` property, repeat each value that
+    * many times (before going on to the next value).
     */
    Variable.prototype.rep = function rep(times) {
       if (times instanceof Variable) { times = times.values; }
@@ -348,9 +414,9 @@ define(function(require) {
    };
 
    /**
-    * Resize `this`.
-    * If fill is `true`, recycle the values to reach the new length, `length`.
-    * If fill is `false` or omitted, the new values will be `NaN`.
+    * Resize the variable.
+    * If fill is `true`, recycle the values to reach the specified length.
+    * If fill is `false` or omitted, the new values will be filled with `utils.missing`.
     */
    Variable.prototype.resize = function resize(length, fill) {
       if (fill !== true) { fill = function(i) { return utils.missing; }; }
@@ -372,7 +438,11 @@ define(function(require) {
 
    // Iterators
 
-   // skipMissing defaults to false
+   /**
+    * Apply the function `f(val, i)` to each value in the variable.
+    * If `skipMissing` is set to `true` (default is `false`), it will only apply
+    * `f` to non-missing values (as determined by `utils.isNotMissing`).
+    */
    Variable.prototype.each = function each(f, skipMissing) {
       var f2;
       f2 = skipMissing !== true ? f :
@@ -380,7 +450,14 @@ define(function(require) {
       this.values.each(f2);
    };
 
-   // skipMissing defaults to false
+   /**
+    * Apply the function `f(acc, val, i)` to each value in the variable, accumulating
+    * the result to be returned.
+    * If `skipMissing` is set to `true` (default is `false`), it will only apply
+    * `f` to non-missing values (as determined by `utils.isNotMissing`).
+    *
+    * Similar to Javascript's `Array.prototype.reduce`.
+    */
    Variable.prototype.reduce = function reduce(f, initial, skipMissing) {
       var f2;
       f2 = skipMissing !== true ? f :
@@ -388,9 +465,11 @@ define(function(require) {
       return utils.singleMissing(this.values.reduce(f2, initial));
    };
 
-   /** skipMissing defaults to false. If it is true, missings automatically map to missing
-    * and f is only applied to non-missing values. `mode` must be a string if specified.
-    * Both skipMissing and mode are optional.
+   /**
+    * Create a new variable from the results of applying the function `f(val, i)` to the
+    * values of the original variable. If `skipMissing` is set to `true` (default is `false`),
+    * then missing values will be preserved, and `f` will only be applied to the non-missing
+    * values. The optional parameter `mode` specifies the desired mode of the new variable.
     */
    Variable.prototype.map = function map(f, skipMissing, mode) {
       var f2;
@@ -404,8 +483,8 @@ define(function(require) {
    };
 
    /**
-    * Given a predicate, `pred(val, i)`, return a `Variable` of the values from `this`
-    * which pass the predicate.
+    * Given a predicate `pred(val, i)`, return a new variable containing
+    * those values from the original variable that satisfy the predicate.
     */
    Variable.prototype.filter = function filter(pred) {
       var arr;
@@ -417,24 +496,35 @@ define(function(require) {
    };
 
    /**
-    * Return a `Variable` of the non-null values from `this`.
+    * Return a new variable containing the non-missing values from the original
+    * variable as indicated by `utils.isNotMissing`.
     */
    Variable.prototype.nonMissing = function nonMissing() {
       return this.filter(utils.isNotMissing);
    };
 
+   /**
+    * Return a boolean indicating whether the variable contains missing values
+    * as indicated by `utils.isMissing`.
+    */
    Variable.prototype.hasMissing = function hasMissing() {
       return utils.hasMissing(this.toArray());
    };
 
+   /**
+    * Return a boolean indicating whether the variable has the same length
+    * as the variable `other`.
+    */
    Variable.prototype.sameLength = function sameLength(other) {
       return this.values.length === other.values.length;
    };
 
    // Helper methods
 
-   /* Helper method to standardize values. All nan/missing/undefined turns to null.
-    * `val` can be an array or a single value or a function of `i`. */
+   /*
+    * Helper method to standardize values. All nan/missing/undefined turns to null.
+    * `val` can be an array or a single value or a function of `i`.
+    */
    function normalizeValue(val, ind) {
       var i;
       if (typeof val === 'function') {
@@ -445,7 +535,8 @@ define(function(require) {
       return val;
    }
 
-   /* `v` is the Variable that these indices are meant to index.
+   /*
+    * `v` is the Variable that these indices are meant to index.
     * `ind` can be: single value, array, vector, logical variable,
     * scalar variable (other variables turned scalar). Returns the indices as an array of
     * the positions we are interested in, with `NaN`s in for any "missing" indices.
