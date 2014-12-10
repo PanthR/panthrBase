@@ -6,9 +6,17 @@ return function(loader) {
    var utils;
    utils    = require('../utils');
 
-   // build array of arrays of objects (array of rows to be displayed)
-   // each object has a `name` and a `value` property.
-   // `ncol` is a positive integer
+   /**
+    * Lay out the variable's values in rows. Return an array with one entry for
+    * each row. Each row entry is an array of objects representing the values.
+    * The objects have the form `{ index: i, value: val, name: s }`.
+    *
+    * The parameter `ncol` specifies how many entries will be in each row (default
+    * is 1). If the variable length is not an exact multiple of `ncol`, then the
+    * last row will contain fewer entries.
+    *
+    * Mostly intended as an internal method for use in `Variable#toHTML`.
+    */
    loader.addInstanceMethod('Variable', 'layOut', function layOut(ncol) {
       var rows, currentRow, i, stringVar, names;
       names = this.names();
@@ -33,17 +41,23 @@ return function(loader) {
       return rows;
    });
 
-   // Returns a string (an HTML expression) for displaying the variable.
-   // `options` can include:
-   //  - ncol: a positive integer, defaults to 1
-   //  - withNames: a boolean value, defaults to false
-   //  - value: an object with properties `tag` and `class` for specifying the
-   //           html tag and the class attribute.
-   //  - name:  an object... same as value
-   //  - row:   an object... same as value
-   //  All three of these objects are optional, and their individual parts are
-   //  optional as well.  Defaults to `<td>` or `<tr>` for the tag and to
-   //  `var-value`, `var-name`, `var-row` for the class.
+   /**
+    * Return an HTML string displaying the variable. Each value is wrapped in
+    * a tag, and that tag may be preceded by a tagged name. Each row is further
+    * wrapped in a tag. The default format can be used as the contents of a
+    * `table` tag.
+    *
+    * The `options` object may include:
+    *  - `ncol`: The number of "columns" (default is 1).
+    *  - `withNames`: Whether names should be included (default is `false`).
+    *  - `value`: An object with properties `tag` and `class` for specifying the
+    *      html tag and the class attributes to be used for the values.
+    *  - `name`:  A similar object to be used for the names.
+    *  - `row`:   A similar object to be used for wrapping around each row.
+    *  All three of these objects are optional, and their individual parts are
+    *  optional as well. The defaults are `<td>` or `<tr>` for the tag and
+    *  `var-value`, `var-name` or `var-row` for the class.
+    */
    loader.addInstanceMethod('Variable', 'toHTML', function toHTML(options) {
       var arr, defaults, makeRow;
       function wrap(params) {
@@ -84,13 +98,14 @@ return function(loader) {
       }).map(wrap(options.row)).join('\n');
    });
 
-   // Returns a string variable for displaying the given variable with
-   // specified numerical formatting. `options` is an object and may
-   // include the following properties:
-   //  - type:  has a string value 'scientific' or 'fixed
-   //  - decimals:  indicates fixed number of decimal digits to the right of
-   //       the decimal point; has a non-negative integer value; defaults to 4 in
-   //       the case of scientific notation, and to 2 otherwise
+   /**
+    * Return a string variable for displaying the given variable with a
+    * specified numerical formatting. The `options` object may include:
+    *  - `type`: A string value, either 'scientific' or 'fixed'.
+    *  - `decimals`: The number of decimal digits to be displayed to the right of
+    * the decimal point. Defaults to 4 for 'scientific' format and to 2 for 'fixed'
+    * format.
+    */
    loader.addInstanceMethod('Variable', 'format', function format(options) {
       var v, maxDigits;
       v = this.asScalar().names(this.names());
