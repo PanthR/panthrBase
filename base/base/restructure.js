@@ -2,10 +2,12 @@
 define(function(require) {
 
 return function(loader) {
-   var Variable, List;
+   var Variable, List, utils;
 
    Variable = loader.getClass('Variable');
    List     = loader.getClass('List');
+
+   utils    = require('../utils');
 
    /**
     * Split a `Dataset` into a `List` of sub-datasets, based on the specified
@@ -25,21 +27,36 @@ return function(loader) {
             return select(that.rowFun(i), i);
          }, 1, that.nrow, {mode: 'factor'});
       }
-      if (select instanceof Variable) { select = select.which(); }
+      if (select instanceof Variable) { select = select.groupIndices(); }
       return select.map(function(val) { return that.get(val, true); });
    });
 
    /**
     * Return a `List` of arrays of indices corresponding to the distribution
-    * of the factor variable.
+    * of the factor variable. If the variable is not factor or ordinal, it will
+    * be treated as a factor variable.
     *
-    *     Variable.factor(['a','a','b']).which(); // { a: [1, 2], b: [3] }
+    * If missing values are present, an extra (unnamed) list item to hold those
+    * indices will be created at the end of the list.
+    *
+    *     Variable.factor(['a','a','b']).groupIndices(); // { a: [1, 2], b: [3] }
     */
-   loader.addInstanceMethod('Variable.FactorVar', 'which', function which() {
-      var arr, levels;
-      levels = this.levels();
+   loader.addInstanceMethod('Variable', 'groupIndices', function groupIndices() {
+      var that = this, arr, levels;
+      if (that.mode !== 'factor' && that.mode !== 'ordinal') {
+         that = Variable.factor(that.toArray());
+      }
+      levels = that.levels();
       arr = new Variable.Vector(function() { return []; }, levels.length).get();
-      this.values.each(function(c, i) { arr[c - 1].push(i); });
+      that.values.each(function(c, i) {
+         if (utils.isMissing(c)) {
+            arr[levels.length] = arr[levels.length] || [];
+            arr[levels.length].push(i);
+         } else {
+            arr[c - 1].push(i);
+         }
+      });
+      if (arr.length !== levels.length) { levels.push(utils.missing); }
       return new List(arr).names(levels);
    });
 };

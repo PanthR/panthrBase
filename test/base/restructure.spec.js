@@ -64,3 +64,42 @@ describe('split', function() {
       expect(L1.get('C').get(true, 3).toArray()).to.deep.equal(['C']);
    });
 });
+describe('groupIndices', function() {
+   it('groups same-valued indices for factor variables', function() {
+      var v1 = Variable.factor(['a', 'b', 'a', 'a', 'b']);
+      var l1 = v1.groupIndices();
+      expect(l1.names().toArray()).to.deep.equal(['a', 'b']);
+      expect(l1.get('a')).to.deep.equal([1, 3, 4]);
+      expect(l1.get('b')).to.deep.equal([2, 5]);
+   });
+   it('also works with scalar variables', function() {
+      var v1 = Variable.string([1.2, 0.1, 1.2, 1.2, 0.1]);
+      var l1 = v1.groupIndices();
+      expect(l1.names().toArray()).to.deep.equal(['0.1', '1.2']);
+      expect(l1.get('1.2')).to.deep.equal([1, 3, 4]);
+      expect(l1.get('0.1')).to.deep.equal([2, 5]);
+   });
+   it('also works with string variables', function() {
+      var v1 = Variable.string(['a', 'b', 'a', 'a', 'b']);
+      var l1 = v1.groupIndices();
+      expect(l1.names().toArray()).to.deep.equal(['a', 'b']);
+      expect(l1.get('a')).to.deep.equal([1, 3, 4]);
+      expect(l1.get('b')).to.deep.equal([2, 5]);
+   });
+   it('also works with logical variables', function() {
+      var v1 = Variable.string(['false', 'true', 'false', 'false', 'true']);
+      var l1 = v1.groupIndices();
+      expect(l1.names().toArray()).to.deep.equal(['false', 'true']);
+      expect(l1.get('false')).to.deep.equal([1, 3, 4]);
+      expect(l1.get('true')).to.deep.equal([2, 5]);
+   });
+   it('also works with string variables', function() {
+      var v1 = Variable.string(['a', 'b', null, 'a', 'a', 'b']);
+      var l1 = v1.groupIndices();
+      expect(utils.areEqualArrays(l1.names().toArray(),
+                                  ['a', 'b', utils.missing])).to.be.true;
+      expect(l1.get('a')).to.deep.equal([1, 4, 5]);
+      expect(l1.get('b')).to.deep.equal([2, 6]);
+      expect(l1.get(3)).to.deep.equal([3]);
+   });
+});
