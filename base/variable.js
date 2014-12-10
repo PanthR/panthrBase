@@ -85,27 +85,38 @@ define(function(require) {
       Variable.modes[key].prototype.mode = function mode() { return key; };
    });
 
-   /** Convenience constructor. */
+   /**
+    * Create a scalar variable. `label` is optional.
+    */
    Variable.scalar = function scalar(values, label) {
       return new Variable(values, { mode: 'scalar', label: label });
    };
 
-   /** Convenience constructor. */
+   /**
+    * Create a logical variable. `label` is optional.
+    */
    Variable.logical = function logical(values, label) {
       return new Variable(values, { mode: 'logical', label: label });
    };
 
-   /** Convenience constructor. */
+   /**
+    * Create a string variable. `label` is optional.
+    */
    Variable.string = function string(values, label) {
       return new Variable(values, { mode: 'string', label: label });
    };
 
-   /** Convenience constructor. */
+   /**
+    * Create a factor variable. `label` is optional.
+    */
    Variable.factor = function factor(values, label) {
       return new Variable(values, { mode: 'factor', label: label });
    };
 
-   /** Convenience constructor. `levels` or `label` could be omitted. */
+   /**
+    * Create an ordinal variable. `levels` and `label` are optional. If `levels`
+    * is omitted, an alphabetical ordering of the levels will be used.
+    */
    Variable.ordinal = function ordinal(values, levels, label) {
       return new Variable(values,
          Array.isArray(levels) ? { mode: 'ordinal', levels: levels, label: label }
@@ -113,7 +124,9 @@ define(function(require) {
       );
    };
 
-   /** Convenience constructor. */
+   /**
+    * Create a date-time variable. `label` is optional.
+    */
    Variable.dateTime = function dateTime(values, label) {
       return new Variable(values, { mode: 'date', label: label });
    };
