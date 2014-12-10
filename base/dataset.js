@@ -222,7 +222,7 @@ define(function(require) {
       var len = that.length();
       if (arguments.length === 1) {
          values = names;
-         names = utils.missing; // TO DO supply default names
+         names = utils.missing;
       }
       if (typeof values === 'function') {
          values = new Variable(values, {length: that.nrow});
