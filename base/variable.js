@@ -379,6 +379,38 @@ define(function(require) {
       return this.select(Vector.seq(this.length()));
    };
 
+   /*
+    * Only usable for factor and ordinal variables.
+    *
+    * When called with no argument, return an array of the levels.
+    * When called with an array `arr` as the argument, use `arr`
+    * to set the levels.
+    *
+    * Duplicates in `arr` are ignored.
+    */
+   Variable.prototype.levels = function levels(arr) {
+      throw new Error('"levels" only applicable for factor/ordinal variables');
+   };
+
+   /*
+    * Only usable for factor and ordinal variables.
+    *
+    * Given an array of string `values`, return the
+    * corresponding array of numerical codes.
+    */
+   Variable.prototype.getCodes = function getCodes(values) {
+      throw new Error('"getCodes" only applicable for factor/ordinal variables');
+   };
+
+   /*
+    * Only usable for logical variables.
+    *
+    * Return a scalar variable of the indices that correspond to `true` entries.
+    */
+   Variable.prototype.which = function which() {
+      throw new Error('"which" only applicable for logical variables');
+   };
+
    /**
     * Return a new variable with all the same settings as the original
     * but with values taken from `newValues`, which may be
