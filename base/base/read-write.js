@@ -66,6 +66,21 @@ return function(loader) {
    });
 
    /**
+    * Write the variable to a string.
+    *
+    * `options` is an object that can include:
+    *   - `sep`: A character or string to use as separator. Defaults to `','`.
+    *   - `quote`: A boolean value specifying whether to quote string values/names. Defaults
+    *      to `false`.
+    *   - `qescape`: A boolean value specifying whether to escape embedded quotes via a
+    *      backslash. Defaults to `false`, meaning escape via an extra double-quote.
+    */
+   loader.addInstanceMethod('Variable', 'write', function write(options) {
+      options = utils.mixin({}, options, writeDefaults);
+      return prepareVar(this, options).join(options.sep);
+   });
+
+   /**
     * Read a dataset from a string `vals` which is the contents of a delimited file.
     *
     * Quote-escaping rules are similar to `Variable#read`.
@@ -129,21 +144,6 @@ return function(loader) {
          rows.push(row.join(options.sep));
       });
       return rows.join('\n') + '\n';
-   });
-
-   /**
-    * Write the variable to a string.
-    *
-    * `options` is an object that can include:
-    *   - `sep`: A character or string to use as separator. Defaults to `','`.
-    *   - `quote`: A boolean value specifying whether to quote string values/names. Defaults
-    *      to `false`.
-    *   - `qescape`: A boolean value specifying whether to escape embedded quotes via a
-    *      backslash. Defaults to `false`, meaning escape via an extra double-quote.
-    */
-   loader.addInstanceMethod('Variable', 'write', function write(options) {
-      options = utils.mixin({}, options, writeDefaults);
-      return prepareVar(this, options).join(options.sep);
    });
 
    // helper methods
