@@ -1,7 +1,7 @@
 (function(define) {'use strict';
 define(function(require) {
 
-   /**
+   /*
     * Base structures for PanthR
     * @module Base
     * @version 0.0.1
@@ -13,16 +13,16 @@ define(function(require) {
 return function(loader) {
    var Base;
 
-   /**
+   /*
     * TODO
     */
    Base = {};
 
-   /** Implementation of "statistics" variables. */
+   /* Implementation of "statistics" variables. */
    Base.Variable = require('./base/variable');
-   /** Implementation of basic list structure. */
+   /* Implementation of basic list structure. */
    Base.List = require('./base/list');
-   /** Implementation of "statistics" datasets. */
+   /* Implementation of "statistics" datasets. */
    Base.Dataset = require('./base/dataset');
 
    loader.addClass('Variable', Base.Variable);
