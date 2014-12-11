@@ -1,19 +1,18 @@
 /**
  * Utility library for panthrBase.
+ *
+ * A collection of utilities used by panthrBase.
+ * Contains methods for:
+ *   - handling missing values,
+ *   - standard arithmetic operations,
+ *   - equality tests,
+ *   - number formatting.
  * @module utils
  * @author Haris Skiadas <skiadas@hanover.edu>, Barb Wahl <wahl@hanover.edu>
  */
 (function(define) {'use strict';
 define(function(require) {
 
-   /**
-    * A collection of utilities used by panthrBase.
-    * Contains methods for:
-    *   - handling missing values,
-    *   - standard arithmetic operations,
-    *   - equality tests,
-    *   - number formatting.
-    */
    var utils = {};
 
    /**
