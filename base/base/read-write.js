@@ -149,14 +149,15 @@ return function(loader) {
    // helper methods
    function quote(options) {
       var replacements;
+      // Underscores added because of @name bug in JsDoc
       replacements = {
-         '\\' : '\\\\',
-         '\t' : '\\t',
-         '\n' : '\\n',
-         '\r' : '\\r'
+         '_\\' : '\\\\',
+         '_\t' : '\\t',
+         '_\n' : '\\n',
+         '_\r' : '\\r'
       };
       return function(str) {
-         str = str.replace(/[\\\t\n\r]/g, function(m) { return replacements[m]; });
+         str = str.replace(/[\\\t\n\r]/g, function(m) { return replacements['_' + m]; });
          if (!options.quote) { return str; }
          return '"' + str.replace(/"/g, options.qescape ? '\\"' : '""') + '"';
       };
@@ -194,7 +195,8 @@ return function(loader) {
    // - spaces (' ')
    function inferSep(terms) {
       var sepCounts, seps;
-      sepCounts = { '\t': [], ',': [], ';': [], ' ': [] };
+      // Underscores added because of @name bug in JsDoc
+      sepCounts = { '_\t': [], '_,': [], '_;': [], '_ ': [] };
       seps = Object.keys(sepCounts);
       terms.forEach(function(term) {
          seps.forEach(function(sep) {
@@ -229,14 +231,15 @@ return function(loader) {
    // for inferring separator type
    function tokenizeDatasetLine(line) {
       var obj;
-      obj = { tokens: [], separators: { '\t': 0, ',': 0, ';': 0, ' ': 0 } };
+      // Underscores added because of @name bug in JsDoc
+      obj = { tokens: [], separators: { '_\t': 0, '_,': 0, '_;': 0, '_ ': 0 } };
       obj.line = line.replace(regexp.datasetTerm, function(m, p1, p2, p3) {
          obj.tokens.push(cleanMatch([m, p1, p2, p3]));
          return obj.tokens.length;
       });
       // scan line and count separators
       (obj.line.match(regexp.datasetSeparators) || []).forEach(function(sep) {
-         obj.separators[sep.length === 1 ? sep : ' '] += 1;
+         obj.separators['_' + (sep.length === 1 ? sep : ' ')] += 1;
       });
       return obj;
    }
@@ -250,11 +253,12 @@ return function(loader) {
             return s ? s : '';
          });
       }
+      // Underscores added because of @name bug in JsDoc
       obj = {
-         '\t': { term: '([^\\t\\n]*)', sep: '\\t', junk: ' *' },
-         ',':  { term: '([^,\\n]*)', sep: ',', junk: '[\\t ]*' },
-         ';':  { term: '([^;\\n]*)', sep: ';', junk: '[\\t ]*' },
-         ' ':  { term: '([^\\s]*)', sep: '[ \\t]+', junk: '' }
+         '_\t': { term: '([^\\t\\n]*)', sep: '\\t', junk: ' *' },
+         '_,':  { term: '([^,\\n]*)', sep: ',', junk: '[\\t ]*' },
+         '_;':  { term: '([^;\\n]*)', sep: ';', junk: '[\\t ]*' },
+         '_ ':  { term: '([^\\s]*)', sep: '[ \\t]+', junk: '' }
       };
       pattern = '(?:' +
                      '"(' + reString.doubleQuoteContent + ')"' + '|' +
