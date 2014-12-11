@@ -1,7 +1,7 @@
 (function(define) {'use strict';
 define(function(require) {
 
-   /**
+   /*
     * Use this as the top-level file for stand-alone testing of Base.
     */
    var Base, loader;
