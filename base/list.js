@@ -3,7 +3,6 @@
  * @module List
  * @author Haris Skiadas <skiadas@hanover.edu>
  * Barb Wahl <wahl@hanover.edu>
- * Bill Altermatt <altermattw@hanover.edu>
  */
 (function(define) {'use strict';
 define(function(require) {

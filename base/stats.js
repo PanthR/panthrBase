@@ -7,7 +7,6 @@ return function(loader) {
     * @module stats
     * @author Haris Skiadas <skiadas@hanover.edu>
     * Barb Wahl <wahl@hanover.edu>
-    * Bill Altermatt <altermattw@hanover.edu>
     */
    loader.addModule('stats', {});
    loader.loadModule(require('./stats/basic'));

@@ -7,7 +7,6 @@ define(function(require) {
     * @version 0.0.1
     * @author Haris Skiadas <skiadas@hanover.edu>
     * Barb Wahl <wahl@hanover.edu>
-    * Bill Altermatt <altermattw@hanover.edu>
     */
 
 return function(loader) {
