@@ -7,7 +7,7 @@ return function(Variable) {
    moment = require('moment');
    utils = require('./../utils');
 
-   /**
+   /*
     * Need to know (or infer) how to read the values.
     * Use options.format to specify input mode.
     * If values are numbers, they're assumed to be millisec.

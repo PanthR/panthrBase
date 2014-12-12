@@ -3,7 +3,7 @@ define(function(require) {
 
 return function(Variable) {
 
-   /**
+   /*
     * Constructs a factor variable with ordered levels.
     * `options.levels` can be an array of the levels, indicating the
     * desired ordering.
