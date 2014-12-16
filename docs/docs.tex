@@ -9,7 +9,8 @@
 \tableofcontents
 
   \section{Variable}
-    \subsection{Variable(values, options)}
+    \subsection*{Variable(values, options)}
+    \addcontentsline{toc}{subsection}{Variable(values, options)}
     Create a new variable. \texttt{values} is one of the following:
 
 
@@ -55,7 +56,8 @@ converted to \texttt{null}.
 If \texttt{values} is a \texttt{Variable} it will simply be cloned (\texttt{options} will be ignored).
 
 
-    \subsection{Variable.concat(vars)}
+    \subsection*{Variable.concat(vars)}
+    \addcontentsline{toc}{subsection}{Variable.concat(vars)}
     Concatenate the inputs into a single variable. All inputs must be variables,
 and a common mode will be inferred based on the variable modes:
 
@@ -72,11 +74,13 @@ and a common mode will be inferred based on the variable modes:
 
 \end{itemize}
 
-    \subsection{Variable.dateTime(values, label)}
+    \subsection*{Variable.dateTime(values, label)}
+    \addcontentsline{toc}{subsection}{Variable.dateTime(values, label)}
     Create a date-time variable. \texttt{label} is optional.
 
 
-    \subsection{Variable.ensureArray(val)}
+    \subsection*{Variable.ensureArray(val)}
+    \addcontentsline{toc}{subsection}{Variable.ensureArray(val)}
     Convert \texttt{val} into a (Javascript) array, with \&quot;missing values\&quot;
 replaced by \texttt{utils.missing}. The argument may be:
 
@@ -91,17 +95,20 @@ replaced by \texttt{utils.missing}. The argument may be:
 
 \end{itemize}
 
-    \subsection{Variable.factor(values, label)}
+    \subsection*{Variable.factor(values, label)}
+    \addcontentsline{toc}{subsection}{Variable.factor(values, label)}
     Create a factor variable. \texttt{label} is optional.
 
 
-    \subsection{Variable.fiveNum(skipMissing)}
+    \subsection*{Variable.fiveNum(skipMissing)}
+    \addcontentsline{toc}{subsection}{Variable.fiveNum(skipMissing)}
     Return a 'named' scalar variable of the five-number of the values of the variable.
 \texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
 the variable has missing values, return \texttt{utils.missing}.
 
 
-    \subsection{Variable.format(options)}
+    \subsection*{Variable.format(options)}
+    \addcontentsline{toc}{subsection}{Variable.format(options)}
     Return a string variable for displaying the given variable with a
 specified numerical formatting. The \texttt{options} object may include:
 
@@ -116,7 +123,8 @@ format.
 
 \end{itemize}
 
-    \subsection{Variable.groupIndices()}
+    \subsection*{Variable.groupIndices()}
+    \addcontentsline{toc}{subsection}{Variable.groupIndices()}
     Return a \texttt{List} of arrays of indices corresponding to the distribution
 of the factor variable. If the variable is not factor or ordinal, it will
 be treated as a factor variable.
@@ -129,7 +137,8 @@ indices will be created at the end of the list.
 \begin{lstlisting}
 \texttt{Variable.factor(['a','a','b']).groupIndices(); // { a: [1, 2], b: [3] }}\end{lstlisting}
 
-    \subsection{Variable.layOut(ncol)}
+    \subsection*{Variable.layOut(ncol)}
+    \addcontentsline{toc}{subsection}{Variable.layOut(ncol)}
     Lay out the variable's values in rows. Return an array with one entry for
 each row. Each row entry is an array of objects representing the values.
 The objects have the form \texttt{{ index: i, value: val, name: s }}.
@@ -143,53 +152,62 @@ last row will contain fewer entries.
 Mostly intended as an internal method for use in \texttt{Variable\#toHTML}.
 
 
-    \subsection{Variable.logical(values, label)}
+    \subsection*{Variable.logical(values, label)}
+    \addcontentsline{toc}{subsection}{Variable.logical(values, label)}
     Create a logical variable. \texttt{label} is optional.
 
 
-    \subsection{Variable.max(skipMissing)}
+    \subsection*{Variable.max(skipMissing)}
+    \addcontentsline{toc}{subsection}{Variable.max(skipMissing)}
     Return the maximum of the values of the variable.
 \texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
 the variable has missing values, return \texttt{utils.missing}.
 
 
-    \subsection{Variable.mean(skipMissing)}
+    \subsection*{Variable.mean(skipMissing)}
+    \addcontentsline{toc}{subsection}{Variable.mean(skipMissing)}
     Return the mean of the values of the variable.
 \texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
 the variable has missing values, return \texttt{utils.missing}.
 
 
-    \subsection{Variable.median(skipMissing)}
+    \subsection*{Variable.median(skipMissing)}
+    \addcontentsline{toc}{subsection}{Variable.median(skipMissing)}
     Return the median of the values of the variable.
 \texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
 the variable has missing values, return \texttt{utils.missing}.
 
 
-    \subsection{Variable.min(skipMissing)}
+    \subsection*{Variable.min(skipMissing)}
+    \addcontentsline{toc}{subsection}{Variable.min(skipMissing)}
     Return the minimum of the values of the variable.
 \texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
 the variable has missing values, return \texttt{utils.missing}.
 
 
-    \subsection{Variable.oneDimToArray(val)}
+    \subsection*{Variable.oneDimToArray(val)}
+    \addcontentsline{toc}{subsection}{Variable.oneDimToArray(val)}
     Convert \texttt{val} into an array, if \texttt{val} is \&quot;one-dimensional\&quot;
 (\texttt{Variable}, \texttt{Vector}, array).
 Non-one-dimensional arguments are returned unchanged.
 
 
-    \subsection{Variable.oneDimToVariable(val)}
+    \subsection*{Variable.oneDimToVariable(val)}
+    \addcontentsline{toc}{subsection}{Variable.oneDimToVariable(val)}
     Convert \texttt{val} into a \texttt{Variable}, if \texttt{val} is \&quot;one-dimensional\&quot;
 (\texttt{Variable}, \texttt{Vector}, array).
 Non-one-dimensional arguments are returned unchanged.
 
 
-    \subsection{Variable.oneDimToVector(val)}
+    \subsection*{Variable.oneDimToVector(val)}
+    \addcontentsline{toc}{subsection}{Variable.oneDimToVector(val)}
     Convert \texttt{val} into a \texttt{Vector}, if \texttt{val} is \&quot;one-dimensional\&quot;
 (\texttt{Variable}, \texttt{Vector}, array).
 Non-one-dimensional arguments are returned unchanged.
 
 
-    \subsection{Variable.order(desc)}
+    \subsection*{Variable.order(desc)}
+    \addcontentsline{toc}{subsection}{Variable.order(desc)}
     Return a \texttt{Variable} representing the permutation that sorts the values of the
 original variable according to the order specified by \texttt{desc}.
 
@@ -207,12 +225,14 @@ in order, and \texttt{1} if \texttt{b} precedes \texttt{a}.
 
 \end{itemize}
 
-    \subsection{Variable.ordinal(values, levels, label)}
+    \subsection*{Variable.ordinal(values, levels, label)}
+    \addcontentsline{toc}{subsection}{Variable.ordinal(values, levels, label)}
     Create an ordinal variable. \texttt{levels} and \texttt{label} are optional. If \texttt{levels}
 is omitted, an alphabetical ordering of the levels will be used.
 
 
-    \subsection{Variable.read(vals, mode)}
+    \subsection*{Variable.read(vals, mode)}
+    \addcontentsline{toc}{subsection}{Variable.read(vals, mode)}
     Read values from a string (e.g., text file) into a \texttt{Variable}.
 
 
@@ -245,11 +265,13 @@ If the mode is not specified, it will be inferred as \texttt{scalar} if all the 
 can be interpreted as numbers, or as \texttt{factor} otherwise.
 
 
-    \subsection{Variable.scalar(values, label)}
+    \subsection*{Variable.scalar(values, label)}
+    \addcontentsline{toc}{subsection}{Variable.scalar(values, label)}
     Create a scalar variable. \texttt{label} is optional.
 
 
-    \subsection{Variable.scale(center, scale)}
+    \subsection*{Variable.scale(center, scale)}
+    \addcontentsline{toc}{subsection}{Variable.scale(center, scale)}
     Rescale the variable based on the provided \texttt{center} and \texttt{scale}.
 Return a \texttt{List} holding three items:
 
@@ -267,13 +289,15 @@ Return a \texttt{List} holding three items:
 Must be called with two arguments.
 
 
-    \subsection{Variable.sd(skipMissing)}
+    \subsection*{Variable.sd(skipMissing)}
+    \addcontentsline{toc}{subsection}{Variable.sd(skipMissing)}
     Return the standard deviation of the values of the variable.
 \texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
 the variable has missing values, return \texttt{utils.missing}.
 
 
-    \subsection{Variable.seq(from, to, step, options)}
+    \subsection*{Variable.seq(from, to, step, options)}
+    \addcontentsline{toc}{subsection}{Variable.seq(from, to, step, options)}
     Construct a scalar variable from an arithmetic sequence.
 Can be called as:
 
@@ -301,33 +325,39 @@ Can be called as:
 
 \end{itemize}
 
-    \subsection{Variable.sort(desc)}
+    \subsection*{Variable.sort(desc)}
+    \addcontentsline{toc}{subsection}{Variable.sort(desc)}
     Return a new \texttt{Variable} with the values sorted in the order specified by \texttt{desc}.
 See \texttt{Variable\#order}.
 
 
-    \subsection{Variable.string(values, label)}
+    \subsection*{Variable.string(values, label)}
+    \addcontentsline{toc}{subsection}{Variable.string(values, label)}
     Create a string variable. \texttt{label} is optional.
 
 
-    \subsection{Variable.sum(skipMissing)}
+    \subsection*{Variable.sum(skipMissing)}
+    \addcontentsline{toc}{subsection}{Variable.sum(skipMissing)}
     Return the sum of the values of the variable.
 \texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
 the variable has missing values, return \texttt{utils.missing}.
 
 
-    \subsection{Variable.table()}
+    \subsection*{Variable.table()}
+    \addcontentsline{toc}{subsection}{Variable.table()}
     Return a frequency table for the variable, in the form of a 'named' scalar
 variable.  The variable is treated as a factor variable in order to
 accumulate the frequencies.
 
 
-    \subsection{Variable.tabulate(f, from, to, options)}
+    \subsection*{Variable.tabulate(f, from, to, options)}
+    \addcontentsline{toc}{subsection}{Variable.tabulate(f, from, to, options)}
     Create a new variable with values \texttt{f(from), f(from+1), ..., f(to)}.
 The \texttt{options} parameter is passed to the \texttt{Variable} constructor.
 
 
-    \subsection{Variable.toHTML(options)}
+    \subsection*{Variable.toHTML(options)}
+    \addcontentsline{toc}{subsection}{Variable.toHTML(options)}
     Return an HTML string displaying the variable. Each value is wrapped in
 a tag, and that tag may be preceded by a tagged name. Each row is further
 wrapped in a tag. The default format can be used as the contents of a
@@ -355,13 +385,15 @@ optional as well. The defaults are \texttt{\&lt;td\&gt;} or \texttt{\&lt;tr\&gt;
 
 \end{itemize}
 
-    \subsection{Variable.var(skipMissing)}
+    \subsection*{Variable.var(skipMissing)}
+    \addcontentsline{toc}{subsection}{Variable.var(skipMissing)}
     Return the variance of the values of the variable.
 \texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
 the variable has missing values, return \texttt{utils.missing}.
 
 
-    \subsection{Variable.write(options)}
+    \subsection*{Variable.write(options)}
+    \addcontentsline{toc}{subsection}{Variable.write(options)}
     Write the variable to a string.
 
 
@@ -380,7 +412,8 @@ the variable has missing values, return \texttt{utils.missing}.
 
 \end{itemize}
 
-    \subsection{Variable.zscore()}
+    \subsection*{Variable.zscore()}
+    \addcontentsline{toc}{subsection}{Variable.zscore()}
     Return the standardized values using \texttt{Variable\#rescale} where \texttt{center} is the
 mean of the variable and \texttt{scale} is the standard deviation.
 
@@ -388,40 +421,47 @@ mean of the variable and \texttt{scale} is the standard deviation.
 Missing values are preserved, but are ignored in the computation.
 
 
-    \subsection{Variable.prototype.asScalar()}
+    \subsection*{Variable.prototype.asScalar()}
+    \addcontentsline{toc}{subsection}{Variable.prototype.asScalar()}
     Convert the variable to scalar mode.
 
 
 For factor variables, the codes are used.
 
 
-    \subsection{Variable.prototype.asString()}
+    \subsection*{Variable.prototype.asString()}
+    \addcontentsline{toc}{subsection}{Variable.prototype.asString()}
     Convert the variable to string mode.
 
 
 For factor variables, the values are used.
 
 
-    \subsection{Variable.prototype.clone()}
+    \subsection*{Variable.prototype.clone()}
+    \addcontentsline{toc}{subsection}{Variable.prototype.clone()}
     Clone the variable, creating a new variable with the same values and mode.
 
 
-    \subsection{Variable.prototype.concat(vars)}
+    \subsection*{Variable.prototype.concat(vars)}
+    \addcontentsline{toc}{subsection}{Variable.prototype.concat(vars)}
     See \texttt{Variable.concat}.
 
 
-    \subsection{Variable.prototype.each(f, skipMissing)}
+    \subsection*{Variable.prototype.each(f, skipMissing)}
+    \addcontentsline{toc}{subsection}{Variable.prototype.each(f, skipMissing)}
     Apply the function \texttt{f(val, i)} to each value in the variable.
 If \texttt{skipMissing} is set to \texttt{true} (default is \texttt{false}), it will only apply
 \texttt{f} to non-missing values (as determined by \texttt{utils.isNotMissing}).
 
 
-    \subsection{Variable.prototype.filter(pred)}
+    \subsection*{Variable.prototype.filter(pred)}
+    \addcontentsline{toc}{subsection}{Variable.prototype.filter(pred)}
     Given a predicate \texttt{pred(val, i)}, return a new variable containing
 those values from the original variable that satisfy the predicate.
 
 
-    \subsection{Variable.prototype.get(i)}
+    \subsection*{Variable.prototype.get(i)}
+    \addcontentsline{toc}{subsection}{Variable.prototype.get(i)}
     Return the values(s) indicated by \texttt{i}.  (Keep in mind that variables
 are indexed starting from 1.)
 
@@ -447,23 +487,27 @@ variable, in which case, return an array of the values which correspond to the
 For factor variables, the values are returned, not the codes.
 
 
-    \subsection{Variable.prototype.hasMissing()}
+    \subsection*{Variable.prototype.hasMissing()}
+    \addcontentsline{toc}{subsection}{Variable.prototype.hasMissing()}
     Return a boolean indicating whether the variable contains missing values
 as indicated by \texttt{utils.isMissing}.
 
 
-    \subsection{Variable.prototype.length()}
+    \subsection*{Variable.prototype.length()}
+    \addcontentsline{toc}{subsection}{Variable.prototype.length()}
     Return the length of the variable.
 
 
-    \subsection{Variable.prototype.map(f, skipMissing, mode)}
+    \subsection*{Variable.prototype.map(f, skipMissing, mode)}
+    \addcontentsline{toc}{subsection}{Variable.prototype.map(f, skipMissing, mode)}
     Create a new variable from the results of applying the function \texttt{f(val, i)} to the
 values of the original variable. If \texttt{skipMissing} is set to \texttt{true} (default is \texttt{false}),
 then missing values will be preserved, and \texttt{f} will only be applied to the non-missing
 values. The optional parameter \texttt{mode} specifies the desired mode of the new variable.
 
 
-    \subsection{Variable.prototype.names(newNames)}
+    \subsection*{Variable.prototype.names(newNames)}
+    \addcontentsline{toc}{subsection}{Variable.prototype.names(newNames)}
     Called with no arguments, return the names associated with the variable's
 entries.
 
@@ -476,12 +520,14 @@ If the provided names do not have the correct length, \texttt{Variable\#resize}
 will be used on the names.
 
 
-    \subsection{Variable.prototype.nonMissing()}
+    \subsection*{Variable.prototype.nonMissing()}
+    \addcontentsline{toc}{subsection}{Variable.prototype.nonMissing()}
     Return a new variable containing the non-missing values from the original
 variable as indicated by \texttt{utils.isNotMissing}.
 
 
-    \subsection{Variable.prototype.reduce(f, initial, skipMissing)}
+    \subsection*{Variable.prototype.reduce(f, initial, skipMissing)}
+    \addcontentsline{toc}{subsection}{Variable.prototype.reduce(f, initial, skipMissing)}
     Apply the function \texttt{f(acc, val, i)} to each value in the variable, accumulating
 the result to be returned.
 If \texttt{skipMissing} is set to \texttt{true} (default is \texttt{false}), it will only apply
@@ -491,7 +537,8 @@ If \texttt{skipMissing} is set to \texttt{true} (default is \texttt{false}), it 
 Similar to Javascript's \texttt{Array.prototype.reduce}.
 
 
-    \subsection{Variable.prototype.rep(times)}
+    \subsection*{Variable.prototype.rep(times)}
+    \addcontentsline{toc}{subsection}{Variable.prototype.rep(times)}
     Repeat a variable according to a pattern to make a new variable.
 \texttt{times} can be used in several different ways, depending on its type:
 
@@ -511,7 +558,8 @@ many times (before going on to the next value).
 
 \end{itemize}
 
-    \subsection{Variable.prototype.reproduce(newValues, newNames)}
+    \subsection*{Variable.prototype.reproduce(newValues, newNames)}
+    \addcontentsline{toc}{subsection}{Variable.prototype.reproduce(newValues, newNames)}
     Return a new variable with all the same settings as the original
 but with values taken from \texttt{newValues}, which may be
 a \texttt{Vector} or an array.
@@ -526,23 +574,27 @@ If \texttt{newNames} is provided, it must be one-dimensional (\texttt{Variable},
 or array) and it is used to set names for the new variable.
 
 
-    \subsection{Variable.prototype.resize(length, fill)}
+    \subsection*{Variable.prototype.resize(length, fill)}
+    \addcontentsline{toc}{subsection}{Variable.prototype.resize(length, fill)}
     Resize the variable.
 If fill is \texttt{true}, recycle the values to reach the specified length.
 If fill is \texttt{false} or omitted, the new values will be filled with \texttt{utils.missing}.
 
 
-    \subsection{Variable.prototype.sameLength(other)}
+    \subsection*{Variable.prototype.sameLength(other)}
+    \addcontentsline{toc}{subsection}{Variable.prototype.sameLength(other)}
     Return a boolean indicating whether the variable has the same length
 as the variable \texttt{other}.
 
 
-    \subsection{Variable.prototype.select(indices)}
+    \subsection*{Variable.prototype.select(indices)}
+    \addcontentsline{toc}{subsection}{Variable.prototype.select(indices)}
     From a given array or \texttt{Vector} of indices, create a new variable based on the
 values of the original variable corresponding to those indices.
 
 
-    \subsection{Variable.prototype.set(i, val)}
+    \subsection*{Variable.prototype.set(i, val)}
+    \addcontentsline{toc}{subsection}{Variable.prototype.set(i, val)}
     Set the entries indicated by \texttt{i} to the values indicated by \texttt{val}.
 (Keep in mind that Variables are indexed starting from 1.)
 
@@ -576,14 +628,16 @@ This method cannot be used to append values. To set values out of bounds,
 call \texttt{Variable\#resize} first.
 
 
-    \subsection{Variable.prototype.toArray()}
+    \subsection*{Variable.prototype.toArray()}
+    \addcontentsline{toc}{subsection}{Variable.prototype.toArray()}
     Return a Javascript array of the values of the variable.
 
 
 For factor variables, the values are returned.
 
 
-    \subsection{Variable.prototype.toVector()}
+    \subsection*{Variable.prototype.toVector()}
+    \addcontentsline{toc}{subsection}{Variable.prototype.toVector()}
     Return a \texttt{Vector} of the values of the variable.
 
 
@@ -591,7 +645,8 @@ For factor variables, the codes are returned.
 
 
   \section{Dataset}
-    \subsection{Dataset(values)}
+    \subsection*{Dataset(values)}
+    \addcontentsline{toc}{subsection}{Dataset(values)}
     Create a dataset out of the provided \texttt{values}. A dataset is a \texttt{List} whose items
 are variables of the same length. Unlike lists, datasets are required to have names
 for all their \&quot;columns\&quot;, and those names are unique.
@@ -620,7 +675,8 @@ Properties:
 
 \end{itemize}
 
-    \subsection{Dataset.read(vals, options)}
+    \subsection*{Dataset.read(vals, options)}
+    \addcontentsline{toc}{subsection}{Dataset.read(vals, options)}
     Read a dataset from a string \texttt{vals} which is the contents of a delimited file.
 
 
@@ -641,7 +697,8 @@ treated as a single separator.
 
 \end{itemize}
 
-    \subsection{Dataset.split(select)}
+    \subsection*{Dataset.split(select)}
+    \addcontentsline{toc}{subsection}{Dataset.split(select)}
     Split a \texttt{Dataset} into a \texttt{List} of sub-datasets, based on the specified
 subsets of the rows.  \texttt{select} can be:
 
@@ -661,7 +718,8 @@ together.
 If an empty group of rows is created by \texttt{select}, it will generate an empty \texttt{Dataset}.
 
 
-    \subsection{Dataset.write(options)}
+    \subsection*{Dataset.write(options)}
+    \addcontentsline{toc}{subsection}{Dataset.write(options)}
     Write the dataset to a string.
 
 
@@ -682,7 +740,8 @@ If an empty group of rows is created by \texttt{select}, it will generate an emp
 
 \end{itemize}
 
-    \subsection{Dataset.prototype.appendCols(names, values)}
+    \subsection*{Dataset.prototype.appendCols(names, values)}
+    \addcontentsline{toc}{subsection}{Dataset.prototype.appendCols(names, values)}
     Append to the columns of the dataset.
 If called with two arguments, then the first argument is the names for the
 new columns. If called with only one argument, names will be generated
@@ -706,7 +765,8 @@ order to deduce the new variables to be appended.
 
 \end{itemize}
 
-    \subsection{Dataset.prototype.appendRows(rows, values)}
+    \subsection*{Dataset.prototype.appendRows(rows, values)}
+    \addcontentsline{toc}{subsection}{Dataset.prototype.appendRows(rows, values)}
     Append to the rows of the dataset.
 When called with one argument, the argument needs to be 2-dimensional
 (\texttt{Matrix} or dataset) or 1-dimensional (\texttt{Array}, \texttt{Variable} or \texttt{Vector}) and then
@@ -723,11 +783,13 @@ dSet.appendRows([1, 2, 3]) // Add a single row at row index 3
 dSet.appendRows(dSet)      // Add duplicates of the 3 rows
 dSet.appendRows(2, function(i, j) { return i + j }); // Adds rows [2,3,4], [3,4,5]}\end{lstlisting}
 
-    \subsection{Dataset.prototype.clone()}
+    \subsection*{Dataset.prototype.clone()}
+    \addcontentsline{toc}{subsection}{Dataset.prototype.clone()}
     Clone the dataset.
 
 
-    \subsection{Dataset.prototype.deleteCols(cols)}
+    \subsection*{Dataset.prototype.deleteCols(cols)}
+    \addcontentsline{toc}{subsection}{Dataset.prototype.deleteCols(cols)}
     Delete the specified columns from the dataset. \texttt{cols} may be:
 
 
@@ -739,7 +801,8 @@ dSet.appendRows(2, function(i, j) { return i + j }); // Adds rows [2,3,4], [3,4,
 
 \end{itemize}
 
-    \subsection{Dataset.prototype.deleteRows(rows)}
+    \subsection*{Dataset.prototype.deleteRows(rows)}
+    \addcontentsline{toc}{subsection}{Dataset.prototype.deleteRows(rows)}
     Delete the specified rows from the dataset. \texttt{rows} may be:
 
 
@@ -753,7 +816,8 @@ dSet.appendRows(2, function(i, j) { return i + j }); // Adds rows [2,3,4], [3,4,
 
 \end{itemize}
 
-    \subsection{Dataset.prototype.get(rows, cols)}
+    \subsection*{Dataset.prototype.get(rows, cols)}
+    \addcontentsline{toc}{subsection}{Dataset.prototype.get(rows, cols)}
     Return a subset of the values in the dataset. This method may be called with
 no arguments, in which case an array of arrays of the columns is returned.
 Otherwise, the method requires two arguments, \texttt{rows} and \texttt{cols}, specifying
@@ -799,16 +863,19 @@ appropriate entries.
 
 \end{itemize}
 
-    \subsection{Dataset.prototype.getVar(col)}
+    \subsection*{Dataset.prototype.getVar(col)}
+    \addcontentsline{toc}{subsection}{Dataset.prototype.getVar(col)}
     Get a single column (variable). \texttt{col} is a positive number or string name.
 
 
-    \subsection{Dataset.prototype.names(i, newNames)}
+    \subsection*{Dataset.prototype.names(i, newNames)}
+    \addcontentsline{toc}{subsection}{Dataset.prototype.names(i, newNames)}
     Get or set the names of the dataset's columns. See \texttt{List\#names} for
 details. This method enforces uniqueness of names.
 
 
-    \subsection{Dataset.prototype.rowFun(i)}
+    \subsection*{Dataset.prototype.rowFun(i)}
+    \addcontentsline{toc}{subsection}{Dataset.prototype.rowFun(i)}
     Given a row index \texttt{i}, return a function \texttt{f(col)} which \&quot;simulates\&quot; row \texttt{i}.
 
 
@@ -816,7 +883,8 @@ details. This method enforces uniqueness of names.
 \texttt{l.rowFun(2)('a') // Returns the second value in column 'a'.
 l.rowFun(2)(2)   // Returns the second value in the second column.}\end{lstlisting}
 
-    \subsection{Dataset.prototype.set(rows, cols, vals)}
+    \subsection*{Dataset.prototype.set(rows, cols, vals)}
+    \addcontentsline{toc}{subsection}{Dataset.prototype.set(rows, cols, vals)}
     Set the values at specified rows and columns, using the values specified by
 \texttt{vals}. See \texttt{Dataset\#get} for how to use \texttt{rows} and \texttt{cols} to specify the
 positions to be set. All 3 arguments are required.
@@ -837,22 +905,26 @@ and \texttt{name} is a column name.
 
 \end{itemize}
 
-    \subsection{Dataset.prototype.setVar(col, val)}
+    \subsection*{Dataset.prototype.setVar(col, val)}
+    \addcontentsline{toc}{subsection}{Dataset.prototype.setVar(col, val)}
     Replace the variable at column \texttt{col} with the variable \texttt{val}. The length
 of \texttt{val} must match \texttt{nrow}.
 
 
-    \subsection{Dataset.prototype.toArray()}
+    \subsection*{Dataset.prototype.toArray()}
+    \addcontentsline{toc}{subsection}{Dataset.prototype.toArray()}
     Return an array of arrays representing the columns of the dataset.
 
 
-    \subsection{Dataset.prototype.which(pred)}
+    \subsection*{Dataset.prototype.which(pred)}
+    \addcontentsline{toc}{subsection}{Dataset.prototype.which(pred)}
     Given a predicate \texttt{pred(row, i)}, return a \texttt{Variable} of the row numbers of the
 rows for which the predicate is \texttt{true}.
 
 
   \section{List}
-    \subsection{List(values)}
+    \subsection*{List(values)}
+    \addcontentsline{toc}{subsection}{List(values)}
     A list is a collection of Javascript entities that can be accessed by index
 or by name. One can remove an item from a list, which results in the other
 items shifting place. One can also insert at the end of a list, or alter the
@@ -875,26 +947,31 @@ We can create a list by providing:
 
 \end{itemize}
 
-    \subsection{List.prototype.\_set(i, val)}
+    \subsection*{List.prototype.\_set(i, val)}
+    \addcontentsline{toc}{subsection}{List.prototype.\_set(i, val)}
     Internal method used to set one item value. Requires two arguments,
 an integer or string name \texttt{i} and a value \texttt{val}.
 
 
-    \subsection{List.prototype.clone()}
+    \subsection*{List.prototype.clone()}
+    \addcontentsline{toc}{subsection}{List.prototype.clone()}
     Clone the list. This method will attempt to make a deep clone by calling \texttt{clone}
 on any top-level items in the list that have a clone method.
 
 
-    \subsection{List.prototype.delete(i)}
+    \subsection*{List.prototype.delete(i)}
+    \addcontentsline{toc}{subsection}{List.prototype.delete(i)}
     Delete the item at index/name \texttt{i}. \texttt{i} may be a positive integer or string name.
 
 
-    \subsection{List.prototype.each(f)}
+    \subsection*{List.prototype.each(f)}
+    \addcontentsline{toc}{subsection}{List.prototype.each(f)}
     Apply the function \texttt{f(val, i, name)} to each item in the list.  For any
 items with no associated name, \texttt{name} will be \texttt{utils.missing}.
 
 
-    \subsection{List.prototype.get(i)}
+    \subsection*{List.prototype.get(i)}
+    \addcontentsline{toc}{subsection}{List.prototype.get(i)}
     Return a list item by index. The index \texttt{i} can be:
 
 
@@ -909,7 +986,8 @@ is returned.
 
 \end{itemize}
 
-    \subsection{List.prototype.getIndexOf(name)}
+    \subsection*{List.prototype.getIndexOf(name)}
+    \addcontentsline{toc}{subsection}{List.prototype.getIndexOf(name)}
     Given a name, return the index of the item with that name
 or utils.missing if there isn't one.
 You may also instead pass a single number, or an array of names
@@ -917,17 +995,20 @@ and numbers, in which case an array of indices is returned.
 Mostly meant as an internal method.
 
 
-    \subsection{List.prototype.length()}
+    \subsection*{List.prototype.length()}
+    \addcontentsline{toc}{subsection}{List.prototype.length()}
     Return the length of the list (number of items)
 
 
-    \subsection{List.prototype.map(f)}
+    \subsection*{List.prototype.map(f)}
+    \addcontentsline{toc}{subsection}{List.prototype.map(f)}
     Create a new list from the results of applying the function \texttt{f(val, i, name)}
 to the items of the original list. For any values with no associated name,
 \texttt{name} will be supplied as \texttt{utils.missing}.
 
 
-    \subsection{List.prototype.names(i, newNames)}
+    \subsection*{List.prototype.names(i, newNames)}
+    \addcontentsline{toc}{subsection}{List.prototype.names(i, newNames)}
     Get or set the item names.
 
 
@@ -962,7 +1043,8 @@ to \texttt{newName}.
 
 \end{itemize}
 
-    \subsection{List.prototype.reduce(f, initial)}
+    \subsection*{List.prototype.reduce(f, initial)}
+    \addcontentsline{toc}{subsection}{List.prototype.reduce(f, initial)}
     Apply the function \texttt{f(acc, val, i, name)} to each item in the list,
 accumulating the result to be returned.
 
@@ -974,7 +1056,8 @@ For any values with no associated name, \texttt{name} will be supplied as
 Similar to Javascript's \texttt{Array.prototype.reduce}.
 
 
-    \subsection{List.prototype.set(i, val)}
+    \subsection*{List.prototype.set(i, val)}
+    \addcontentsline{toc}{subsection}{List.prototype.set(i, val)}
     Called with two arguments \texttt{i}, \texttt{val}. Set the list item at a given index \texttt{i}.
 \texttt{i} can be:
 
@@ -998,7 +1081,8 @@ each pair.
 omitted.
 
 
-    \subsection{List.prototype.toVariable()}
+    \subsection*{List.prototype.toVariable()}
+    \addcontentsline{toc}{subsection}{List.prototype.toVariable()}
     Return a \texttt{Variable} by concatenating the values from the list's items.
 Works with items of any of the following types:
 
@@ -1031,7 +1115,8 @@ names of the form \texttt{itemName.1, itemName.2, ...}
 
 \end{itemize}
 
-    \subsection{List.prototype.unnest(levels)}
+    \subsection*{List.prototype.unnest(levels)}
+    \addcontentsline{toc}{subsection}{List.prototype.unnest(levels)}
     Unnest a number of levels out of a nested list, starting at the
 top level. \texttt{levels} is the number of levels it will attempt to unnest.
 Level 0 indicates no change. Default is 1.
@@ -1046,7 +1131,8 @@ BEWARE: This operation changes the list(s) \emph{in place}.
 
 
   \section{stats}
-    \subsection{stats.correlate(xs, ys, skipMissing)}
+    \subsection*{stats.correlate(xs, ys, skipMissing)}
+    \addcontentsline{toc}{subsection}{stats.correlate(xs, ys, skipMissing)}
     Return the Pearson correlation coefficient between two variables, \texttt{xs} and \texttt{ys}.
 By default, uses all the values of both variables.  If \texttt{skipMissing} is not set
 to \texttt{true} and missing values exist, return \texttt{utils.missing}.
@@ -1056,28 +1142,34 @@ The two variables must have the same length.
 
 
   \section{utils}
-    \subsection{utils.allMissing(arr)}
+    \subsection*{utils.allMissing(arr)}
+    \addcontentsline{toc}{subsection}{utils.allMissing(arr)}
     Return true if all entries in the array are missing.
 
 
-    \subsection{utils.areEqualArrays(A, B)}
+    \subsection*{utils.areEqualArrays(A, B)}
+    \addcontentsline{toc}{subsection}{utils.areEqualArrays(A, B)}
     Test for array element equality that respects missing values.
 Makes a shallow comparison.
 
 
-    \subsection{utils.equal(a, b)}
+    \subsection*{utils.equal(a, b)}
+    \addcontentsline{toc}{subsection}{utils.equal(a, b)}
     Test for equality that respects missing values.
 
 
-    \subsection{utils.format}
+    \subsection*{utils.format}
+    \addcontentsline{toc}{subsection}{utils.format}
     An object containing formatting functions for numbers.
 
 
-    \subsection{utils.getDefault(val, deflt)}
+    \subsection*{utils.getDefault(val, deflt)}
+    \addcontentsline{toc}{subsection}{utils.getDefault(val, deflt)}
     If \texttt{val} is a missing value, return \texttt{deflt}, else return \texttt{val}.
 
 
-    \subsection{utils.getOption(s, optList, deflt)}
+    \subsection*{utils.getOption(s, optList, deflt)}
+    \addcontentsline{toc}{subsection}{utils.getOption(s, optList, deflt)}
     Take a user-provided option description \texttt{s} (a string) and an array \texttt{optList}
 of allowable option settings.  Return the first element of the array that
 has \texttt{s} as its initial substring.  Return \texttt{null} if no such match is found.
@@ -1086,74 +1178,91 @@ has \texttt{s} as its initial substring.  Return \texttt{null} if no such match 
 If \texttt{s} is empty, \texttt{null} or \texttt{undefined}, return the default setting \texttt{deflt}.
 
 
-    \subsection{utils.hasMissing(arr)}
+    \subsection*{utils.hasMissing(arr)}
+    \addcontentsline{toc}{subsection}{utils.hasMissing(arr)}
     For an array, return whether the array has any missing values in it.
 
 
-    \subsection{utils.isMissing(val)}
+    \subsection*{utils.isMissing(val)}
+    \addcontentsline{toc}{subsection}{utils.isMissing(val)}
     Return true if \texttt{val} is \texttt{undefined}, \texttt{null}, or \texttt{NaN}. *
 
 
-    \subsection{utils.isNotMissing(val)}
+    \subsection*{utils.isNotMissing(val)}
+    \addcontentsline{toc}{subsection}{utils.isNotMissing(val)}
     Return true if \texttt{val} is not \texttt{undefined}, \texttt{null}, or \texttt{NaN}. *
 
 
-    \subsection{utils.isOfType(v, types)}
+    \subsection*{utils.isOfType(v, types)}
+    \addcontentsline{toc}{subsection}{utils.isOfType(v, types)}
     Test if \texttt{v} is of one of the listed \texttt{types} (an array of strings).
 
 
-    \subsection{utils.makePreserveMissing(f)}
+    \subsection*{utils.makePreserveMissing(f)}
+    \addcontentsline{toc}{subsection}{utils.makePreserveMissing(f)}
     Return a new function \texttt{g} such that \texttt{g(any missing)} is \texttt{utils.missing},
 and \texttt{g(val)} is either \texttt{f(val)} or \texttt{utils.missing}, depending on whether
 \texttt{f(val)} is a missing value.
 
 
-    \subsection{utils.missing}
+    \subsection*{utils.missing}
+    \addcontentsline{toc}{subsection}{utils.missing}
     Value to be used for all missing values.
 
 
-    \subsection{utils.mixin(target)}
+    \subsection*{utils.mixin(target)}
+    \addcontentsline{toc}{subsection}{utils.mixin(target)}
     Mixes into the first object the key-value pairs from the other objects.
 Shallow copy.
 
 
-    \subsection{utils.op}
+    \subsection*{utils.op}
+    \addcontentsline{toc}{subsection}{utils.op}
     Arithmetic operators
 
 
-    \subsection{utils.op.add(a, b)}
+    \subsection*{utils.op.add(a, b)}
+    \addcontentsline{toc}{subsection}{utils.op.add(a, b)}
     The function that adds two numbers. Also available as \texttt{utils.op['+']}.
 
 
-    \subsection{utils.op.div(a, b)}
+    \subsection*{utils.op.div(a, b)}
+    \addcontentsline{toc}{subsection}{utils.op.div(a, b)}
     The function that divides two numbers. Also available as \texttt{utils.op['/']}.
 
 
-    \subsection{utils.op.max2(a, b)}
+    \subsection*{utils.op.max2(a, b)}
+    \addcontentsline{toc}{subsection}{utils.op.max2(a, b)}
     The function that takes two values and returns the maximum.
 
 
-    \subsection{utils.op.min2(a, b)}
+    \subsection*{utils.op.min2(a, b)}
+    \addcontentsline{toc}{subsection}{utils.op.min2(a, b)}
     The function that takes two values and returns the minimum.
 
 
-    \subsection{utils.op.mult(a, b)}
+    \subsection*{utils.op.mult(a, b)}
+    \addcontentsline{toc}{subsection}{utils.op.mult(a, b)}
     The function that multiplies two numbers. Also available as \texttt{utils.op['*']}.
 
 
-    \subsection{utils.op.sub(a, b)}
+    \subsection*{utils.op.sub(a, b)}
+    \addcontentsline{toc}{subsection}{utils.op.sub(a, b)}
     The function that subtracts two numbers. Also available as \texttt{utils.op['-']}.
 
 
-    \subsection{utils.optionMap(val, f)}
+    \subsection*{utils.optionMap(val, f)}
+    \addcontentsline{toc}{subsection}{utils.optionMap(val, f)}
     If \texttt{val} is a missing value, return \texttt{utils.missing}. Otherwise return \texttt{f(val)}.
 
 
-    \subsection{utils.seq(from, to, step)}
+    \subsection*{utils.seq(from, to, step)}
+    \addcontentsline{toc}{subsection}{utils.seq(from, to, step)}
     Create an array of sequential values. Similar options to \texttt{Variable.seq}.
 
 
-    \subsection{utils.singleMissing(val)}
+    \subsection*{utils.singleMissing(val)}
+    \addcontentsline{toc}{subsection}{utils.singleMissing(val)}
     Return \texttt{val} if it is non-missing; otherwise return \texttt{utils.missing}.
 
 
