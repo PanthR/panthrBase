@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="doc.css" type="text/css" media="screen" title="no title" charset="utf-8">
+    <title>Dataset</title>
+  </head>
+  <body>
+    <div id="header">
+    <h1>Documentation for module <code>Dataset</code>
+      
+      </h1>
+    </div>
+    <div id="sidebar">
+      <div>
+        <h3>Module Index</h3>
+      <ul>
+        <a href="Variable.html"><li><code>Variable</code></li></a>
+        <a href="Dataset.html"><li><code>Dataset</code></li></a>
+        <a href="List.html"><li><code>List</code></li></a>
+        <a href="stats.html"><li><code>stats</code></li></a>
+        <a href="utils.html"><li><code>utils</code></li></a>
+      </ul>
+      </div>
+      <div>
+        <h3>Contents</h3>
+      <ul>
+        
+        <a href="#Dataset"><li><code>Dataset</code></li></a>
+        
+        <a href="#Dataset.read"><li><code>Dataset.read</code></li></a>
+        
+        <a href="#Dataset.split"><li><code>Dataset.split</code></li></a>
+        
+        <a href="#Dataset.write"><li><code>Dataset.write</code></li></a>
+        
+        <a href="#Dataset%25appendCols"><li><code>Dataset#appendCols</code></li></a>
+        
+        <a href="#Dataset%25appendRows"><li><code>Dataset#appendRows</code></li></a>
+        
+        <a href="#Dataset%25clone"><li><code>Dataset#clone</code></li></a>
+        
+        <a href="#Dataset%25deleteCols"><li><code>Dataset#deleteCols</code></li></a>
+        
+        <a href="#Dataset%25deleteRows"><li><code>Dataset#deleteRows</code></li></a>
+        
+        <a href="#Dataset%25get"><li><code>Dataset#get</code></li></a>
+        
+        <a href="#Dataset%25getVar"><li><code>Dataset#getVar</code></li></a>
+        
+        <a href="#Dataset%25names"><li><code>Dataset#names</code></li></a>
+        
+        <a href="#Dataset%25rowFun"><li><code>Dataset#rowFun</code></li></a>
+        
+        <a href="#Dataset%25set"><li><code>Dataset#set</code></li></a>
+        
+        <a href="#Dataset%25setVar"><li><code>Dataset#setVar</code></li></a>
+        
+        <a href="#Dataset%25toArray"><li><code>Dataset#toArray</code></li></a>
+        
+        <a href="#Dataset%25which"><li><code>Dataset#which</code></li></a>
+        
+      </ul>
+      </div>
+    </div>
+    <div id="main">
+      <div class="moduleInfo">
+        <h2>Module <code>Dataset</code></h2>
+        <p>Author(s): <a class="author" href="mailto:skiadas@hanover.edu">Haris Skiadas</a>, <a class="author" href="mailto:wahl@hanover.edu">Barb Wahl</a><p>
+        <p>Representation of &quot;statistics&quot; Datasets</p>
+      </div>
+      <div>
+        <h4 id="Dataset"><code>Dataset(values)</code></h4>
+        <p>Create a dataset out of the provided <code>values</code>. A dataset is a <a href="#List"><code>List</code></a> whose items
+are variables of the same length. Unlike lists, datasets are required to have names
+for all their &quot;columns&quot;, and those names are unique.</p>
+<p><code>values</code> is one more more arguments of the following types:</p>
+<ul>
+<li>An object, a <a href="#List"><code>List</code></a>, or <code>Matrix</code>; in this case it will be 'unpacked' to create
+the columns of the dataset.</li>
+<li>A <a href="#Variable"><code>Variable</code></a> or <code>Vector</code>.</li>
+</ul>
+<p>Properties:</p>
+<ul>
+<li><code>nrow</code>: The number of rows in the dataset (the length of each variable)</li>
+<li><code>ncol</code>: The number of columns in the dataset (the number of variables)</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Dataset.read"><code>Dataset.read(vals, options)</code></h4>
+        <p>Read a dataset from a string <code>vals</code> which is the contents of a delimited file.</p>
+<p>Quote-escaping rules are similar to <code>Variable#read</code>.</p>
+<p><code>options</code> is an object that can include:</p>
+<ul>
+<li><code>sep</code>: A character or string specifying the separator. If not provided, an attempt
+to infer the separator will be made. Typical separators include <code>','</code>, <code>';'</code>, <code>'\t'</code>,
+and <code>' '</code>. In this last case, any sequence of whitespace, including tabs, will be
+treated as a single separator.</li>
+<li><code>header</code>: A boolean value specifying whether headers are included. Defaults to <code>false</code>.</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Dataset.split"><code>Dataset.split(select)</code></h4>
+        <p>Split a <a href="#Dataset"><code>Dataset</code></a> into a <a href="#List"><code>List</code></a> of sub-datasets, based on the specified
+subsets of the rows.  <code>select</code> can be:</p>
+<ul>
+<li>A <a href="#List"><code>List</code></a> whose elements are one-dimensional collections of row indices</li>
+<li>A factor <a href="#Variable"><code>Variable</code></a> of length <code>nrow</code>.  Rows with the same corresponding
+factor value will be grouped together.</li>
+<li>A function <code>f(row, i)</code>.  Rows with the same function value will be grouped
+together.</li>
+</ul>
+<p>If an empty group of rows is created by <code>select</code>, it will generate an empty <a href="#Dataset"><code>Dataset</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="Dataset.write"><code>Dataset.write(options)</code></h4>
+        <p>Write the dataset to a string.</p>
+<p><code>options</code> is an object that can include:</p>
+<ul>
+<li><code>sep</code>: A character or string to use as separator. Defaults to <code>','</code>.</li>
+<li><code>header</code>: A boolean value specifying whether to include headers. Defaults to <code>true</code>.</li>
+<li><code>quote</code>: A boolean value specifying whether to quote string values/names. Defaults
+ to <code>false</code>.</li>
+<li><code>qescape</code>: A boolean value specifying whether to escape embedded quotes via a
+ backslash. Defaults to <code>false</code>, meaning escape via an extra double-quote.</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Dataset%25appendCols"><code>Dataset#appendCols(names, values)</code></h4>
+        <p>Append to the columns of the dataset.
+If called with two arguments, then the first argument is the names for the
+new columns. If called with only one argument, names will be generated
+automatically.</p>
+<p>The <code>values</code> argument needs to be one of the following:</p>
+<ul>
+<li>A 2-dimensional object (<code>Matrix</code> or <a href="#Dataset"><code>Dataset</code></a>).</li>
+<li>A 1-dimensional object (<code>Array</code>, <code>Vector</code> or <a href="#Variable"><code>Variable</code></a>).</li>
+<li>A <a href="#List"><code>List</code></a> of columns to be appended. Corresponding names will be copied over.
+In this case, the provided list will be fed into the dataset constructor in
+order to deduce the new variables to be appended.</li>
+<li>A function <code>f(i)</code> for computing the values in the new column.</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Dataset%25appendRows"><code>Dataset#appendRows(rows, values)</code></h4>
+        <p>Append to the rows of the dataset.
+When called with one argument, the argument needs to be 2-dimensional
+(<code>Matrix</code> or dataset) or 1-dimensional (<code>Array</code>, <a href="#Variable"><code>Variable</code></a> or <code>Vector</code>) and then
+the number rows to be appended will be inferred.
+When called with two arguments, <code>rows</code> is the number of rows to append, and <code>values</code>
+is a single value or a function <code>f(i, j, colName)</code> to be used for filling the rows.
+In the case of a function, the index <code>i</code> is relative to the new rows to be added
+(so <code>i</code> is 1 for the first row to be added, 2 for the second row to be added, etc.).</p>
+<pre class="prettyprint source"><code>// dSet assumed to be a 2x3 dataset
+dSet.appendRows([1, 2, 3]) // Add a single row at row index 3
+dSet.appendRows(dSet)      // Add duplicates of the 3 rows
+dSet.appendRows(2, function(i, j) { return i + j }); // Adds rows [2,3,4], [3,4,5]</code></pre>
+      </div>
+      <div>
+        <h4 id="Dataset%25clone"><code>Dataset#clone()</code></h4>
+        <p>Clone the dataset.</p>
+      </div>
+      <div>
+        <h4 id="Dataset%25deleteCols"><code>Dataset#deleteCols(cols)</code></h4>
+        <p>Delete the specified columns from the dataset. <code>cols</code> may be:</p>
+<ul>
+<li>A single number or string name.</li>
+<li>A 1-dimensional object of single numbers or string names.</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Dataset%25deleteRows"><code>Dataset#deleteRows(rows)</code></h4>
+        <p>Delete the specified rows from the dataset. <code>rows</code> may be:</p>
+<ul>
+<li>A single number.</li>
+<li>A 1-dimensional object.</li>
+<li>A predicate function <code>f(row, i)</code>.</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Dataset%25get"><code>Dataset#get(rows, cols)</code></h4>
+        <p>Return a subset of the values in the dataset. This method may be called with
+no arguments, in which case an array of arrays of the columns is returned.
+Otherwise, the method requires two arguments, <code>rows</code> and <code>cols</code>, specifying
+respectively the rows and columns to be used.</p>
+<ul>
+<li><code>cols</code> can be:<ul>
+<li>A single number or string. In this case a single column is used.</li>
+<li>The boolean <code>true</code>, indicating that all columns should be used.</li>
+<li>A one-dimensional object (<code>Array</code>, <a href="#Variable"><code>Variable</code></a>, <code>Vector</code>) of numbers, strings
+or booleans. In the case where the values are booleans, the length of the
+object must match <code>ncol</code>.</li>
+<li>A predicate of the form <code>pred(colName, j)</code>, which returns true for
+those columns that are to be used.</li>
+</ul>
+</li>
+<li><code>rows</code> can be:<ul>
+<li>A single number. In this case a single row is used.</li>
+<li>The boolean <code>true</code>, indicating all rows should be used.</li>
+<li>An <code>Array</code>, <a href="#Variable"><code>Variable</code></a> or <code>Vector</code> of numbers or booleans (similar to <code>cols</code>)</li>
+<li>A predicate that has form <code>pred(row, i)</code>, where <code>row</code> is a function as returned
+by <a href="#Dataset%25rowFun"><code>Dataset#rowFun</code></a>, giving access to the <code>i</code>-th row.
+If given two single values, returns the corresponding single value at the
+i-th row/j-th column. Otherwise returns a dataset that contains copies of the
+appropriate entries.</li>
+</ul>
+</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Dataset%25getVar"><code>Dataset#getVar(col)</code></h4>
+        <p>Get a single column (variable). <code>col</code> is a positive number or string name.</p>
+      </div>
+      <div>
+        <h4 id="Dataset%25names"><code>Dataset#names(i, newNames)</code></h4>
+        <p>Get or set the names of the dataset's columns. See <a href="#List%25names"><code>List#names</code></a> for
+details. This method enforces uniqueness of names.</p>
+      </div>
+      <div>
+        <h4 id="Dataset%25rowFun"><code>Dataset#rowFun(i)</code></h4>
+        <p>Given a row index <code>i</code>, return a function <code>f(col)</code> which &quot;simulates&quot; row <code>i</code>.</p>
+<pre class="prettyprint source"><code>l.rowFun(2)('a') // Returns the second value in column 'a'.
+l.rowFun(2)(2)   // Returns the second value in the second column.</code></pre>
+      </div>
+      <div>
+        <h4 id="Dataset%25set"><code>Dataset#set(rows, cols, vals)</code></h4>
+        <p>Set the values at specified rows and columns, using the values specified by
+<code>vals</code>. See <a href="#Dataset%25get"><code>Dataset#get</code></a> for how to use <code>rows</code> and <code>cols</code> to specify the
+positions to be set. All 3 arguments are required.
+<code>vals</code> is used to specify new values in one of the following ways:</p>
+<ul>
+<li>A single value (to be used in all specified positions)</li>
+<li>A <a href="#Variable"><code>Variable</code></a>, <code>Vector</code> or <code>Array</code> (only valid when setting within a single
+row or column)</li>
+<li>A <a href="#Dataset"><code>Dataset</code></a> or <code>Matrix</code> (whose dims match those of the selected region)</li>
+<li>A function <code>f(i, j, name)</code> where <code>i</code> is a row number, <code>j</code> is a column number,
+and <code>name</code> is a column name.</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Dataset%25setVar"><code>Dataset#setVar(col, val)</code></h4>
+        <p>Replace the variable at column <code>col</code> with the variable <code>val</code>. The length
+of <code>val</code> must match <code>nrow</code>.</p>
+      </div>
+      <div>
+        <h4 id="Dataset%25toArray"><code>Dataset#toArray()</code></h4>
+        <p>Return an array of arrays representing the columns of the dataset.</p>
+      </div>
+      <div>
+        <h4 id="Dataset%25which"><code>Dataset#which(pred)</code></h4>
+        <p>Given a predicate <code>pred(row, i)</code>, return a <a href="#Variable"><code>Variable</code></a> of the row numbers of the
+rows for which the predicate is <code>true</code>.</p>
+      </div>
+    </div>
+  </body>
+</html>

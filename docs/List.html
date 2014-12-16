@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="doc.css" type="text/css" media="screen" title="no title" charset="utf-8">
+    <title>List</title>
+  </head>
+  <body>
+    <div id="header">
+    <h1>Documentation for module <code>List</code>
+      
+      </h1>
+    </div>
+    <div id="sidebar">
+      <div>
+        <h3>Module Index</h3>
+      <ul>
+        <a href="Variable.html"><li><code>Variable</code></li></a>
+        <a href="Dataset.html"><li><code>Dataset</code></li></a>
+        <a href="List.html"><li><code>List</code></li></a>
+        <a href="stats.html"><li><code>stats</code></li></a>
+        <a href="utils.html"><li><code>utils</code></li></a>
+      </ul>
+      </div>
+      <div>
+        <h3>Contents</h3>
+      <ul>
+        
+        <a href="#List"><li><code>List</code></li></a>
+        
+        <a href="#List%25_set"><li><code>List#_set</code></li></a>
+        
+        <a href="#List%25clone"><li><code>List#clone</code></li></a>
+        
+        <a href="#List%25delete"><li><code>List#delete</code></li></a>
+        
+        <a href="#List%25each"><li><code>List#each</code></li></a>
+        
+        <a href="#List%25get"><li><code>List#get</code></li></a>
+        
+        <a href="#List%25getIndexOf"><li><code>List#getIndexOf</code></li></a>
+        
+        <a href="#List%25length"><li><code>List#length</code></li></a>
+        
+        <a href="#List%25map"><li><code>List#map</code></li></a>
+        
+        <a href="#List%25names"><li><code>List#names</code></li></a>
+        
+        <a href="#List%25reduce"><li><code>List#reduce</code></li></a>
+        
+        <a href="#List%25set"><li><code>List#set</code></li></a>
+        
+        <a href="#List%25toVariable"><li><code>List#toVariable</code></li></a>
+        
+        <a href="#List%25unnest"><li><code>List#unnest</code></li></a>
+        
+      </ul>
+      </div>
+    </div>
+    <div id="main">
+      <div class="moduleInfo">
+        <h2>Module <code>List</code></h2>
+        <p>Author(s): <a class="author" href="mailto:skiadas@hanover.edu">Haris Skiadas</a>, <a class="author" href="mailto:wahl@hanover.edu">Barb Wahl</a><p>
+        <p>Representation of &quot;Lists&quot;</p>
+      </div>
+      <div>
+        <h4 id="List"><code>List(values)</code></h4>
+        <p>A list is a collection of Javascript entities that can be accessed by index
+or by name. One can remove an item from a list, which results in the other
+items shifting place. One can also insert at the end of a list, or alter the
+contents of the list.</p>
+<p>Indexing starts at 1.</p>
+<p>We can create a list by providing:</p>
+<ul>
+<li>an object containing the items to be placed in the list along with their names</li>
+<li>an array of items to be placed in the list, without names</li>
+<li>no arguments, resulting in an empty list</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="List%25_set"><code>List#_set(i, val)</code></h4>
+        <p>Internal method used to set one item value. Requires two arguments,
+an integer or string name <code>i</code> and a value <code>val</code>.</p>
+      </div>
+      <div>
+        <h4 id="List%25clone"><code>List#clone()</code></h4>
+        <p>Clone the list. This method will attempt to make a deep clone by calling <code>clone</code>
+on any top-level items in the list that have a clone method.</p>
+      </div>
+      <div>
+        <h4 id="List%25delete"><code>List#delete(i)</code></h4>
+        <p>Delete the item at index/name <code>i</code>. <code>i</code> may be a positive integer or string name.</p>
+      </div>
+      <div>
+        <h4 id="List%25each"><code>List#each(f)</code></h4>
+        <p>Apply the function <code>f(val, i, name)</code> to each item in the list.  For any
+items with no associated name, <code>name</code> will be <a href="#utils.missing"><code>utils.missing</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="List%25get"><code>List#get(i)</code></h4>
+        <p>Return a list item by index. The index <code>i</code> can be:</p>
+<ul>
+<li>a positive number</li>
+<li>a string name</li>
+<li><code>null</code> or <a href="#utils.missing"><code>utils.missing</code></a>; in this case, an array of all the items
+is returned.</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="List%25getIndexOf"><code>List#getIndexOf(name)</code></h4>
+        <p>Given a name, return the index of the item with that name
+or utils.missing if there isn't one.
+You may also instead pass a single number, or an array of names
+and numbers, in which case an array of indices is returned.
+Mostly meant as an internal method.</p>
+      </div>
+      <div>
+        <h4 id="List%25length"><code>List#length()</code></h4>
+        <p>Return the length of the list (number of items)</p>
+      </div>
+      <div>
+        <h4 id="List%25map"><code>List#map(f)</code></h4>
+        <p>Create a new list from the results of applying the function <code>f(val, i, name)</code>
+to the items of the original list. For any values with no associated name,
+<code>name</code> will be supplied as <a href="#utils.missing"><code>utils.missing</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="List%25names"><code>List#names(i, newNames)</code></h4>
+        <p>Get or set the item names.</p>
+<ul>
+<li>When called with no arguments, return a string <a href="#Variable"><code>Variable</code></a> of all the names,
+with <a href="#utils.missing"><code>utils.missing</code></a> in place of any missing names. If no names exist,
+returns <a href="#utils.missing"><code>utils.missing</code></a>.</li>
+<li>When called with a single numeric argument <code>i</code>, return the name at the
+given index.</li>
+<li>When called with a single array or <a href="#Variable"><code>Variable</code></a> argument, set the names of the
+list using the array/variable's elements.</li>
+<li>When called with a single <code>null</code> or <a href="#utils.missing"><code>utils.missing</code></a> argument, set the names
+to <a href="#utils.missing"><code>utils.missing</code></a>.</li>
+<li><p>When called with two arguments <code>i</code>, <code>newName</code>, set the name of the <code>i</code>-th item
+to <code>newName</code>.</p>
+<p>  var l = new List({ a: [1, 2], b: 3 });
+  l.names();           // Variable(['a', 'b'])
+  l.names(2);          // 'b'
+  l.names(2, 'c');     // <code>l</code> is now { a: [1,2], c: 3 }
+  l.names(['d', 'e']); // <code>l</code> is now { d: [1,2], e: 3 }
+  l.names(null);       // <code>l</code> now has no names</p>
+</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="List%25reduce"><code>List#reduce(f, initial)</code></h4>
+        <p>Apply the function <code>f(acc, val, i, name)</code> to each item in the list,
+accumulating the result to be returned.</p>
+<p>For any values with no associated name, <code>name</code> will be supplied as
+<a href="#utils.missing"><code>utils.missing</code></a>.</p>
+<p>Similar to Javascript's <code>Array.prototype.reduce</code>.</p>
+      </div>
+      <div>
+        <h4 id="List%25set"><code>List#set(i, val)</code></h4>
+        <p>Called with two arguments <code>i</code>, <code>val</code>. Set the list item at a given index <code>i</code>.
+<code>i</code> can be:</p>
+<ul>
+<li>a positive number. If <code>i</code> is greater than the length of the list,
+create a new item at index <code>i</code> and fill the resulting gap with <a href="#utils.missing"><code>utils.missing</code></a>.</li>
+<li>a string name:  If the name <code>i</code> is not already a name in the list, append a
+new item with name <code>i</code>. Otherwise, update the existing item with the new value.</li>
+<li>an object of name-value pairs, causing a series of updates or appends, one for
+each pair.</li>
+<li>an array of values, causing a series of appends of these (unnamed) items.</li>
+</ul>
+<p><code>val</code> can be any Javascript entity. If <code>i</code> is an object or array, then <code>val</code> is
+omitted.</p>
+      </div>
+      <div>
+        <h4 id="List%25toVariable"><code>List#toVariable()</code></h4>
+        <p>Return a <a href="#Variable"><code>Variable</code></a> by concatenating the values from the list's items.
+Works with items of any of the following types:</p>
+<ul>
+<li>single value</li>
+<li>Array, <code>Vector</code>, <a href="#Variable"><code>Variable</code></a></li>
+<li><a href="#List"><code>List</code></a></li>
+</ul>
+<p>Names are generated for the new Variable base on the items' names in the list
+as well as their names (if any) as PanthR objects. The idea is to preserve any
+names in the list and/or in the values of the list in some reasonable way,
+wherever they exist.</p>
+<ul>
+<li>If the item is a variable with names, and it is a named list item, join the names</li>
+<li>If the item is a variable with names, and it is an unnamed list item,
+use the variable names</li>
+<li>If the item is a variable without names, and it is a named list item, provide
+names of the form <code>itemName.1, itemName.2, ...</code></li>
+</ul>
+      </div>
+      <div>
+        <h4 id="List%25unnest"><code>List#unnest(levels)</code></h4>
+        <p>Unnest a number of levels out of a nested list, starting at the
+top level. <code>levels</code> is the number of levels it will attempt to unnest.
+Level 0 indicates no change. Default is 1.
+Level <code>Infinity</code> indicates complete unnesting.</p>
+<p>This method will only attempt to resolve nesting formed via <a href="#List"><code>List</code></a> constructs,
+and will not recurse into Javascript Objects or Arrays.</p>
+<p>BEWARE: This operation changes the list(s) <em>in place</em>.</p>
+      </div>
+    </div>
+  </body>
+</html>

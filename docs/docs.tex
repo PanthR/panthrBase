@@ -1,0 +1,1160 @@
+\documentclass{article}
+\usepackage{listings}
+\usepackage[vmargin=1in,hmargin=1in]{geometry}
+\title{PanthRBase Documentation}
+\author{PanthR Team}
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+  \section{Variable}
+    \subsection{Variable(values, options)}
+    Create a new variable. \texttt{values} is one of the following:
+
+
+\begin{itemize}
+
+\item an array or vector with the desired values,
+
+\item a variable (which is simply cloned)
+
+\item a function \texttt{f(i)} for generating the values, in which case \texttt{length} is
+a required option.
+\texttt{options} is an object indicating properties of the variable:\begin{itemize}
+
+\item \texttt{length}: Will be ignored if \texttt{values} is not a function
+
+\item \texttt{label}: The label to use in graphs/tables/descriptions.
+
+\item \texttt{mode}: A string describing what type of variable to create. If \texttt{mode} is missing
+it will be determined based on the first non-missing entry in \texttt{values}.
+
+\item \texttt{\_names}: An optional vector/array/variable of equal length containing names for
+the values. Access it via the \texttt{names} method.
+
+\end{itemize}
+
+
+
+\end{itemize}
+
+Further options depend on the particular mode chosen. See the subclass documentations
+for details.
+
+
+A default label value will be generated if not provided. So creating a \texttt{Variable} can
+be as simple as passing a \texttt{values} argument to the constructor.
+
+
+Variable construction and setting needs to preserve the invariant that all entries are
+either \texttt{null} or a \&quot;meaningful\&quot; value. All \texttt{undefined}, missing and \texttt{NaN} entries will be
+converted to \texttt{null}.
+
+
+If \texttt{values} is a \texttt{Variable} it will simply be cloned (\texttt{options} will be ignored).
+
+
+    \subsection{Variable.concat(vars)}
+    Concatenate the inputs into a single variable. All inputs must be variables,
+and a common mode will be inferred based on the variable modes:
+
+
+\begin{itemize}
+
+\item Variables of mode ordinal are treated as having mode factor
+
+\item If one of the variables is of mode string, the result is of mode string
+
+\item If all variables have the same mode, the result is of that mode
+
+\item Otherwise the result is of mode scalar
+
+\end{itemize}
+
+    \subsection{Variable.dateTime(values, label)}
+    Create a date-time variable. \texttt{label} is optional.
+
+
+    \subsection{Variable.ensureArray(val)}
+    Convert \texttt{val} into a (Javascript) array, with \&quot;missing values\&quot;
+replaced by \texttt{utils.missing}. The argument may be:
+
+
+\begin{itemize}
+
+\item A single number
+
+\item A value that is \texttt{utils.isMissing}  (\texttt{NaN}, \texttt{null}, \texttt{undefined})
+
+\item An array, \texttt{Vector} or \texttt{Variable}
+
+\end{itemize}
+
+    \subsection{Variable.factor(values, label)}
+    Create a factor variable. \texttt{label} is optional.
+
+
+    \subsection{Variable.fiveNum(skipMissing)}
+    Return a 'named' scalar variable of the five-number of the values of the variable.
+\texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
+the variable has missing values, return \texttt{utils.missing}.
+
+
+    \subsection{Variable.format(options)}
+    Return a string variable for displaying the given variable with a
+specified numerical formatting. The \texttt{options} object may include:
+
+
+\begin{itemize}
+
+\item \texttt{type}: A string value, either 'scientific' or 'fixed'.
+
+\item \texttt{decimals}: The number of decimal digits to be displayed to the right of
+the decimal point. Defaults to 4 for 'scientific' format and to 2 for 'fixed'
+format.
+
+\end{itemize}
+
+    \subsection{Variable.groupIndices()}
+    Return a \texttt{List} of arrays of indices corresponding to the distribution
+of the factor variable. If the variable is not factor or ordinal, it will
+be treated as a factor variable.
+
+
+If missing values are present, an extra (unnamed) list item to hold those
+indices will be created at the end of the list.
+
+
+\begin{lstlisting}
+\texttt{Variable.factor(['a','a','b']).groupIndices(); // { a: [1, 2], b: [3] }}\end{lstlisting}
+
+    \subsection{Variable.layOut(ncol)}
+    Lay out the variable's values in rows. Return an array with one entry for
+each row. Each row entry is an array of objects representing the values.
+The objects have the form \texttt{{ index: i, value: val, name: s }}.
+
+
+The parameter \texttt{ncol} specifies how many entries will be in each row (default
+is 1). If the variable length is not an exact multiple of \texttt{ncol}, then the
+last row will contain fewer entries.
+
+
+Mostly intended as an internal method for use in \texttt{Variable\#toHTML}.
+
+
+    \subsection{Variable.logical(values, label)}
+    Create a logical variable. \texttt{label} is optional.
+
+
+    \subsection{Variable.max(skipMissing)}
+    Return the maximum of the values of the variable.
+\texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
+the variable has missing values, return \texttt{utils.missing}.
+
+
+    \subsection{Variable.mean(skipMissing)}
+    Return the mean of the values of the variable.
+\texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
+the variable has missing values, return \texttt{utils.missing}.
+
+
+    \subsection{Variable.median(skipMissing)}
+    Return the median of the values of the variable.
+\texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
+the variable has missing values, return \texttt{utils.missing}.
+
+
+    \subsection{Variable.min(skipMissing)}
+    Return the minimum of the values of the variable.
+\texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
+the variable has missing values, return \texttt{utils.missing}.
+
+
+    \subsection{Variable.oneDimToArray(val)}
+    Convert \texttt{val} into an array, if \texttt{val} is \&quot;one-dimensional\&quot;
+(\texttt{Variable}, \texttt{Vector}, array).
+Non-one-dimensional arguments are returned unchanged.
+
+
+    \subsection{Variable.oneDimToVariable(val)}
+    Convert \texttt{val} into a \texttt{Variable}, if \texttt{val} is \&quot;one-dimensional\&quot;
+(\texttt{Variable}, \texttt{Vector}, array).
+Non-one-dimensional arguments are returned unchanged.
+
+
+    \subsection{Variable.oneDimToVector(val)}
+    Convert \texttt{val} into a \texttt{Vector}, if \texttt{val} is \&quot;one-dimensional\&quot;
+(\texttt{Variable}, \texttt{Vector}, array).
+Non-one-dimensional arguments are returned unchanged.
+
+
+    \subsection{Variable.order(desc)}
+    Return a \texttt{Variable} representing the permutation that sorts the values of the
+original variable according to the order specified by \texttt{desc}.
+
+
+\begin{itemize}
+
+\item If \texttt{desc} is a boolean value, then \texttt{false} indicates ascending order, \texttt{true}
+indicates descending order.
+
+\item If \texttt{desc} is a function \texttt{f(a, b)}, then it is interpreted as the comparator
+for sorting, and must return \texttt{-1} if \texttt{a} precedes \texttt{b}, \texttt{0} if \texttt{a} and \texttt{b} are \&quot;equal\&quot;
+in order, and \texttt{1} if \texttt{b} precedes \texttt{a}.
+
+\item If \texttt{desc} is omitted, it defaults to \texttt{false} (ascending order).
+
+\end{itemize}
+
+    \subsection{Variable.ordinal(values, levels, label)}
+    Create an ordinal variable. \texttt{levels} and \texttt{label} are optional. If \texttt{levels}
+is omitted, an alphabetical ordering of the levels will be used.
+
+
+    \subsection{Variable.read(vals, mode)}
+    Read values from a string (e.g., text file) into a \texttt{Variable}.
+
+
+\texttt{Variable\#read} makes a sequence of tokens by breaking the string at any sequence
+of newlines, spaces, commas and semicolons.
+
+
+\begin{itemize}
+
+\item If a token starts with a double quote, then it must also end with a
+double-quote, and its contents are interpreted as follows:\begin{itemize}
+
+\item Consecutive double-quotes (\texttt{\&quot;\&quot;}) are interpreted as a double-quote (\texttt{\&quot;}).
+
+\item Escaped (backslashed) characters (\texttt{\c}) are interpreted as the character (\texttt{c}).
+
+\item No unescaped un-doubled double-quotes are allowed in the term.
+
+\end{itemize}
+
+
+
+\item Analogous conditions apply for a term starting with a single quote (\texttt{'}).
+
+\item If the token does not start with a quote, then it is interpreted literally.
+
+\end{itemize}
+
+If the mode is not specified, it will be inferred as \texttt{scalar} if all the tokens
+can be interpreted as numbers, or as \texttt{factor} otherwise.
+
+
+    \subsection{Variable.scalar(values, label)}
+    Create a scalar variable. \texttt{label} is optional.
+
+
+    \subsection{Variable.scale(center, scale)}
+    Rescale the variable based on the provided \texttt{center} and \texttt{scale}.
+Return a \texttt{List} holding three items:
+
+
+\begin{itemize}
+
+\item \texttt{center}
+
+\item \texttt{scale}
+
+\item \texttt{values} (a \texttt{Variable} holding the rescaled values).
+
+\end{itemize}
+
+Must be called with two arguments.
+
+
+    \subsection{Variable.sd(skipMissing)}
+    Return the standard deviation of the values of the variable.
+\texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
+the variable has missing values, return \texttt{utils.missing}.
+
+
+    \subsection{Variable.seq(from, to, step, options)}
+    Construct a scalar variable from an arithmetic sequence.
+Can be called as:
+
+
+\begin{itemize}
+
+\item \texttt{seq(to[, options])} where \texttt{from} equals 1
+
+\item \texttt{seq(from, to[, options])} where \texttt{step} equals -1 or +1
+
+\item \texttt{seq(from, to, step[, options])}
+\texttt{step} must have the same sign as \texttt{to - from}.
+\texttt{options} parameter is an optional options object that is passed to the
+\texttt{Variable} constructor
+
+
+  seq(5)            // [1, 2, 3, 4, 5]
+  seq(5, 7.5)       // [5, 6, 7]
+  seq(4, 1.2)       // [4, 3, 2]
+  seq(5.1, 6.1, .5) // [5.1, 5.6, 6.1]
+  seq(4, 1.2, -2)   // [4, 2]
+
+
+
+
+\end{itemize}
+
+    \subsection{Variable.sort(desc)}
+    Return a new \texttt{Variable} with the values sorted in the order specified by \texttt{desc}.
+See \texttt{Variable\#order}.
+
+
+    \subsection{Variable.string(values, label)}
+    Create a string variable. \texttt{label} is optional.
+
+
+    \subsection{Variable.sum(skipMissing)}
+    Return the sum of the values of the variable.
+\texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
+the variable has missing values, return \texttt{utils.missing}.
+
+
+    \subsection{Variable.table()}
+    Return a frequency table for the variable, in the form of a 'named' scalar
+variable.  The variable is treated as a factor variable in order to
+accumulate the frequencies.
+
+
+    \subsection{Variable.tabulate(f, from, to, options)}
+    Create a new variable with values \texttt{f(from), f(from+1), ..., f(to)}.
+The \texttt{options} parameter is passed to the \texttt{Variable} constructor.
+
+
+    \subsection{Variable.toHTML(options)}
+    Return an HTML string displaying the variable. Each value is wrapped in
+a tag, and that tag may be preceded by a tagged name. Each row is further
+wrapped in a tag. The default format can be used as the contents of a
+\texttt{table} tag.
+
+
+The \texttt{options} object may include:
+
+
+\begin{itemize}
+
+\item \texttt{ncol}: The number of \&quot;columns\&quot; (default is 1).
+
+\item \texttt{withNames}: Whether names should be included (default is \texttt{false}).
+
+\item \texttt{value}: An object with properties \texttt{tag} and \texttt{class} for specifying the
+  html tag and the class attributes to be used for the values.
+
+\item \texttt{name}:  A similar object to be used for the names.
+
+\item \texttt{row}:   A similar object to be used for wrapping around each row.
+All three of these objects are optional, and their individual parts are
+optional as well. The defaults are \texttt{\&lt;td\&gt;} or \texttt{\&lt;tr\&gt;} for the tag and
+\texttt{var-value}, \texttt{var-name} or \texttt{var-row} for the class.
+
+\end{itemize}
+
+    \subsection{Variable.var(skipMissing)}
+    Return the variance of the values of the variable.
+\texttt{skipMissing} defaults to \texttt{false}.  If \texttt{skipMissing} is \texttt{false} and
+the variable has missing values, return \texttt{utils.missing}.
+
+
+    \subsection{Variable.write(options)}
+    Write the variable to a string.
+
+
+\texttt{options} is an object that can include:
+
+
+\begin{itemize}
+
+\item \texttt{sep}: A character or string to use as separator. Defaults to \texttt{','}.
+
+\item \texttt{quote}: A boolean value specifying whether to quote string values/names. Defaults
+ to \texttt{false}.
+
+\item \texttt{qescape}: A boolean value specifying whether to escape embedded quotes via a
+ backslash. Defaults to \texttt{false}, meaning escape via an extra double-quote.
+
+\end{itemize}
+
+    \subsection{Variable.zscore()}
+    Return the standardized values using \texttt{Variable\#rescale} where \texttt{center} is the
+mean of the variable and \texttt{scale} is the standard deviation.
+
+
+Missing values are preserved, but are ignored in the computation.
+
+
+    \subsection{Variable.prototype.asScalar()}
+    Convert the variable to scalar mode.
+
+
+For factor variables, the codes are used.
+
+
+    \subsection{Variable.prototype.asString()}
+    Convert the variable to string mode.
+
+
+For factor variables, the values are used.
+
+
+    \subsection{Variable.prototype.clone()}
+    Clone the variable, creating a new variable with the same values and mode.
+
+
+    \subsection{Variable.prototype.concat(vars)}
+    See \texttt{Variable.concat}.
+
+
+    \subsection{Variable.prototype.each(f, skipMissing)}
+    Apply the function \texttt{f(val, i)} to each value in the variable.
+If \texttt{skipMissing} is set to \texttt{true} (default is \texttt{false}), it will only apply
+\texttt{f} to non-missing values (as determined by \texttt{utils.isNotMissing}).
+
+
+    \subsection{Variable.prototype.filter(pred)}
+    Given a predicate \texttt{pred(val, i)}, return a new variable containing
+those values from the original variable that satisfy the predicate.
+
+
+    \subsection{Variable.prototype.get(i)}
+    Return the values(s) indicated by \texttt{i}.  (Keep in mind that variables
+are indexed starting from 1.)
+
+
+\begin{itemize}
+
+\item If \texttt{i} is a positive integer, return the value at index \texttt{i}.
+
+\item If \texttt{i} is an array of non-negative integers, return an array of
+the corresponding values (skipping indices of value 0).
+
+\item If \texttt{i} is an array of non-positive integers, return an array of
+all values of the variable except those indicated by the negative indices.
+
+\item If \texttt{i} is a scalar variable, it is converted into an array.
+
+\item If \texttt{i} is a logical variable, it must have the same length as the original
+variable, in which case, return an array of the values which correspond to the
+\texttt{true} values in \texttt{i}.
+
+\end{itemize}
+
+For factor variables, the values are returned, not the codes.
+
+
+    \subsection{Variable.prototype.hasMissing()}
+    Return a boolean indicating whether the variable contains missing values
+as indicated by \texttt{utils.isMissing}.
+
+
+    \subsection{Variable.prototype.length()}
+    Return the length of the variable.
+
+
+    \subsection{Variable.prototype.map(f, skipMissing, mode)}
+    Create a new variable from the results of applying the function \texttt{f(val, i)} to the
+values of the original variable. If \texttt{skipMissing} is set to \texttt{true} (default is \texttt{false}),
+then missing values will be preserved, and \texttt{f} will only be applied to the non-missing
+values. The optional parameter \texttt{mode} specifies the desired mode of the new variable.
+
+
+    \subsection{Variable.prototype.names(newNames)}
+    Called with no arguments, return the names associated with the variable's
+entries.
+
+
+Otherwise \texttt{newNames} is passed to the \texttt{Variable} constructor to create a
+string variable of the new names.
+
+
+If the provided names do not have the correct length, \texttt{Variable\#resize}
+will be used on the names.
+
+
+    \subsection{Variable.prototype.nonMissing()}
+    Return a new variable containing the non-missing values from the original
+variable as indicated by \texttt{utils.isNotMissing}.
+
+
+    \subsection{Variable.prototype.reduce(f, initial, skipMissing)}
+    Apply the function \texttt{f(acc, val, i)} to each value in the variable, accumulating
+the result to be returned.
+If \texttt{skipMissing} is set to \texttt{true} (default is \texttt{false}), it will only apply
+\texttt{f} to non-missing values (as determined by \texttt{utils.isNotMissing}).
+
+
+Similar to Javascript's \texttt{Array.prototype.reduce}.
+
+
+    \subsection{Variable.prototype.rep(times)}
+    Repeat a variable according to a pattern to make a new variable.
+\texttt{times} can be used in several different ways, depending on its type:
+
+
+\begin{itemize}
+
+\item If \texttt{times} is a number, repeat the variable that many times.
+
+\item If \texttt{times} is a variable or array, use the values as frequencies for
+corresponding entries. \texttt{times} must have same length as the original variable.
+
+\item If \texttt{times} is an object with a \texttt{length} property, cycle the values in the
+variable up to the specified length.
+
+\item If \texttt{times} is an object with an \texttt{each} property, repeat each value that
+many times (before going on to the next value).
+
+\end{itemize}
+
+    \subsection{Variable.prototype.reproduce(newValues, newNames)}
+    Return a new variable with all the same settings as the original
+but with values taken from \texttt{newValues}, which may be
+a \texttt{Vector} or an array.
+
+
+Note: If the variable is a factor or an ordinal variable, it is
+assumed that the new values are codes which are in agreement
+with the codes used by the variable.
+
+
+If \texttt{newNames} is provided, it must be one-dimensional (\texttt{Variable}, \texttt{Vector}
+or array) and it is used to set names for the new variable.
+
+
+    \subsection{Variable.prototype.resize(length, fill)}
+    Resize the variable.
+If fill is \texttt{true}, recycle the values to reach the specified length.
+If fill is \texttt{false} or omitted, the new values will be filled with \texttt{utils.missing}.
+
+
+    \subsection{Variable.prototype.sameLength(other)}
+    Return a boolean indicating whether the variable has the same length
+as the variable \texttt{other}.
+
+
+    \subsection{Variable.prototype.select(indices)}
+    From a given array or \texttt{Vector} of indices, create a new variable based on the
+values of the original variable corresponding to those indices.
+
+
+    \subsection{Variable.prototype.set(i, val)}
+    Set the entries indicated by \texttt{i} to the values indicated by \texttt{val}.
+(Keep in mind that Variables are indexed starting from 1.)
+
+
+\texttt{val} may be a single value, or a \texttt{Variable} or array of values of
+the appropriate length.
+
+
+\begin{itemize}
+
+\item If \texttt{i} is a positive integer, set the value at index \texttt{i}.
+
+\item If \texttt{i} is an array of non-negative integers, set
+the corresponding values (skipping indices of value 0).
+
+\item If \texttt{i} is an array of non-positive integers, set
+all values of the variable except those indicated by the negative indices.
+
+\item If \texttt{i} is a scalar variable, it is converted into an array.
+
+\item If \texttt{i} is a logical variable, it must have the same length as the original
+variable, in which case set the values which correspond to the \texttt{true}
+values in \texttt{i}.
+
+\end{itemize}
+
+In all cases, if there are any null/undefined/NaN indices, an error occurs.
+
+
+This method cannot be used to append values. To set values out of bounds,
+call \texttt{Variable\#resize} first.
+
+
+    \subsection{Variable.prototype.toArray()}
+    Return a Javascript array of the values of the variable.
+
+
+For factor variables, the values are returned.
+
+
+    \subsection{Variable.prototype.toVector()}
+    Return a \texttt{Vector} of the values of the variable.
+
+
+For factor variables, the codes are returned.
+
+
+  \section{Dataset}
+    \subsection{Dataset(values)}
+    Create a dataset out of the provided \texttt{values}. A dataset is a \texttt{List} whose items
+are variables of the same length. Unlike lists, datasets are required to have names
+for all their \&quot;columns\&quot;, and those names are unique.
+
+
+\texttt{values} is one more more arguments of the following types:
+
+
+\begin{itemize}
+
+\item An object, a \texttt{List}, or \texttt{Matrix}; in this case it will be 'unpacked' to create
+the columns of the dataset.
+
+\item A \texttt{Variable} or \texttt{Vector}.
+
+\end{itemize}
+
+Properties:
+
+
+\begin{itemize}
+
+\item \texttt{nrow}: The number of rows in the dataset (the length of each variable)
+
+\item \texttt{ncol}: The number of columns in the dataset (the number of variables)
+
+\end{itemize}
+
+    \subsection{Dataset.read(vals, options)}
+    Read a dataset from a string \texttt{vals} which is the contents of a delimited file.
+
+
+Quote-escaping rules are similar to \texttt{Variable\#read}.
+
+
+\texttt{options} is an object that can include:
+
+
+\begin{itemize}
+
+\item \texttt{sep}: A character or string specifying the separator. If not provided, an attempt
+to infer the separator will be made. Typical separators include \texttt{','}, \texttt{';'}, \texttt{'\t'},
+and \texttt{' '}. In this last case, any sequence of whitespace, including tabs, will be
+treated as a single separator.
+
+\item \texttt{header}: A boolean value specifying whether headers are included. Defaults to \texttt{false}.
+
+\end{itemize}
+
+    \subsection{Dataset.split(select)}
+    Split a \texttt{Dataset} into a \texttt{List} of sub-datasets, based on the specified
+subsets of the rows.  \texttt{select} can be:
+
+
+\begin{itemize}
+
+\item A \texttt{List} whose elements are one-dimensional collections of row indices
+
+\item A factor \texttt{Variable} of length \texttt{nrow}.  Rows with the same corresponding
+factor value will be grouped together.
+
+\item A function \texttt{f(row, i)}.  Rows with the same function value will be grouped
+together.
+
+\end{itemize}
+
+If an empty group of rows is created by \texttt{select}, it will generate an empty \texttt{Dataset}.
+
+
+    \subsection{Dataset.write(options)}
+    Write the dataset to a string.
+
+
+\texttt{options} is an object that can include:
+
+
+\begin{itemize}
+
+\item \texttt{sep}: A character or string to use as separator. Defaults to \texttt{','}.
+
+\item \texttt{header}: A boolean value specifying whether to include headers. Defaults to \texttt{true}.
+
+\item \texttt{quote}: A boolean value specifying whether to quote string values/names. Defaults
+ to \texttt{false}.
+
+\item \texttt{qescape}: A boolean value specifying whether to escape embedded quotes via a
+ backslash. Defaults to \texttt{false}, meaning escape via an extra double-quote.
+
+\end{itemize}
+
+    \subsection{Dataset.prototype.appendCols(names, values)}
+    Append to the columns of the dataset.
+If called with two arguments, then the first argument is the names for the
+new columns. If called with only one argument, names will be generated
+automatically.
+
+
+The \texttt{values} argument needs to be one of the following:
+
+
+\begin{itemize}
+
+\item A 2-dimensional object (\texttt{Matrix} or \texttt{Dataset}).
+
+\item A 1-dimensional object (\texttt{Array}, \texttt{Vector} or \texttt{Variable}).
+
+\item A \texttt{List} of columns to be appended. Corresponding names will be copied over.
+In this case, the provided list will be fed into the dataset constructor in
+order to deduce the new variables to be appended.
+
+\item A function \texttt{f(i)} for computing the values in the new column.
+
+\end{itemize}
+
+    \subsection{Dataset.prototype.appendRows(rows, values)}
+    Append to the rows of the dataset.
+When called with one argument, the argument needs to be 2-dimensional
+(\texttt{Matrix} or dataset) or 1-dimensional (\texttt{Array}, \texttt{Variable} or \texttt{Vector}) and then
+the number rows to be appended will be inferred.
+When called with two arguments, \texttt{rows} is the number of rows to append, and \texttt{values}
+is a single value or a function \texttt{f(i, j, colName)} to be used for filling the rows.
+In the case of a function, the index \texttt{i} is relative to the new rows to be added
+(so \texttt{i} is 1 for the first row to be added, 2 for the second row to be added, etc.).
+
+
+\begin{lstlisting}
+\texttt{// dSet assumed to be a 2x3 dataset
+dSet.appendRows([1, 2, 3]) // Add a single row at row index 3
+dSet.appendRows(dSet)      // Add duplicates of the 3 rows
+dSet.appendRows(2, function(i, j) { return i + j }); // Adds rows [2,3,4], [3,4,5]}\end{lstlisting}
+
+    \subsection{Dataset.prototype.clone()}
+    Clone the dataset.
+
+
+    \subsection{Dataset.prototype.deleteCols(cols)}
+    Delete the specified columns from the dataset. \texttt{cols} may be:
+
+
+\begin{itemize}
+
+\item A single number or string name.
+
+\item A 1-dimensional object of single numbers or string names.
+
+\end{itemize}
+
+    \subsection{Dataset.prototype.deleteRows(rows)}
+    Delete the specified rows from the dataset. \texttt{rows} may be:
+
+
+\begin{itemize}
+
+\item A single number.
+
+\item A 1-dimensional object.
+
+\item A predicate function \texttt{f(row, i)}.
+
+\end{itemize}
+
+    \subsection{Dataset.prototype.get(rows, cols)}
+    Return a subset of the values in the dataset. This method may be called with
+no arguments, in which case an array of arrays of the columns is returned.
+Otherwise, the method requires two arguments, \texttt{rows} and \texttt{cols}, specifying
+respectively the rows and columns to be used.
+
+
+\begin{itemize}
+
+\item \texttt{cols} can be:\begin{itemize}
+
+\item A single number or string. In this case a single column is used.
+
+\item The boolean \texttt{true}, indicating that all columns should be used.
+
+\item A one-dimensional object (\texttt{Array}, \texttt{Variable}, \texttt{Vector}) of numbers, strings
+or booleans. In the case where the values are booleans, the length of the
+object must match \texttt{ncol}.
+
+\item A predicate of the form \texttt{pred(colName, j)}, which returns true for
+those columns that are to be used.
+
+\end{itemize}
+
+
+
+\item \texttt{rows} can be:\begin{itemize}
+
+\item A single number. In this case a single row is used.
+
+\item The boolean \texttt{true}, indicating all rows should be used.
+
+\item An \texttt{Array}, \texttt{Variable} or \texttt{Vector} of numbers or booleans (similar to \texttt{cols})
+
+\item A predicate that has form \texttt{pred(row, i)}, where \texttt{row} is a function as returned
+by \texttt{Dataset\#rowFun}, giving access to the \texttt{i}-th row.
+If given two single values, returns the corresponding single value at the
+i-th row/j-th column. Otherwise returns a dataset that contains copies of the
+appropriate entries.
+
+\end{itemize}
+
+
+
+\end{itemize}
+
+    \subsection{Dataset.prototype.getVar(col)}
+    Get a single column (variable). \texttt{col} is a positive number or string name.
+
+
+    \subsection{Dataset.prototype.names(i, newNames)}
+    Get or set the names of the dataset's columns. See \texttt{List\#names} for
+details. This method enforces uniqueness of names.
+
+
+    \subsection{Dataset.prototype.rowFun(i)}
+    Given a row index \texttt{i}, return a function \texttt{f(col)} which \&quot;simulates\&quot; row \texttt{i}.
+
+
+\begin{lstlisting}
+\texttt{l.rowFun(2)('a') // Returns the second value in column 'a'.
+l.rowFun(2)(2)   // Returns the second value in the second column.}\end{lstlisting}
+
+    \subsection{Dataset.prototype.set(rows, cols, vals)}
+    Set the values at specified rows and columns, using the values specified by
+\texttt{vals}. See \texttt{Dataset\#get} for how to use \texttt{rows} and \texttt{cols} to specify the
+positions to be set. All 3 arguments are required.
+\texttt{vals} is used to specify new values in one of the following ways:
+
+
+\begin{itemize}
+
+\item A single value (to be used in all specified positions)
+
+\item A \texttt{Variable}, \texttt{Vector} or \texttt{Array} (only valid when setting within a single
+row or column)
+
+\item A \texttt{Dataset} or \texttt{Matrix} (whose dims match those of the selected region)
+
+\item A function \texttt{f(i, j, name)} where \texttt{i} is a row number, \texttt{j} is a column number,
+and \texttt{name} is a column name.
+
+\end{itemize}
+
+    \subsection{Dataset.prototype.setVar(col, val)}
+    Replace the variable at column \texttt{col} with the variable \texttt{val}. The length
+of \texttt{val} must match \texttt{nrow}.
+
+
+    \subsection{Dataset.prototype.toArray()}
+    Return an array of arrays representing the columns of the dataset.
+
+
+    \subsection{Dataset.prototype.which(pred)}
+    Given a predicate \texttt{pred(row, i)}, return a \texttt{Variable} of the row numbers of the
+rows for which the predicate is \texttt{true}.
+
+
+  \section{List}
+    \subsection{List(values)}
+    A list is a collection of Javascript entities that can be accessed by index
+or by name. One can remove an item from a list, which results in the other
+items shifting place. One can also insert at the end of a list, or alter the
+contents of the list.
+
+
+Indexing starts at 1.
+
+
+We can create a list by providing:
+
+
+\begin{itemize}
+
+\item an object containing the items to be placed in the list along with their names
+
+\item an array of items to be placed in the list, without names
+
+\item no arguments, resulting in an empty list
+
+\end{itemize}
+
+    \subsection{List.prototype.\_set(i, val)}
+    Internal method used to set one item value. Requires two arguments,
+an integer or string name \texttt{i} and a value \texttt{val}.
+
+
+    \subsection{List.prototype.clone()}
+    Clone the list. This method will attempt to make a deep clone by calling \texttt{clone}
+on any top-level items in the list that have a clone method.
+
+
+    \subsection{List.prototype.delete(i)}
+    Delete the item at index/name \texttt{i}. \texttt{i} may be a positive integer or string name.
+
+
+    \subsection{List.prototype.each(f)}
+    Apply the function \texttt{f(val, i, name)} to each item in the list.  For any
+items with no associated name, \texttt{name} will be \texttt{utils.missing}.
+
+
+    \subsection{List.prototype.get(i)}
+    Return a list item by index. The index \texttt{i} can be:
+
+
+\begin{itemize}
+
+\item a positive number
+
+\item a string name
+
+\item \texttt{null} or \texttt{utils.missing}; in this case, an array of all the items
+is returned.
+
+\end{itemize}
+
+    \subsection{List.prototype.getIndexOf(name)}
+    Given a name, return the index of the item with that name
+or utils.missing if there isn't one.
+You may also instead pass a single number, or an array of names
+and numbers, in which case an array of indices is returned.
+Mostly meant as an internal method.
+
+
+    \subsection{List.prototype.length()}
+    Return the length of the list (number of items)
+
+
+    \subsection{List.prototype.map(f)}
+    Create a new list from the results of applying the function \texttt{f(val, i, name)}
+to the items of the original list. For any values with no associated name,
+\texttt{name} will be supplied as \texttt{utils.missing}.
+
+
+    \subsection{List.prototype.names(i, newNames)}
+    Get or set the item names.
+
+
+\begin{itemize}
+
+\item When called with no arguments, return a string \texttt{Variable} of all the names,
+with \texttt{utils.missing} in place of any missing names. If no names exist,
+returns \texttt{utils.missing}.
+
+\item When called with a single numeric argument \texttt{i}, return the name at the
+given index.
+
+\item When called with a single array or \texttt{Variable} argument, set the names of the
+list using the array/variable's elements.
+
+\item When called with a single \texttt{null} or \texttt{utils.missing} argument, set the names
+to \texttt{utils.missing}.
+
+\item When called with two arguments \texttt{i}, \texttt{newName}, set the name of the \texttt{i}-th item
+to \texttt{newName}.
+
+
+  var l = new List({ a: [1, 2], b: 3 });
+  l.names();           // Variable(['a', 'b'])
+  l.names(2);          // 'b'
+  l.names(2, 'c');     // \texttt{l} is now { a: [1,2], c: 3 }
+  l.names(['d', 'e']); // \texttt{l} is now { d: [1,2], e: 3 }
+  l.names(null);       // \texttt{l} now has no names
+
+
+
+
+\end{itemize}
+
+    \subsection{List.prototype.reduce(f, initial)}
+    Apply the function \texttt{f(acc, val, i, name)} to each item in the list,
+accumulating the result to be returned.
+
+
+For any values with no associated name, \texttt{name} will be supplied as
+\texttt{utils.missing}.
+
+
+Similar to Javascript's \texttt{Array.prototype.reduce}.
+
+
+    \subsection{List.prototype.set(i, val)}
+    Called with two arguments \texttt{i}, \texttt{val}. Set the list item at a given index \texttt{i}.
+\texttt{i} can be:
+
+
+\begin{itemize}
+
+\item a positive number. If \texttt{i} is greater than the length of the list,
+create a new item at index \texttt{i} and fill the resulting gap with \texttt{utils.missing}.
+
+\item a string name:  If the name \texttt{i} is not already a name in the list, append a
+new item with name \texttt{i}. Otherwise, update the existing item with the new value.
+
+\item an object of name-value pairs, causing a series of updates or appends, one for
+each pair.
+
+\item an array of values, causing a series of appends of these (unnamed) items.
+
+\end{itemize}
+
+\texttt{val} can be any Javascript entity. If \texttt{i} is an object or array, then \texttt{val} is
+omitted.
+
+
+    \subsection{List.prototype.toVariable()}
+    Return a \texttt{Variable} by concatenating the values from the list's items.
+Works with items of any of the following types:
+
+
+\begin{itemize}
+
+\item single value
+
+\item Array, \texttt{Vector}, \texttt{Variable}
+
+\item \texttt{List}
+
+\end{itemize}
+
+Names are generated for the new Variable base on the items' names in the list
+as well as their names (if any) as PanthR objects. The idea is to preserve any
+names in the list and/or in the values of the list in some reasonable way,
+wherever they exist.
+
+
+\begin{itemize}
+
+\item If the item is a variable with names, and it is a named list item, join the names
+
+\item If the item is a variable with names, and it is an unnamed list item,
+use the variable names
+
+\item If the item is a variable without names, and it is a named list item, provide
+names of the form \texttt{itemName.1, itemName.2, ...}
+
+\end{itemize}
+
+    \subsection{List.prototype.unnest(levels)}
+    Unnest a number of levels out of a nested list, starting at the
+top level. \texttt{levels} is the number of levels it will attempt to unnest.
+Level 0 indicates no change. Default is 1.
+Level \texttt{Infinity} indicates complete unnesting.
+
+
+This method will only attempt to resolve nesting formed via \texttt{List} constructs,
+and will not recurse into Javascript Objects or Arrays.
+
+
+BEWARE: This operation changes the list(s) \emph{in place}.
+
+
+  \section{stats}
+    \subsection{stats.correlate(xs, ys, skipMissing)}
+    Return the Pearson correlation coefficient between two variables, \texttt{xs} and \texttt{ys}.
+By default, uses all the values of both variables.  If \texttt{skipMissing} is not set
+to \texttt{true} and missing values exist, return \texttt{utils.missing}.
+
+
+The two variables must have the same length.
+
+
+  \section{utils}
+    \subsection{utils.allMissing(arr)}
+    Return true if all entries in the array are missing.
+
+
+    \subsection{utils.areEqualArrays(A, B)}
+    Test for array element equality that respects missing values.
+Makes a shallow comparison.
+
+
+    \subsection{utils.equal(a, b)}
+    Test for equality that respects missing values.
+
+
+    \subsection{utils.format}
+    An object containing formatting functions for numbers.
+
+
+    \subsection{utils.getDefault(val, deflt)}
+    If \texttt{val} is a missing value, return \texttt{deflt}, else return \texttt{val}.
+
+
+    \subsection{utils.getOption(s, optList, deflt)}
+    Take a user-provided option description \texttt{s} (a string) and an array \texttt{optList}
+of allowable option settings.  Return the first element of the array that
+has \texttt{s} as its initial substring.  Return \texttt{null} if no such match is found.
+
+
+If \texttt{s} is empty, \texttt{null} or \texttt{undefined}, return the default setting \texttt{deflt}.
+
+
+    \subsection{utils.hasMissing(arr)}
+    For an array, return whether the array has any missing values in it.
+
+
+    \subsection{utils.isMissing(val)}
+    Return true if \texttt{val} is \texttt{undefined}, \texttt{null}, or \texttt{NaN}. *
+
+
+    \subsection{utils.isNotMissing(val)}
+    Return true if \texttt{val} is not \texttt{undefined}, \texttt{null}, or \texttt{NaN}. *
+
+
+    \subsection{utils.isOfType(v, types)}
+    Test if \texttt{v} is of one of the listed \texttt{types} (an array of strings).
+
+
+    \subsection{utils.makePreserveMissing(f)}
+    Return a new function \texttt{g} such that \texttt{g(any missing)} is \texttt{utils.missing},
+and \texttt{g(val)} is either \texttt{f(val)} or \texttt{utils.missing}, depending on whether
+\texttt{f(val)} is a missing value.
+
+
+    \subsection{utils.missing}
+    Value to be used for all missing values.
+
+
+    \subsection{utils.mixin(target)}
+    Mixes into the first object the key-value pairs from the other objects.
+Shallow copy.
+
+
+    \subsection{utils.op}
+    Arithmetic operators
+
+
+    \subsection{utils.op.add(a, b)}
+    The function that adds two numbers. Also available as \texttt{utils.op['+']}.
+
+
+    \subsection{utils.op.div(a, b)}
+    The function that divides two numbers. Also available as \texttt{utils.op['/']}.
+
+
+    \subsection{utils.op.max2(a, b)}
+    The function that takes two values and returns the maximum.
+
+
+    \subsection{utils.op.min2(a, b)}
+    The function that takes two values and returns the minimum.
+
+
+    \subsection{utils.op.mult(a, b)}
+    The function that multiplies two numbers. Also available as \texttt{utils.op['*']}.
+
+
+    \subsection{utils.op.sub(a, b)}
+    The function that subtracts two numbers. Also available as \texttt{utils.op['-']}.
+
+
+    \subsection{utils.optionMap(val, f)}
+    If \texttt{val} is a missing value, return \texttt{utils.missing}. Otherwise return \texttt{f(val)}.
+
+
+    \subsection{utils.seq(from, to, step)}
+    Create an array of sequential values. Similar options to \texttt{Variable.seq}.
+
+
+    \subsection{utils.singleMissing(val)}
+    Return \texttt{val} if it is non-missing; otherwise return \texttt{utils.missing}.
+
+
+\end{document}

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="doc.css" type="text/css" media="screen" title="no title" charset="utf-8">
+    <title>utils</title>
+  </head>
+  <body>
+    <div id="header">
+    <h1>Documentation for module <code>utils</code>
+      
+      </h1>
+    </div>
+    <div id="sidebar">
+      <div>
+        <h3>Module Index</h3>
+      <ul>
+        <a href="Variable.html"><li><code>Variable</code></li></a>
+        <a href="Dataset.html"><li><code>Dataset</code></li></a>
+        <a href="List.html"><li><code>List</code></li></a>
+        <a href="stats.html"><li><code>stats</code></li></a>
+        <a href="utils.html"><li><code>utils</code></li></a>
+      </ul>
+      </div>
+      <div>
+        <h3>Contents</h3>
+      <ul>
+        
+        <a href="#utils.allMissing"><li><code>utils.allMissing</code></li></a>
+        
+        <a href="#utils.areEqualArrays"><li><code>utils.areEqualArrays</code></li></a>
+        
+        <a href="#utils.equal"><li><code>utils.equal</code></li></a>
+        
+        <a href="#utils.format"><li><code>utils.format</code></li></a>
+        
+        <a href="#utils.getDefault"><li><code>utils.getDefault</code></li></a>
+        
+        <a href="#utils.getOption"><li><code>utils.getOption</code></li></a>
+        
+        <a href="#utils.hasMissing"><li><code>utils.hasMissing</code></li></a>
+        
+        <a href="#utils.isMissing"><li><code>utils.isMissing</code></li></a>
+        
+        <a href="#utils.isNotMissing"><li><code>utils.isNotMissing</code></li></a>
+        
+        <a href="#utils.isOfType"><li><code>utils.isOfType</code></li></a>
+        
+        <a href="#utils.makePreserveMissing"><li><code>utils.makePreserveMissing</code></li></a>
+        
+        <a href="#utils.missing"><li><code>utils.missing</code></li></a>
+        
+        <a href="#utils.mixin"><li><code>utils.mixin</code></li></a>
+        
+        <a href="#utils.op"><li><code>utils.op</code></li></a>
+        
+        <a href="#utils.op.add"><li><code>utils.op.add</code></li></a>
+        
+        <a href="#utils.op.div"><li><code>utils.op.div</code></li></a>
+        
+        <a href="#utils.op.max2"><li><code>utils.op.max2</code></li></a>
+        
+        <a href="#utils.op.min2"><li><code>utils.op.min2</code></li></a>
+        
+        <a href="#utils.op.mult"><li><code>utils.op.mult</code></li></a>
+        
+        <a href="#utils.op.sub"><li><code>utils.op.sub</code></li></a>
+        
+        <a href="#utils.optionMap"><li><code>utils.optionMap</code></li></a>
+        
+        <a href="#utils.seq"><li><code>utils.seq</code></li></a>
+        
+        <a href="#utils.singleMissing"><li><code>utils.singleMissing</code></li></a>
+        
+      </ul>
+      </div>
+    </div>
+    <div id="main">
+      <div class="moduleInfo">
+        <h2>Module <code>utils</code></h2>
+        <p>Author(s): <a class="author" href="mailto:skiadas@hanover.edu">Haris Skiadas</a>, <a class="author" href="mailto:wahl@hanover.edu">Barb Wahl</a><p>
+        <p>Utility library for panthrBase.</p>
+<p>A collection of utilities used by panthrBase.
+Contains methods for:</p>
+<ul>
+<li>handling missing values,</li>
+<li>standard arithmetic operations,</li>
+<li>equality tests,</li>
+<li>number formatting.</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="utils.allMissing"><code>utils.allMissing(arr)</code></h4>
+        <p>Return true if all entries in the array are missing.</p>
+      </div>
+      <div>
+        <h4 id="utils.areEqualArrays"><code>utils.areEqualArrays(A, B)</code></h4>
+        <p>Test for array element equality that respects missing values.
+Makes a shallow comparison.</p>
+      </div>
+      <div>
+        <h4 id="utils.equal"><code>utils.equal(a, b)</code></h4>
+        <p>Test for equality that respects missing values.</p>
+      </div>
+      <div>
+        <h4 id="utils.format"><code>utils.format</code></h4>
+        <p>An object containing formatting functions for numbers.</p>
+      </div>
+      <div>
+        <h4 id="utils.getDefault"><code>utils.getDefault(val, deflt)</code></h4>
+        <p>If <code>val</code> is a missing value, return <code>deflt</code>, else return <code>val</code>.</p>
+      </div>
+      <div>
+        <h4 id="utils.getOption"><code>utils.getOption(s, optList, deflt)</code></h4>
+        <p>Take a user-provided option description <code>s</code> (a string) and an array <code>optList</code>
+of allowable option settings.  Return the first element of the array that
+has <code>s</code> as its initial substring.  Return <code>null</code> if no such match is found.</p>
+<p>If <code>s</code> is empty, <code>null</code> or <code>undefined</code>, return the default setting <code>deflt</code>.</p>
+      </div>
+      <div>
+        <h4 id="utils.hasMissing"><code>utils.hasMissing(arr)</code></h4>
+        <p>For an array, return whether the array has any missing values in it.</p>
+      </div>
+      <div>
+        <h4 id="utils.isMissing"><code>utils.isMissing(val)</code></h4>
+        <p>Return true if <code>val</code> is <code>undefined</code>, <code>null</code>, or <code>NaN</code>. *</p>
+      </div>
+      <div>
+        <h4 id="utils.isNotMissing"><code>utils.isNotMissing(val)</code></h4>
+        <p>Return true if <code>val</code> is not <code>undefined</code>, <code>null</code>, or <code>NaN</code>. *</p>
+      </div>
+      <div>
+        <h4 id="utils.isOfType"><code>utils.isOfType(v, types)</code></h4>
+        <p>Test if <code>v</code> is of one of the listed <code>types</code> (an array of strings).</p>
+      </div>
+      <div>
+        <h4 id="utils.makePreserveMissing"><code>utils.makePreserveMissing(f)</code></h4>
+        <p>Return a new function <code>g</code> such that <code>g(any missing)</code> is <a href="#utils.missing"><code>utils.missing</code></a>,
+and <code>g(val)</code> is either <code>f(val)</code> or <a href="#utils.missing"><code>utils.missing</code></a>, depending on whether
+<code>f(val)</code> is a missing value.</p>
+      </div>
+      <div>
+        <h4 id="utils.missing"><code>utils.missing</code></h4>
+        <p>Value to be used for all missing values.</p>
+      </div>
+      <div>
+        <h4 id="utils.mixin"><code>utils.mixin(target)</code></h4>
+        <p>Mixes into the first object the key-value pairs from the other objects.
+Shallow copy.</p>
+      </div>
+      <div>
+        <h4 id="utils.op"><code>utils.op</code></h4>
+        <p>Arithmetic operators</p>
+      </div>
+      <div>
+        <h4 id="utils.op.add"><code>utils.op.add(a, b)</code></h4>
+        <p>The function that adds two numbers. Also available as <code>utils.op['+']</code>.</p>
+      </div>
+      <div>
+        <h4 id="utils.op.div"><code>utils.op.div(a, b)</code></h4>
+        <p>The function that divides two numbers. Also available as <code>utils.op['/']</code>.</p>
+      </div>
+      <div>
+        <h4 id="utils.op.max2"><code>utils.op.max2(a, b)</code></h4>
+        <p>The function that takes two values and returns the maximum.</p>
+      </div>
+      <div>
+        <h4 id="utils.op.min2"><code>utils.op.min2(a, b)</code></h4>
+        <p>The function that takes two values and returns the minimum.</p>
+      </div>
+      <div>
+        <h4 id="utils.op.mult"><code>utils.op.mult(a, b)</code></h4>
+        <p>The function that multiplies two numbers. Also available as <code>utils.op['*']</code>.</p>
+      </div>
+      <div>
+        <h4 id="utils.op.sub"><code>utils.op.sub(a, b)</code></h4>
+        <p>The function that subtracts two numbers. Also available as <code>utils.op['-']</code>.</p>
+      </div>
+      <div>
+        <h4 id="utils.optionMap"><code>utils.optionMap(val, f)</code></h4>
+        <p>If <code>val</code> is a missing value, return <a href="#utils.missing"><code>utils.missing</code></a>. Otherwise return <code>f(val)</code>.</p>
+      </div>
+      <div>
+        <h4 id="utils.seq"><code>utils.seq(from, to, step)</code></h4>
+        <p>Create an array of sequential values. Similar options to <a href="#Variable.seq"><code>Variable.seq</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="utils.singleMissing"><code>utils.singleMissing(val)</code></h4>
+        <p>Return <code>val</code> if it is non-missing; otherwise return <a href="#utils.missing"><code>utils.missing</code></a>.</p>
+      </div>
+    </div>
+  </body>
+</html>

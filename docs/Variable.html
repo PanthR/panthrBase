@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="doc.css" type="text/css" media="screen" title="no title" charset="utf-8">
+    <title>Variable</title>
+  </head>
+  <body>
+    <div id="header">
+    <h1>Documentation for module <code>Variable</code>
+      
+      </h1>
+    </div>
+    <div id="sidebar">
+      <div>
+        <h3>Module Index</h3>
+      <ul>
+        <a href="Variable.html"><li><code>Variable</code></li></a>
+        <a href="Dataset.html"><li><code>Dataset</code></li></a>
+        <a href="List.html"><li><code>List</code></li></a>
+        <a href="stats.html"><li><code>stats</code></li></a>
+        <a href="utils.html"><li><code>utils</code></li></a>
+      </ul>
+      </div>
+      <div>
+        <h3>Contents</h3>
+      <ul>
+        
+        <a href="#Variable"><li><code>Variable</code></li></a>
+        
+        <a href="#Variable.concat"><li><code>Variable.concat</code></li></a>
+        
+        <a href="#Variable.dateTime"><li><code>Variable.dateTime</code></li></a>
+        
+        <a href="#Variable.ensureArray"><li><code>Variable.ensureArray</code></li></a>
+        
+        <a href="#Variable.factor"><li><code>Variable.factor</code></li></a>
+        
+        <a href="#Variable.fiveNum"><li><code>Variable.fiveNum</code></li></a>
+        
+        <a href="#Variable.format"><li><code>Variable.format</code></li></a>
+        
+        <a href="#Variable.groupIndices"><li><code>Variable.groupIndices</code></li></a>
+        
+        <a href="#Variable.layOut"><li><code>Variable.layOut</code></li></a>
+        
+        <a href="#Variable.logical"><li><code>Variable.logical</code></li></a>
+        
+        <a href="#Variable.max"><li><code>Variable.max</code></li></a>
+        
+        <a href="#Variable.mean"><li><code>Variable.mean</code></li></a>
+        
+        <a href="#Variable.median"><li><code>Variable.median</code></li></a>
+        
+        <a href="#Variable.min"><li><code>Variable.min</code></li></a>
+        
+        <a href="#Variable.oneDimToArray"><li><code>Variable.oneDimToArray</code></li></a>
+        
+        <a href="#Variable.oneDimToVariable"><li><code>Variable.oneDimToVariable</code></li></a>
+        
+        <a href="#Variable.oneDimToVector"><li><code>Variable.oneDimToVector</code></li></a>
+        
+        <a href="#Variable.order"><li><code>Variable.order</code></li></a>
+        
+        <a href="#Variable.ordinal"><li><code>Variable.ordinal</code></li></a>
+        
+        <a href="#Variable.read"><li><code>Variable.read</code></li></a>
+        
+        <a href="#Variable.scalar"><li><code>Variable.scalar</code></li></a>
+        
+        <a href="#Variable.scale"><li><code>Variable.scale</code></li></a>
+        
+        <a href="#Variable.sd"><li><code>Variable.sd</code></li></a>
+        
+        <a href="#Variable.seq"><li><code>Variable.seq</code></li></a>
+        
+        <a href="#Variable.sort"><li><code>Variable.sort</code></li></a>
+        
+        <a href="#Variable.string"><li><code>Variable.string</code></li></a>
+        
+        <a href="#Variable.sum"><li><code>Variable.sum</code></li></a>
+        
+        <a href="#Variable.table"><li><code>Variable.table</code></li></a>
+        
+        <a href="#Variable.tabulate"><li><code>Variable.tabulate</code></li></a>
+        
+        <a href="#Variable.toHTML"><li><code>Variable.toHTML</code></li></a>
+        
+        <a href="#Variable.var"><li><code>Variable.var</code></li></a>
+        
+        <a href="#Variable.write"><li><code>Variable.write</code></li></a>
+        
+        <a href="#Variable.zscore"><li><code>Variable.zscore</code></li></a>
+        
+        <a href="#Variable%25asScalar"><li><code>Variable#asScalar</code></li></a>
+        
+        <a href="#Variable%25asString"><li><code>Variable#asString</code></li></a>
+        
+        <a href="#Variable%25clone"><li><code>Variable#clone</code></li></a>
+        
+        <a href="#Variable%25concat"><li><code>Variable#concat</code></li></a>
+        
+        <a href="#Variable%25each"><li><code>Variable#each</code></li></a>
+        
+        <a href="#Variable%25filter"><li><code>Variable#filter</code></li></a>
+        
+        <a href="#Variable%25get"><li><code>Variable#get</code></li></a>
+        
+        <a href="#Variable%25hasMissing"><li><code>Variable#hasMissing</code></li></a>
+        
+        <a href="#Variable%25length"><li><code>Variable#length</code></li></a>
+        
+        <a href="#Variable%25map"><li><code>Variable#map</code></li></a>
+        
+        <a href="#Variable%25names"><li><code>Variable#names</code></li></a>
+        
+        <a href="#Variable%25nonMissing"><li><code>Variable#nonMissing</code></li></a>
+        
+        <a href="#Variable%25reduce"><li><code>Variable#reduce</code></li></a>
+        
+        <a href="#Variable%25rep"><li><code>Variable#rep</code></li></a>
+        
+        <a href="#Variable%25reproduce"><li><code>Variable#reproduce</code></li></a>
+        
+        <a href="#Variable%25resize"><li><code>Variable#resize</code></li></a>
+        
+        <a href="#Variable%25sameLength"><li><code>Variable#sameLength</code></li></a>
+        
+        <a href="#Variable%25select"><li><code>Variable#select</code></li></a>
+        
+        <a href="#Variable%25set"><li><code>Variable#set</code></li></a>
+        
+        <a href="#Variable%25toArray"><li><code>Variable#toArray</code></li></a>
+        
+        <a href="#Variable%25toVector"><li><code>Variable#toVector</code></li></a>
+        
+      </ul>
+      </div>
+    </div>
+    <div id="main">
+      <div class="moduleInfo">
+        <h2>Module <code>Variable</code></h2>
+        <p>Author(s): <a class="author" href="mailto:skiadas@hanover.edu">Haris Skiadas</a>, <a class="author" href="mailto:wahl@hanover.edu">Barb Wahl</a><p>
+        <p>Representation of &quot;statistics&quot; Variables</p>
+      </div>
+      <div>
+        <h4 id="Variable"><code>Variable(values, options)</code></h4>
+        <p>Create a new variable. <code>values</code> is one of the following:</p>
+<ul>
+<li>an array or vector with the desired values,</li>
+<li>a variable (which is simply cloned)</li>
+<li>a function <code>f(i)</code> for generating the values, in which case <code>length</code> is
+a required option.
+<code>options</code> is an object indicating properties of the variable:<ul>
+<li><code>length</code>: Will be ignored if <code>values</code> is not a function</li>
+<li><code>label</code>: The label to use in graphs/tables/descriptions.</li>
+<li><code>mode</code>: A string describing what type of variable to create. If <code>mode</code> is missing
+it will be determined based on the first non-missing entry in <code>values</code>.</li>
+<li><code>_names</code>: An optional vector/array/variable of equal length containing names for
+the values. Access it via the <code>names</code> method.</li>
+</ul>
+</li>
+</ul>
+<p>Further options depend on the particular mode chosen. See the subclass documentations
+for details.</p>
+<p>A default label value will be generated if not provided. So creating a <a href="#Variable"><code>Variable</code></a> can
+be as simple as passing a <code>values</code> argument to the constructor.</p>
+<p>Variable construction and setting needs to preserve the invariant that all entries are
+either <code>null</code> or a &quot;meaningful&quot; value. All <code>undefined</code>, missing and <code>NaN</code> entries will be
+converted to <code>null</code>.</p>
+<p>If <code>values</code> is a <a href="#Variable"><code>Variable</code></a> it will simply be cloned (<code>options</code> will be ignored).</p>
+      </div>
+      <div>
+        <h4 id="Variable.concat"><code>Variable.concat(vars)</code></h4>
+        <p>Concatenate the inputs into a single variable. All inputs must be variables,
+and a common mode will be inferred based on the variable modes:</p>
+<ul>
+<li>Variables of mode ordinal are treated as having mode factor</li>
+<li>If one of the variables is of mode string, the result is of mode string</li>
+<li>If all variables have the same mode, the result is of that mode</li>
+<li>Otherwise the result is of mode scalar</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Variable.dateTime"><code>Variable.dateTime(values, label)</code></h4>
+        <p>Create a date-time variable. <code>label</code> is optional.</p>
+      </div>
+      <div>
+        <h4 id="Variable.ensureArray"><code>Variable.ensureArray(val)</code></h4>
+        <p>Convert <code>val</code> into a (Javascript) array, with &quot;missing values&quot;
+replaced by <a href="#utils.missing"><code>utils.missing</code></a>. The argument may be:</p>
+<ul>
+<li>A single number</li>
+<li>A value that is <a href="#utils.isMissing"><code>utils.isMissing</code></a>  (<code>NaN</code>, <code>null</code>, <code>undefined</code>)</li>
+<li>An array, <code>Vector</code> or <a href="#Variable"><code>Variable</code></a></li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Variable.factor"><code>Variable.factor(values, label)</code></h4>
+        <p>Create a factor variable. <code>label</code> is optional.</p>
+      </div>
+      <div>
+        <h4 id="Variable.fiveNum"><code>Variable.fiveNum(skipMissing)</code></h4>
+        <p>Return a 'named' scalar variable of the five-number of the values of the variable.
+<code>skipMissing</code> defaults to <code>false</code>.  If <code>skipMissing</code> is <code>false</code> and
+the variable has missing values, return <a href="#utils.missing"><code>utils.missing</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="Variable.format"><code>Variable.format(options)</code></h4>
+        <p>Return a string variable for displaying the given variable with a
+specified numerical formatting. The <code>options</code> object may include:</p>
+<ul>
+<li><code>type</code>: A string value, either 'scientific' or 'fixed'.</li>
+<li><code>decimals</code>: The number of decimal digits to be displayed to the right of
+the decimal point. Defaults to 4 for 'scientific' format and to 2 for 'fixed'
+format.</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Variable.groupIndices"><code>Variable.groupIndices()</code></h4>
+        <p>Return a <a href="#List"><code>List</code></a> of arrays of indices corresponding to the distribution
+of the factor variable. If the variable is not factor or ordinal, it will
+be treated as a factor variable.</p>
+<p>If missing values are present, an extra (unnamed) list item to hold those
+indices will be created at the end of the list.</p>
+<pre class="prettyprint source"><a href="#Variable.factor"><code>Variable.factor(['a','a','b']).groupIndices(); // { a: [1, 2], b: [3] }</code></a></pre>
+      </div>
+      <div>
+        <h4 id="Variable.layOut"><code>Variable.layOut(ncol)</code></h4>
+        <p>Lay out the variable's values in rows. Return an array with one entry for
+each row. Each row entry is an array of objects representing the values.
+The objects have the form <code>{ index: i, value: val, name: s }</code>.</p>
+<p>The parameter <code>ncol</code> specifies how many entries will be in each row (default
+is 1). If the variable length is not an exact multiple of <code>ncol</code>, then the
+last row will contain fewer entries.</p>
+<p>Mostly intended as an internal method for use in <code>Variable#toHTML</code>.</p>
+      </div>
+      <div>
+        <h4 id="Variable.logical"><code>Variable.logical(values, label)</code></h4>
+        <p>Create a logical variable. <code>label</code> is optional.</p>
+      </div>
+      <div>
+        <h4 id="Variable.max"><code>Variable.max(skipMissing)</code></h4>
+        <p>Return the maximum of the values of the variable.
+<code>skipMissing</code> defaults to <code>false</code>.  If <code>skipMissing</code> is <code>false</code> and
+the variable has missing values, return <a href="#utils.missing"><code>utils.missing</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="Variable.mean"><code>Variable.mean(skipMissing)</code></h4>
+        <p>Return the mean of the values of the variable.
+<code>skipMissing</code> defaults to <code>false</code>.  If <code>skipMissing</code> is <code>false</code> and
+the variable has missing values, return <a href="#utils.missing"><code>utils.missing</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="Variable.median"><code>Variable.median(skipMissing)</code></h4>
+        <p>Return the median of the values of the variable.
+<code>skipMissing</code> defaults to <code>false</code>.  If <code>skipMissing</code> is <code>false</code> and
+the variable has missing values, return <a href="#utils.missing"><code>utils.missing</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="Variable.min"><code>Variable.min(skipMissing)</code></h4>
+        <p>Return the minimum of the values of the variable.
+<code>skipMissing</code> defaults to <code>false</code>.  If <code>skipMissing</code> is <code>false</code> and
+the variable has missing values, return <a href="#utils.missing"><code>utils.missing</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="Variable.oneDimToArray"><code>Variable.oneDimToArray(val)</code></h4>
+        <p>Convert <code>val</code> into an array, if <code>val</code> is &quot;one-dimensional&quot;
+(<a href="#Variable"><code>Variable</code></a>, <code>Vector</code>, array).
+Non-one-dimensional arguments are returned unchanged.</p>
+      </div>
+      <div>
+        <h4 id="Variable.oneDimToVariable"><code>Variable.oneDimToVariable(val)</code></h4>
+        <p>Convert <code>val</code> into a <a href="#Variable"><code>Variable</code></a>, if <code>val</code> is &quot;one-dimensional&quot;
+(<a href="#Variable"><code>Variable</code></a>, <code>Vector</code>, array).
+Non-one-dimensional arguments are returned unchanged.</p>
+      </div>
+      <div>
+        <h4 id="Variable.oneDimToVector"><code>Variable.oneDimToVector(val)</code></h4>
+        <p>Convert <code>val</code> into a <code>Vector</code>, if <code>val</code> is &quot;one-dimensional&quot;
+(<a href="#Variable"><code>Variable</code></a>, <code>Vector</code>, array).
+Non-one-dimensional arguments are returned unchanged.</p>
+      </div>
+      <div>
+        <h4 id="Variable.order"><code>Variable.order(desc)</code></h4>
+        <p>Return a <a href="#Variable"><code>Variable</code></a> representing the permutation that sorts the values of the
+original variable according to the order specified by <code>desc</code>.</p>
+<ul>
+<li>If <code>desc</code> is a boolean value, then <code>false</code> indicates ascending order, <code>true</code>
+indicates descending order.</li>
+<li>If <code>desc</code> is a function <code>f(a, b)</code>, then it is interpreted as the comparator
+for sorting, and must return <code>-1</code> if <code>a</code> precedes <code>b</code>, <code>0</code> if <code>a</code> and <code>b</code> are &quot;equal&quot;
+in order, and <code>1</code> if <code>b</code> precedes <code>a</code>.</li>
+<li>If <code>desc</code> is omitted, it defaults to <code>false</code> (ascending order).</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Variable.ordinal"><code>Variable.ordinal(values, levels, label)</code></h4>
+        <p>Create an ordinal variable. <code>levels</code> and <code>label</code> are optional. If <code>levels</code>
+is omitted, an alphabetical ordering of the levels will be used.</p>
+      </div>
+      <div>
+        <h4 id="Variable.read"><code>Variable.read(vals, mode)</code></h4>
+        <p>Read values from a string (e.g., text file) into a <a href="#Variable"><code>Variable</code></a>.</p>
+<p><code>Variable#read</code> makes a sequence of tokens by breaking the string at any sequence
+of newlines, spaces, commas and semicolons.</p>
+<ul>
+<li>If a token starts with a double quote, then it must also end with a
+double-quote, and its contents are interpreted as follows:<ul>
+<li>Consecutive double-quotes (<code>&quot;&quot;</code>) are interpreted as a double-quote (<code>&quot;</code>).</li>
+<li>Escaped (backslashed) characters (<code>\c</code>) are interpreted as the character (<code>c</code>).</li>
+<li>No unescaped un-doubled double-quotes are allowed in the term.</li>
+</ul>
+</li>
+<li>Analogous conditions apply for a term starting with a single quote (<code>'</code>).</li>
+<li>If the token does not start with a quote, then it is interpreted literally.</li>
+</ul>
+<p>If the mode is not specified, it will be inferred as <code>scalar</code> if all the tokens
+can be interpreted as numbers, or as <code>factor</code> otherwise.</p>
+      </div>
+      <div>
+        <h4 id="Variable.scalar"><code>Variable.scalar(values, label)</code></h4>
+        <p>Create a scalar variable. <code>label</code> is optional.</p>
+      </div>
+      <div>
+        <h4 id="Variable.scale"><code>Variable.scale(center, scale)</code></h4>
+        <p>Rescale the variable based on the provided <code>center</code> and <code>scale</code>.
+Return a <a href="#List"><code>List</code></a> holding three items:</p>
+<ul>
+<li><code>center</code></li>
+<li><code>scale</code></li>
+<li><code>values</code> (a <a href="#Variable"><code>Variable</code></a> holding the rescaled values).</li>
+</ul>
+<p>Must be called with two arguments.</p>
+      </div>
+      <div>
+        <h4 id="Variable.sd"><code>Variable.sd(skipMissing)</code></h4>
+        <p>Return the standard deviation of the values of the variable.
+<code>skipMissing</code> defaults to <code>false</code>.  If <code>skipMissing</code> is <code>false</code> and
+the variable has missing values, return <a href="#utils.missing"><code>utils.missing</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="Variable.seq"><code>Variable.seq(from, to, step, options)</code></h4>
+        <p>Construct a scalar variable from an arithmetic sequence.
+Can be called as:</p>
+<ul>
+<li><code>seq(to[, options])</code> where <code>from</code> equals 1</li>
+<li><code>seq(from, to[, options])</code> where <code>step</code> equals -1 or +1</li>
+<li><p><code>seq(from, to, step[, options])</code>
+<code>step</code> must have the same sign as <code>to - from</code>.
+<code>options</code> parameter is an optional options object that is passed to the
+<a href="#Variable"><code>Variable</code></a> constructor</p>
+<p>  seq(5)            // [1, 2, 3, 4, 5]
+  seq(5, 7.5)       // [5, 6, 7]
+  seq(4, 1.2)       // [4, 3, 2]
+  seq(5.1, 6.1, .5) // [5.1, 5.6, 6.1]
+  seq(4, 1.2, -2)   // [4, 2]</p>
+</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Variable.sort"><code>Variable.sort(desc)</code></h4>
+        <p>Return a new <a href="#Variable"><code>Variable</code></a> with the values sorted in the order specified by <code>desc</code>.
+See <code>Variable#order</code>.</p>
+      </div>
+      <div>
+        <h4 id="Variable.string"><code>Variable.string(values, label)</code></h4>
+        <p>Create a string variable. <code>label</code> is optional.</p>
+      </div>
+      <div>
+        <h4 id="Variable.sum"><code>Variable.sum(skipMissing)</code></h4>
+        <p>Return the sum of the values of the variable.
+<code>skipMissing</code> defaults to <code>false</code>.  If <code>skipMissing</code> is <code>false</code> and
+the variable has missing values, return <a href="#utils.missing"><code>utils.missing</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="Variable.table"><code>Variable.table()</code></h4>
+        <p>Return a frequency table for the variable, in the form of a 'named' scalar
+variable.  The variable is treated as a factor variable in order to
+accumulate the frequencies.</p>
+      </div>
+      <div>
+        <h4 id="Variable.tabulate"><code>Variable.tabulate(f, from, to, options)</code></h4>
+        <p>Create a new variable with values <code>f(from), f(from+1), ..., f(to)</code>.
+The <code>options</code> parameter is passed to the <a href="#Variable"><code>Variable</code></a> constructor.</p>
+      </div>
+      <div>
+        <h4 id="Variable.toHTML"><code>Variable.toHTML(options)</code></h4>
+        <p>Return an HTML string displaying the variable. Each value is wrapped in
+a tag, and that tag may be preceded by a tagged name. Each row is further
+wrapped in a tag. The default format can be used as the contents of a
+<code>table</code> tag.</p>
+<p>The <code>options</code> object may include:</p>
+<ul>
+<li><code>ncol</code>: The number of &quot;columns&quot; (default is 1).</li>
+<li><code>withNames</code>: Whether names should be included (default is <code>false</code>).</li>
+<li><code>value</code>: An object with properties <code>tag</code> and <code>class</code> for specifying the
+  html tag and the class attributes to be used for the values.</li>
+<li><code>name</code>:  A similar object to be used for the names.</li>
+<li><code>row</code>:   A similar object to be used for wrapping around each row.
+All three of these objects are optional, and their individual parts are
+optional as well. The defaults are <code>&lt;td&gt;</code> or <code>&lt;tr&gt;</code> for the tag and
+<code>var-value</code>, <code>var-name</code> or <code>var-row</code> for the class.</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Variable.var"><code>Variable.var(skipMissing)</code></h4>
+        <p>Return the variance of the values of the variable.
+<code>skipMissing</code> defaults to <code>false</code>.  If <code>skipMissing</code> is <code>false</code> and
+the variable has missing values, return <a href="#utils.missing"><code>utils.missing</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="Variable.write"><code>Variable.write(options)</code></h4>
+        <p>Write the variable to a string.</p>
+<p><code>options</code> is an object that can include:</p>
+<ul>
+<li><code>sep</code>: A character or string to use as separator. Defaults to <code>','</code>.</li>
+<li><code>quote</code>: A boolean value specifying whether to quote string values/names. Defaults
+ to <code>false</code>.</li>
+<li><code>qescape</code>: A boolean value specifying whether to escape embedded quotes via a
+ backslash. Defaults to <code>false</code>, meaning escape via an extra double-quote.</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Variable.zscore"><code>Variable.zscore()</code></h4>
+        <p>Return the standardized values using <code>Variable#rescale</code> where <code>center</code> is the
+mean of the variable and <code>scale</code> is the standard deviation.</p>
+<p>Missing values are preserved, but are ignored in the computation.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25asScalar"><code>Variable#asScalar()</code></h4>
+        <p>Convert the variable to scalar mode.</p>
+<p>For factor variables, the codes are used.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25asString"><code>Variable#asString()</code></h4>
+        <p>Convert the variable to string mode.</p>
+<p>For factor variables, the values are used.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25clone"><code>Variable#clone()</code></h4>
+        <p>Clone the variable, creating a new variable with the same values and mode.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25concat"><code>Variable#concat(vars)</code></h4>
+        <p>See <a href="#Variable.concat"><code>Variable.concat</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25each"><code>Variable#each(f, skipMissing)</code></h4>
+        <p>Apply the function <code>f(val, i)</code> to each value in the variable.
+If <code>skipMissing</code> is set to <code>true</code> (default is <code>false</code>), it will only apply
+<code>f</code> to non-missing values (as determined by <a href="#utils.isNotMissing"><code>utils.isNotMissing</code></a>).</p>
+      </div>
+      <div>
+        <h4 id="Variable%25filter"><code>Variable#filter(pred)</code></h4>
+        <p>Given a predicate <code>pred(val, i)</code>, return a new variable containing
+those values from the original variable that satisfy the predicate.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25get"><code>Variable#get(i)</code></h4>
+        <p>Return the values(s) indicated by <code>i</code>.  (Keep in mind that variables
+are indexed starting from 1.)</p>
+<ul>
+<li>If <code>i</code> is a positive integer, return the value at index <code>i</code>.</li>
+<li>If <code>i</code> is an array of non-negative integers, return an array of
+the corresponding values (skipping indices of value 0).</li>
+<li>If <code>i</code> is an array of non-positive integers, return an array of
+all values of the variable except those indicated by the negative indices.</li>
+<li>If <code>i</code> is a scalar variable, it is converted into an array.</li>
+<li>If <code>i</code> is a logical variable, it must have the same length as the original
+variable, in which case, return an array of the values which correspond to the
+<code>true</code> values in <code>i</code>.</li>
+</ul>
+<p>For factor variables, the values are returned, not the codes.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25hasMissing"><code>Variable#hasMissing()</code></h4>
+        <p>Return a boolean indicating whether the variable contains missing values
+as indicated by <a href="#utils.isMissing"><code>utils.isMissing</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25length"><code>Variable#length()</code></h4>
+        <p>Return the length of the variable.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25map"><code>Variable#map(f, skipMissing, mode)</code></h4>
+        <p>Create a new variable from the results of applying the function <code>f(val, i)</code> to the
+values of the original variable. If <code>skipMissing</code> is set to <code>true</code> (default is <code>false</code>),
+then missing values will be preserved, and <code>f</code> will only be applied to the non-missing
+values. The optional parameter <code>mode</code> specifies the desired mode of the new variable.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25names"><code>Variable#names(newNames)</code></h4>
+        <p>Called with no arguments, return the names associated with the variable's
+entries.</p>
+<p>Otherwise <code>newNames</code> is passed to the <a href="#Variable"><code>Variable</code></a> constructor to create a
+string variable of the new names.</p>
+<p>If the provided names do not have the correct length, <a href="#Variable%25resize"><code>Variable#resize</code></a>
+will be used on the names.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25nonMissing"><code>Variable#nonMissing()</code></h4>
+        <p>Return a new variable containing the non-missing values from the original
+variable as indicated by <a href="#utils.isNotMissing"><code>utils.isNotMissing</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25reduce"><code>Variable#reduce(f, initial, skipMissing)</code></h4>
+        <p>Apply the function <code>f(acc, val, i)</code> to each value in the variable, accumulating
+the result to be returned.
+If <code>skipMissing</code> is set to <code>true</code> (default is <code>false</code>), it will only apply
+<code>f</code> to non-missing values (as determined by <a href="#utils.isNotMissing"><code>utils.isNotMissing</code></a>).</p>
+<p>Similar to Javascript's <code>Array.prototype.reduce</code>.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25rep"><code>Variable#rep(times)</code></h4>
+        <p>Repeat a variable according to a pattern to make a new variable.
+<code>times</code> can be used in several different ways, depending on its type:</p>
+<ul>
+<li>If <code>times</code> is a number, repeat the variable that many times.</li>
+<li>If <code>times</code> is a variable or array, use the values as frequencies for
+corresponding entries. <code>times</code> must have same length as the original variable.</li>
+<li>If <code>times</code> is an object with a <code>length</code> property, cycle the values in the
+variable up to the specified length.</li>
+<li>If <code>times</code> is an object with an <code>each</code> property, repeat each value that
+many times (before going on to the next value).</li>
+</ul>
+      </div>
+      <div>
+        <h4 id="Variable%25reproduce"><code>Variable#reproduce(newValues, newNames)</code></h4>
+        <p>Return a new variable with all the same settings as the original
+but with values taken from <code>newValues</code>, which may be
+a <code>Vector</code> or an array.</p>
+<p>Note: If the variable is a factor or an ordinal variable, it is
+assumed that the new values are codes which are in agreement
+with the codes used by the variable.</p>
+<p>If <code>newNames</code> is provided, it must be one-dimensional (<a href="#Variable"><code>Variable</code></a>, <code>Vector</code>
+or array) and it is used to set names for the new variable.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25resize"><code>Variable#resize(length, fill)</code></h4>
+        <p>Resize the variable.
+If fill is <code>true</code>, recycle the values to reach the specified length.
+If fill is <code>false</code> or omitted, the new values will be filled with <a href="#utils.missing"><code>utils.missing</code></a>.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25sameLength"><code>Variable#sameLength(other)</code></h4>
+        <p>Return a boolean indicating whether the variable has the same length
+as the variable <code>other</code>.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25select"><code>Variable#select(indices)</code></h4>
+        <p>From a given array or <code>Vector</code> of indices, create a new variable based on the
+values of the original variable corresponding to those indices.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25set"><code>Variable#set(i, val)</code></h4>
+        <p>Set the entries indicated by <code>i</code> to the values indicated by <code>val</code>.
+(Keep in mind that Variables are indexed starting from 1.)</p>
+<p><code>val</code> may be a single value, or a <a href="#Variable"><code>Variable</code></a> or array of values of
+the appropriate length.</p>
+<ul>
+<li>If <code>i</code> is a positive integer, set the value at index <code>i</code>.</li>
+<li>If <code>i</code> is an array of non-negative integers, set
+the corresponding values (skipping indices of value 0).</li>
+<li>If <code>i</code> is an array of non-positive integers, set
+all values of the variable except those indicated by the negative indices.</li>
+<li>If <code>i</code> is a scalar variable, it is converted into an array.</li>
+<li>If <code>i</code> is a logical variable, it must have the same length as the original
+variable, in which case set the values which correspond to the <code>true</code>
+values in <code>i</code>.</li>
+</ul>
+<p>In all cases, if there are any null/undefined/NaN indices, an error occurs.</p>
+<p>This method cannot be used to append values. To set values out of bounds,
+call <a href="#Variable%25resize"><code>Variable#resize</code></a> first.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25toArray"><code>Variable#toArray()</code></h4>
+        <p>Return a Javascript array of the values of the variable.</p>
+<p>For factor variables, the values are returned.</p>
+      </div>
+      <div>
+        <h4 id="Variable%25toVector"><code>Variable#toVector()</code></h4>
+        <p>Return a <code>Vector</code> of the values of the variable.</p>
+<p>For factor variables, the codes are returned.</p>
+      </div>
+    </div>
+  </body>
+</html>
