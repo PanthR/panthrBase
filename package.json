@@ -7,7 +7,7 @@
       "test": "mocha --reporter=progress --recursive --require=./test/stackFixer.js",
       "lint": "eslint base",
       "doc": "node ./node_modules/panthrdoc/run.js .",
-      "bundle": "browserify bundlePre.js -o bundle.js"
+      "bundle": "browserify bundlePre.js | uglifyjs -c > toypages/bundle.js"
    },
    "repository": {
       "type": "git",
