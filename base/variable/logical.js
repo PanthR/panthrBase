@@ -14,9 +14,9 @@ return function(Variable) {
    LogicalVar.prototype = Object.create(Variable.prototype);
 
    LogicalVar.prototype.asScalar = function asScalar() {
-      return new Variable(this.values.map(utils.makePreserveMissing(
+      return (new Variable(this.values.map(utils.makePreserveMissing(
          function(val) { return val === true ? 1 : 0; }
-      )));
+      )))).names(this.names());
    };
 
    LogicalVar.prototype.which = function which() {

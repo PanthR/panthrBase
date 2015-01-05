@@ -43,6 +43,16 @@ describe('Variable Conversion:', function() {
       expect(utils.isMissing(vs[2].asScalar().get(3))).to.be.true;
       expect(utils.isMissing(vs[3].asScalar().get(3))).to.be.true;
    });
+   it('and they preserve names', function() {
+      vs.forEach(function(v) {
+         var names = v.asString().toArray();
+         v.names(names);
+         expect(utils.isNotMissing(v.asString().names())).to.be.ok;
+         expect(utils.isNotMissing(v.asScalar().names())).to.be.ok;
+         expect(v.asString().names().toArray()).to.deep.equal(names);
+         expect(v.asScalar().names().toArray()).to.deep.equal(names);
+      });
+   });
 });
 describe('Name labels', function() {
    var v = new Variable([2.12, -12.2, 3, undefined]);

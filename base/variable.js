@@ -253,7 +253,7 @@ define(function(require) {
     * For factor variables, the codes are used.
     */
    Variable.prototype.asScalar = function asScalar() {
-      return new Variable(this.values);
+      return (new Variable(this.values)).names(this.names());
    };
 
    /**
@@ -264,7 +264,7 @@ define(function(require) {
    Variable.prototype.asString = function asString() {
       return Variable.string(this.values.map(utils.makePreserveMissing(
          function(val) { return '' + val; }
-      )));
+      ))).names(this.names());
    };
 
    /**

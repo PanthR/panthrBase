@@ -52,7 +52,9 @@ return function(Variable) {
    };
 
    DateTimeVar.prototype.asString = function asString() {
-      return this.map(function(val) { return moment(val).format(); }, true, 'string');
+      return this.map(function(val) {
+        return moment(val).format();
+      }, true, 'string').names(this.names());
    };
 
    return DateTimeVar;

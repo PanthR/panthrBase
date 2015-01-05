@@ -91,7 +91,7 @@ return function(Variable) {
    };
 
    FactorVar.prototype.asString = function asString() {
-      return Variable.string(this.get());
+      return Variable.string(this.get()).names(this.names());
    };
 
    return FactorVar;

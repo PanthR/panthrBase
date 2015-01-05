@@ -10,7 +10,7 @@ return function(Variable) {
    StringVar.prototype = Object.create(Variable.prototype);
 
    StringVar.prototype.asScalar = function asScalar() {
-      return this.map(parseFloat, true, 'scalar');
+      return this.map(parseFloat, true, 'scalar').names(this.names());
    };
 
    return StringVar;
