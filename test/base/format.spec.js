@@ -10,9 +10,9 @@ describe('Variable#toHTML', function() {
       var var2 = Variable.tabulate(function(i) { return i*i; }, 0, 9);
       var s1 = var1.toHTML({withNames: true});
       var s2 = var2.toHTML({ncol: 3});
-      var m1 = s1.match(/<tr.*<\/tr>/gm);
+      var m1 = s1.match(/<tr.*?<\/tr>/gm);
       expect(m1.length).to.equal(3);
-      var m2 = s2.match(/<tr.*<\/tr>/gm);
+      var m2 = s2.match(/<tr.*?<\/tr>/gm);
       expect(m2.length).to.equal(4);
       m1.forEach(function(row) {
          expect(row.match(/<td.*?<\/td>/gm).length).to.equal(2);

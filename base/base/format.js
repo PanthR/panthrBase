@@ -3,9 +3,25 @@ define(function(require) {
 
 // Module that contains methods for displaying and formatting variables/datasets
 return function(loader) {
-   var utils;
+   var utils, Handlebars, variableTemplate;
    utils    = require('../utils');
-
+   Handlebars = require('handlebars');
+   variableTemplate = Handlebars.compile([
+      '{{#each values}}',
+      '<{{@root.opts.row.tag}} class="{{@root.opts.row.class}}">',
+      '{{#each this}}',
+      '{{#if @root.opts.withNames}}',
+      '<{{@root.opts.name.tag}} data-relIndex="{{index}}">',
+      '{{name}}',
+      '</{{@root.opts.name.tag}}>',
+      '{{/if}}',
+      '<{{@root.opts.value.tag}} data-relIndex="{{index}}">',
+      '{{value}}',
+      '</{{@root.opts.value.tag}}>',
+      '{{/each}}',
+      '</{{@root.opts.row.tag}}>',
+      '{{/each}}'
+   ].join(''));
    /**
     * Lay out the variable's values in rows. Return an array with one entry for
     * each row. Each row entry is an array of objects representing the values.
@@ -59,14 +75,7 @@ return function(loader) {
     *  `var-value`, `var-name` or `var-row` for the class.
     */
    loader.addInstanceMethod('Variable', 'toHTML', function toHTML(options) {
-      var arr, defaults, makeRow;
-      function wrap(params) {
-         return function(str, others) {
-            return '<' + params.tag + ' class="' + params.class + '" ' +
-                  (others || '') + '>' + str +
-                  '</' + params.tag + '>';
-         };
-      }
+      var defaults;
       defaults = {
          ncol: 1,
          withNames: false,
@@ -78,24 +87,10 @@ return function(loader) {
       options.value = utils.mixin(options.value, defaults.value);
       options.name  = utils.mixin(options.name, defaults.name);
       options.row   = utils.mixin(options.row, defaults.row);
-      makeRow = options.withNames ?
-         function(row) {
-            // entries include names and values
-            return row.map(function(obj) {
-               return wrap(options.name)(obj.name  , 'data-relIndex="' + obj.index + '"') +
-                      wrap(options.value)(obj.value, 'data-relIndex="' + obj.index + '"');
-            }).join('');
-         } :
-         function(row) {
-            return row.map(function(obj) {
-               return wrap(options.value)(obj.value, 'data-relIndex="' + obj.index + '"');
-            }).join('');
-         };
-      arr = this.layOut(options.ncol);
-      return arr.map(function(row) {
-         // row is an array of objects with properties `value` and `name`
-         return makeRow(row);
-      }).map(wrap(options.row)).join('\n');
+      return variableTemplate({
+         values: this.layOut(options.ncol),
+         opts: options
+      });
    });
 
    /**
