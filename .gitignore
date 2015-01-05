@@ -1,1 +1,4 @@
 node_modules
+docs/docs.aux
+docs/docs.log
+docs/docs.toc
