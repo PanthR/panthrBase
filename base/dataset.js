@@ -75,6 +75,16 @@ define(function(require) {
    };
 
    /**
+    * Apply the function `f(row, i)` to each row successively. The first argument
+    * `row` is a function as provided by `Dataset#rowFun`.
+    */
+   Dataset.prototype.eachRow = function eachRow(f) {
+      Variable.seq(this.nrow).each(function(i) {
+         f(this.rowFun(i), i);
+      }.bind(this));
+   };
+
+   /**
     * Return a subset of the values in the dataset. This method may be called with
     * no arguments, in which case an array of arrays of the columns is returned.
     * Otherwise, the method requires two arguments, `rows` and `cols`, specifying
