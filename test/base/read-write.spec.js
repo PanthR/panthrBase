@@ -123,6 +123,12 @@ describe('Dataset read', function() {
          [10.005, -15.32, -23E-5, 4.4e10, +.17, 22., NaN]
       )).to.be.true;
    });
+   it('can infer headers in some cases', function() {
+      var d = Dataset.read(readFile('sampleData.csv'));
+      expect(d.ncol).to.equal(2);
+      expect(d.nrow).to.equal(7);
+      expect(d.names().toArray()).to.deep.equal(['Name', 'Age']);
+   });
 });
 describe('Dataset write', function() {
    it('agrees with read', function() {

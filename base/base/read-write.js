@@ -105,7 +105,14 @@ return function(loader) {
       terms = columnize(terms);
       if (options.header == null) { // can add logic here for inferring headers
          options.header = false;
+         terms.forEach(function(col) {
+            if (!makeVar(col.slice(1, col.length)).sameMode(makeVar(col))) {
+               options.header = true;
+            }
+         });
       }
+      // makeVariable accepts extra parameters, that we must not set.
+      // Hence the wrapper
       function makeVar(row) { return makeVariable(row); }
       if (options.header === true) {
          headings = [];
