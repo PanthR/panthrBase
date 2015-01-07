@@ -563,6 +563,14 @@ define(function(require) {
       return this.values.length === other.values.length;
    };
 
+   /**
+    * Return a boolean indicating whether the variable has the same mode as
+    * the variable `other`.
+    */
+   Variable.prototype.sameMode = function sameMode(other) {
+      return this.mode() === other.mode();
+   };
+
    // Helper methods
 
    /*
