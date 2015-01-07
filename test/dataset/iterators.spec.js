@@ -23,4 +23,15 @@ describe('Dataset has', function() {
       dSet.eachRow(f);
       expect(c).to.equal(dSet.nrow);
    });
+   it('eachCol', function() {
+      var c = 0;
+      function f(val, j, name) {
+         c += 1;
+         expect(j).to.equal(c);
+         expect(name).to.equal(dSet.names(j));
+         expect(val.toArray()).to.deep.equal(dSet.getVar(j).toArray());
+      }
+      dSet.eachCol(f);
+      expect(c).to.equal(dSet.ncol);
+   });
 });

@@ -85,6 +85,11 @@ define(function(require) {
    };
 
    /**
+    * Wrapper for `List#each`.
+    */
+   Dataset.prototype.eachCol = List.prototype.each;
+
+   /**
     * Return a subset of the values in the dataset. This method may be called with
     * no arguments, in which case an array of arrays of the columns is returned.
     * Otherwise, the method requires two arguments, `rows` and `cols`, specifying
