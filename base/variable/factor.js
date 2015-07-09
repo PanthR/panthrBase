@@ -58,19 +58,19 @@ return function(Variable) {
       var c2v = this.c2v;
       var v2c = this.v2c;
       /* eslint-disable complexity */
-      function getCode(val) {
-         if (Array.isArray(val)) { return val.map(getCode); }
-         if (utils.isMissing(val)) { return utils.missing; }
-         if (typeof val === 'string') {
-            if (!v2c.hasOwnProperty(val)) {
+      function getCode(v) {
+         if (Array.isArray(v)) { return v.map(getCode); }
+         if (utils.isMissing(v)) { return utils.missing; }
+         if (typeof v === 'string') {
+            if (!v2c.hasOwnProperty(v)) {
                throw new Error('Invalid value for factor');
             }
-            return v2c[val];
+            return v2c[v];
          }
-         if (isNaN(val) || val < 1 || val >= c2v.length) {
+         if (isNaN(v) || v < 1 || v >= c2v.length) {
             throw new Error('Invalid value for factor');
          }
-         return Math.floor(val);
+         return Math.floor(v);
       }
       /* eslint-enable */
       if (arguments.length === 1) {

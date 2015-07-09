@@ -9,9 +9,9 @@ define(function(require) {
 
    var List, Variable, utils;
 
-   List     = require('./list');
+   List = require('./list');
    Variable = require('./variable');
-   utils    = require('./utils');
+   utils = require('./utils');
    /**
     * Create a dataset out of the provided `values`. A dataset is a `List` whose items
     * are variables of the same length. Unlike lists, datasets are required to have names
@@ -164,7 +164,7 @@ define(function(require) {
       var that = this;
       cols = getColumns(cols, this);
       rows = getRows(rows, this);
-      vals = getValsFunction(vals, this, rows, cols);
+      vals = getValsFunction(vals, rows, cols);
       // From this point on, `vals` is a function: `vals(i, j, name)`.
       cols.forEach(function(j) {
          var myVar = List.prototype.get.call(that, j);
@@ -239,7 +239,7 @@ define(function(require) {
          names = utils.missing;
       }
       if (typeof values === 'function') {
-         values = new Variable(values, {length: that.nrow});
+         values = new Variable(values, { length: that.nrow });
       }
       values = new Dataset(Variable.oneDimToVariable(values));
       if (values.nrow !== this.nrow) {
@@ -338,7 +338,7 @@ define(function(require) {
             normalizeList(val);
          } else if (val instanceof Variable.Matrix) {
             listSet.call(list, i, normalizeList(List.call({}, val.toArray())));
-         } else if (! (val instanceof Variable)) {
+         } else if (!(val instanceof Variable)) {
             listSet.call(list, i, new Variable(val));
          }
       });
@@ -346,23 +346,23 @@ define(function(require) {
    }
 
    /*
-    * Given a columns specification, and a dataset `that`, returns the
+    * Given a columns specification, and a dataset `dset`, returns the
     * corresponding array of column indices. See `Dataset#get`.
     *
     * getColumns will assume it is not given a single number/string.
     * Its callers must have handled that case earlier.
     */
-   function getColumns(cols, that) {
-      if (cols === true) { return utils.seq(that.length()); }
+   function getColumns(cols, dset) {
+      if (cols === true) { return utils.seq(dset.length()); }
       if (typeof cols === 'number' || typeof cols === 'string') { return [cols]; }
       if (typeof cols === 'function') {
-         return utils.seq(that.length()).filter(function(j) {
-            return cols(that._names[j], j);
+         return utils.seq(dset.length()).filter(function(j) {
+            return cols(dset._names[j], j);
          });
       }
       cols = Variable.oneDimToVariable(cols);
       if (cols.mode() === 'logical') {
-         if (that.ncol !== cols.length()) {
+         if (dset.ncol !== cols.length()) {
             throw new Error('Logical vector does not match nCol');
          }
          cols = cols.which();    // to scalar variable
@@ -371,23 +371,23 @@ define(function(require) {
    }
 
    /*
-    * Given a row specification, and a dataset `that`, returns the
+    * Given a row specification, and a dataset `dset`, returns the
     * corresponding array of row indices. See `Dataset#get`.
     *
     * getRows may be given a single number, and should be able to handle it
     */
-   function getRows(rows, that) {
-      if (rows === true) { return utils.seq(that.nrow); }
+   function getRows(rows, dset) {
+      if (rows === true) { return utils.seq(dset.nrow); }
       if (typeof rows === 'function') {
-         return utils.seq(that.nrow).filter(function(i) {
+         return utils.seq(dset.nrow).filter(function(i) {
             // rows here meant to be rows(row, i)
-            return rows(that.rowFun(i), i);
+            return rows(dset.rowFun(i), i);
          });
       }
       if (typeof rows === 'number') { return [rows]; }
       rows = Variable.oneDimToVariable(rows);
       if (rows.mode() === 'logical') {
-         if (that.nrow !== rows.length()) {
+         if (dset.nrow !== rows.length()) {
             throw new Error('Logical vector does not match nRow');
          }
          rows = rows.which();    // to scalar variable
@@ -398,7 +398,7 @@ define(function(require) {
    // Given a vals specification (for #set), returns a function
    // Also validates dimensions for the region and the values
    // Both rows and cols are arrays at this point.
-   function getValsFunction(vals, that, rows, cols) {
+   function getValsFunction(vals, rows, cols) {
       if (typeof vals === 'function') { return vals; }
       vals = Variable.oneDimToArray(vals);
       if (Array.isArray(vals)) {
@@ -420,7 +420,7 @@ define(function(require) {
 
    // Ensures that names for all variables exist and are unique.
    // Will add a .1, .2 etc as needed, and an X1, X2, X3 as needed
-   function sanitizeNames(that) {
+   function sanitizeNames(dset) {
       var cache = {};
       function ensureUnique(name) {
          var j = 1;
@@ -431,12 +431,12 @@ define(function(require) {
          cache[name] = true;
          return name;
       }
-      that.values.forEach(function(val, i) {
+      dset.values.forEach(function(val, i) {
          if (i > 0) {
-            that._names[i] = ensureUnique(utils.getDefault(that._names[i], 'X' + i));
+            dset._names[i] = ensureUnique(utils.getDefault(dset._names[i], 'X' + i));
          }
       });
-      return that;
+      return dset;
    }
 
    return Dataset;

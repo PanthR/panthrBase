@@ -4,7 +4,7 @@ define(function(require) {
 // Module that contains methods for displaying and formatting variables/datasets
 return function(loader) {
    var utils, Handlebars, variableTemplate;
-   utils    = require('../utils');
+   utils = require('../utils');
    Handlebars = require('handlebars');
    variableTemplate = Handlebars.compile([
       '{{#each values}}',
@@ -45,7 +45,7 @@ return function(loader) {
          currentRow.push({
             index: i,
             value: utils.getDefault(stringVar.get(i), ''),
-            name:  utils.isMissing(names) ? '' : names.get(i)
+            name: utils.isMissing(names) ? '' : names.get(i)
          });
          if (currentRow.length >= ncol) {
             rows.push(currentRow);
@@ -80,13 +80,13 @@ return function(loader) {
          ncol: 1,
          withNames: false,
          value: { tag: 'td', class: 'var-value' },
-         name:  { tag: 'td', class: 'var-name' },
-         row:   { tag: 'tr', class: 'var-row' }
+         name: { tag: 'td', class: 'var-name' },
+         row: { tag: 'tr', class: 'var-row' }
       };
       options = utils.mixin({}, options, defaults);
       options.value = utils.mixin(options.value, defaults.value);
-      options.name  = utils.mixin(options.name, defaults.name);
-      options.row   = utils.mixin(options.row, defaults.row);
+      options.name = utils.mixin(options.name, defaults.name);
+      options.row = utils.mixin(options.row, defaults.row);
       return variableTemplate({
          values: this.layOut(options.ncol),
          opts: options

@@ -34,7 +34,7 @@ define(function(require) {
          // Given an object. Need to populate array based on it
          this._names = [utils.missing].concat(Object.keys(values || {}));
          this.values = this._names.map(function(key) {
-            return utils.optionMap(key, function(key) { return values[key]; });
+            return utils.optionMap(key, function(k) { return values[k]; });
          });
       }
    }

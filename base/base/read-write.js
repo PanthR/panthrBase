@@ -6,10 +6,10 @@ return function(loader) {
    var Variable, List, Dataset, reString, regexp, quoteUnescape, utils, writeDefaults;
 
    Variable = loader.getClass('Variable');
-   List     = loader.getClass('List');
-   Dataset  = loader.getClass('Dataset');
+   List = loader.getClass('List');
+   Dataset = loader.getClass('Dataset');
 
-   utils    = require('../utils');
+   utils = require('../utils');
 
    writeDefaults = {
       sep: ',',
@@ -31,7 +31,7 @@ return function(loader) {
                            "'(" + reString.singleQuoteContent + ")'" + '|' +
                            '(' + reString.regularTerm + ')' +
                          ')';
-   reString.datasetTerm  = '(?:' +
+   reString.datasetTerm = '(?:' +
                            '"(' + reString.doubleQuoteContent + ')"' + '|' +
                            "'(" + reString.singleQuoteContent + ")'" + '|' +
                            '(' + reString.regularTerm + ')' +
@@ -134,7 +134,7 @@ return function(loader) {
     *      backslash. Defaults to `false`, meaning escape via an extra double-quote.
     */
    loader.addInstanceMethod('Dataset', 'write', function write(options) {
-      var i, rows, row, cols;
+      var rows, row, cols;
       options = utils.mixin({}, options, writeDefaults);
       function addHeader(arr, name) {
          if (options.header) { arr.unshift(quote(options)(name)); }
@@ -145,7 +145,7 @@ return function(loader) {
       }
       cols = this.map(prepVar); // cols is a list of string arrays, one for each column
       rows = [];
-      cols.get(1).forEach(function(col, i) {
+      cols.get(1).forEach(function(_first, i) {
          row = [];
          cols.each(function(col) { row.push(col[i]); });
          rows.push(row.join(options.sep));
@@ -158,10 +158,10 @@ return function(loader) {
       var replacements;
       // Underscores added because of @name bug in JsDoc
       replacements = {
-         '_\\' : '\\\\',
-         '_\t' : '\\t',
-         '_\n' : '\\n',
-         '_\r' : '\\r'
+         '_\\': '\\\\',
+         '_\t': '\\t',
+         '_\n': '\\n',
+         '_\r': '\\r'
       };
       return function(str) {
          str = str.replace(/[\\\t\n\r]/g, function(m) { return replacements['_' + m]; });
@@ -171,8 +171,8 @@ return function(loader) {
    }
 
    function prepareVar(v, options) {
-      function killMissing(v) {
-         return v.map(function(str) { return utils.getDefault(str, ''); });
+      function killMissing(strv) {
+         return strv.map(function(str) { return utils.getDefault(str, ''); });
       }
       if (v.mode === 'scalar') {
          return killMissing(v.asString()).toArray();
@@ -263,9 +263,9 @@ return function(loader) {
       // Underscores added because of @name bug in JsDoc
       obj = {
          '_\t': { term: '([^\\t\\n]*)', sep: '\\t', junk: ' *' },
-         '_,':  { term: '([^,\\n]*)', sep: ',', junk: '[\\t ]*' },
-         '_;':  { term: '([^;\\n]*)', sep: ';', junk: '[\\t ]*' },
-         '_ ':  { term: '([^\\s]*)', sep: '[ \\t]+', junk: '' }
+         '_,': { term: '([^,\\n]*)', sep: ',', junk: '[\\t ]*' },
+         '_;': { term: '([^;\\n]*)', sep: ';', junk: '[\\t ]*' },
+         '_ ': { term: '([^\\s]*)', sep: '[ \\t]+', junk: '' }
       };
       pattern = '(?:' +
                      '"(' + reString.doubleQuoteContent + ')"' + '|' +
@@ -322,8 +322,8 @@ return function(loader) {
       obj = { '\\n': '\n',
               '\\t': '\t',
               '\\r': '\r',
-              '""' : '"',
-              '\'\'' : '\''
+              '""': '"',
+              '\'\'': '\''
             };
       function lookup(c) { return obj[c] || c[1]; }
       return function(s, q) {

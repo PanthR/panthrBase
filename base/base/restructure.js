@@ -5,9 +5,9 @@ return function(loader) {
    var Variable, List, utils;
 
    Variable = loader.getClass('Variable');
-   List     = loader.getClass('List');
+   List = loader.getClass('List');
 
-   utils    = require('../utils');
+   utils = require('../utils');
 
    /**
     * Split a `Dataset` into a `List` of sub-datasets, based on the specified
@@ -25,7 +25,7 @@ return function(loader) {
       if (typeof select === 'function') {
          select = Variable.tabulate(function(i) {
             return select(that.rowFun(i), i);
-         }, 1, that.nrow, {mode: 'factor'});
+         }, 1, that.nrow, { mode: 'factor' });
       }
       if (select instanceof Variable) { select = select.groupIndices(); }
       return select.map(function(val) { return that.get(val, true); });
@@ -44,7 +44,9 @@ return function(loader) {
    loader.addInstanceMethod('Variable', 'groupIndices', function groupIndices() {
       var that = this, arr, levels;
       if (that.mode !== 'factor' && that.mode !== 'ordinal') {
+         /* eslint-disable consistent-this */
          that = Variable.factor(that.toArray());
+         /* eslint-enable consistent-this */
       }
       levels = that.levels();
       arr = new Variable.Vector(function() { return []; }, levels.length).get();

@@ -7,7 +7,7 @@ return function(loader) {
    utils = require('../utils');
 
    Variable = loader.getClass('Variable');
-   List     = loader.getClass('List');
+   List = loader.getClass('List');
 
    /**
     * Return the sum of the values of the variable.
@@ -134,8 +134,8 @@ return function(loader) {
          return (1 - g) * this.get(k) + g * this.get(k + 1);
       }.bind(this.asScalar().sort());
       quantiles = probs.map(utils.makePreserveMissing(getQuant));
-      names = probs.map(function(p) {
-         return utils.optionMap(p, function(p) { return p * 100 + '%'; });
+      names = probs.map(function(prob) {
+         return utils.optionMap(prob, function(p) { return p * 100 + '%'; });
       });
       return Variable.scalar(quantiles).names(names);
    });
@@ -191,7 +191,7 @@ return function(loader) {
     *
     * Must be called with two arguments.
     */
-   loader.addInstanceMethod('Variable', 'scale', function scale(center, scale) {
+   loader.addInstanceMethod('Variable', 'scale', function(center, scale) {
       return new List({
          center: center,
          scale: scale,

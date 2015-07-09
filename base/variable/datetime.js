@@ -3,7 +3,7 @@ define(function(require) {
 
 return function(Variable) {
 
-   var moment,utils;       // date-time module
+   var moment, utils;       // date-time module
    moment = require('moment');
    utils = require('./../utils');
 
@@ -44,9 +44,9 @@ return function(Variable) {
    DateTimeVar.prototype._set = function _set(i, val, format) {
       var f = format == null ? function(s) { return moment(s); }
                              : function(s) { return moment(s, format); };
-      function getMillis(val) {
-         if (Array.isArray(val)) { return val.map(getMillis); }
-         return utils.singleMissing(typeof val === 'string' ? f(val) : val);
+      function getMillis(v) {
+         if (Array.isArray(v)) { return v.map(getMillis); }
+         return utils.singleMissing(typeof v === 'string' ? f(v) : v);
       }
       this.values.set(i, getMillis(val));
    };

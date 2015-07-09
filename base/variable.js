@@ -59,24 +59,24 @@ define(function(require) {
 
    Variable.prototype = Object.create({});
 
-   Variable.Vector      = require('linalg-panthr').Vector;
+   Variable.Vector = require('linalg-panthr').Vector;
    Vector = Variable.Vector;
-   Variable.Matrix      = require('linalg-panthr').Matrix;
-   Variable.ScalarVar   = require('./variable/scalar')(Variable);
-   Variable.LogicalVar  = require('./variable/logical')(Variable);
-   Variable.StringVar   = require('./variable/string')(Variable);
-   Variable.FactorVar   = require('./variable/factor')(Variable);
-   Variable.OrdinalVar  = require('./variable/ordinal')(Variable);
+   Variable.Matrix = require('linalg-panthr').Matrix;
+   Variable.ScalarVar = require('./variable/scalar')(Variable);
+   Variable.LogicalVar = require('./variable/logical')(Variable);
+   Variable.StringVar = require('./variable/string')(Variable);
+   Variable.FactorVar = require('./variable/factor')(Variable);
+   Variable.OrdinalVar = require('./variable/ordinal')(Variable);
    Variable.DateTimeVar = require('./variable/datetime')(Variable);
 
    // mode values are the keys for Variable.modes
    // the corresponding constructors are stored as values
    Variable.modes = {
-      'scalar':   Variable.ScalarVar,
-      'logical':  Variable.LogicalVar,
-      'string':   Variable.StringVar,
-      'factor':   Variable.FactorVar,
-      'ordinal':  Variable.OrdinalVar,
+      'scalar': Variable.ScalarVar,
+      'logical': Variable.LogicalVar,
+      'string': Variable.StringVar,
+      'factor': Variable.FactorVar,
+      'ordinal': Variable.OrdinalVar,
       'dateTime': Variable.DateTimeVar
    };
    // give a mode property to each Variable subclass
@@ -366,7 +366,7 @@ define(function(require) {
       var len = this.length();
       if (arguments.length === 0) { return this._names; }
       this._names = utils.optionMap(newNames,
-         function(names) { return Variable.string(names).resize(len); }
+         function(nms) { return Variable.string(nms).resize(len); }
       );
       return this;
    };
@@ -602,8 +602,8 @@ define(function(require) {
       ind = normalizeValue(Variable.oneDimToArray(ind));
       // single numbers fall through to end
       if (Array.isArray(ind)) {
-         allNonPos = ind.every(function(v) { return !(v > 0); });
-         allNonNeg = ind.every(function(v) { return !(v < 0); });
+         allNonPos = ind.every(function(val) { return !(val > 0); });
+         allNonNeg = ind.every(function(val) { return !(val < 0); });
          if (allNonPos) {
             ind = v.values.map(function(val, k) {
                return ind.indexOf(-k) === -1 ? k : 0;
@@ -612,7 +612,7 @@ define(function(require) {
             throw new Error('Cannot use both positive and negative indices.');
          }
          // ind contains only null, nonnegative integers at this point
-         ind = ind.filter(function(v) { return v !== 0; }); // drop the zeros
+         ind = ind.filter(function(val) { return val !== 0; }); // drop the zeros
       }
       return ind;
    }
