@@ -18,6 +18,7 @@ define(function(require) {
    /**
     * Mixes into the first object the key-value pairs from the other objects.
     * Shallow copy.
+    * NOTE: Only mixes in values for "new" properties (safe mixin).
     */
    utils.mixin = function(target) {
       var rest = [].slice.call(arguments, 1);
