@@ -57,6 +57,8 @@
       "linalg-panthr": "*",
       "moment": "*",
       "handlebars": "*",
-      "browserify": "*"
+      "browserify": "*",
+      "panthrMath": "*",
+      "rgen": "*"
    }
 }

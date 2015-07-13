@@ -10,6 +10,7 @@ return function(loader) {
     */
    loader.addModule('stats', {});
    loader.loadModule(require('./stats/basic'));
+   loader.loadModule(require('./stats/distr'));
 };
 
 });
