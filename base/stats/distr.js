@@ -12,21 +12,36 @@ return function(loader) {
    Variable = loader.getClass('Variable');
 
    /**
-    * Return a Variable of `n` random uniform values, where `n` is a
-    * non-negative integer.  Range defaults to [0, 1].  `opt` is an
-    * options object with possible properties `min` and `max`.
+    * Each distribution has 4 methods:
+    *
+    * - `r*(n, ...)` for generating random variates from that distribution
+    * - `d*(x, { ..., lowerTail: true, log: false })` for the pdf
+    * - `p*(x, { ..., lowerTail: true, log: false })` for the cdf
+    * - `q*(p, { ..., lowerTail: true, log: false })` for the inverse cdf
+    *
+    * The remaining parameters are to be the same for all 4 methods, but
+    * different for different distributions.
+    *
+    * All parameters are to be specified as a second argument to the call,
+    * in the form of an `options` object.
+    *
+    * - `n` is to be an integer
+    * - `x` and `p` are to be arrays or scalar variables
+    *
+    * Specific distribution parameters and their defaults:
+    *
+    * - unif: min = 0, max = 1
+    * - norm: mu = 0, sigma = 1
     */
+
+   //
+   // UNIFORM
+   //
    loader.addModuleMethod('stats', 'runif',
       makeRandom(function(opt) {
          return rgen.uniform(opt.min, opt.max);
       }, { min: 0, max: 1 })
    );
-
-   /**
-    * Return a scalar variable of the same length as `x`, where `x` is
-    * an array or a variable.  `opt` is an
-    * options object with possible properties `min`, `max`, and log.
-    */
    loader.addModuleMethod('stats', 'dunif',
       makePdf(function(opt) {
          return function(val) {
@@ -36,13 +51,6 @@ return function(loader) {
          };
       }, { min: 0, max: 1 })
    );
-
-   /**
-    * Return a scalar variable of the same length as `x`, where `x` is
-    * an array or a variable.  `opt` is an
-    * options object with possible properties `min`, `max`, log, and
-    * lowerTail.
-    */
    loader.addModuleMethod('stats', 'punif',
       makeCdf(function(opt) {
          return function(val) {
@@ -52,13 +60,6 @@ return function(loader) {
          };
       }, { min: 0, max: 1 })
    );
-
-   /**
-    * Return a scalar variable of the same length as `p`, where `p` is
-    * an array or a variable of probabilities.  `opt` is an
-    * options object with possible properties `min`, `max`, log, and
-    * lowerTail.
-    */
    loader.addModuleMethod('stats', 'qunif',
       makeInvCdf(function(opt) {
          return function(p) {
