@@ -16,24 +16,23 @@ return function(loader) {
     * non-negative integer.  Range defaults to [0, 1].  `opt` is an
     * options object with possible properties `min` and `max`.
     */
-   loader.addModuleMethod('stats', 'runif', function runif(n, opt) {
-      opt = getOptionsUnif(opt);
-      return new Variable(rgen.uniform(opt.min, opt.max), { length: n });
-   });
+   loader.addModuleMethod('stats', 'runif',
+      makeRandom(function(opt) {
+         return rgen.uniform(opt.min, opt.max);
+      }, { min: 0, max: 1 })
+   );
 
    /**
     * Return a scalar variable of the same length as `x`, where `x` is
     * an array or a variable.  `opt` is an
     * options object with possible properties `min`, `max`, and log.
     */
-   loader.addModuleMethod('stats', 'dunif', function dunif(x, opt) {
-      opt = getOptionsUnif(opt);
-      return Variable.oneDimToVariable(x).map(function(v) {
-         var h;
-         h = v <= opt.max && v >= opt.min ? 1 / (opt.max - opt.min) : 0;
-         return opt.log ? Math.log(h) : h;
-      });
-   });
+   loader.addModuleMethod('stats', 'dunif',
+      makePdf(function(val, opt) {
+         return val <= opt.max && val >= opt.min ? 1 / (opt.max - opt.min)
+                                                 : 0;
+      }, { min: 0, max: 1 })
+   );
 
    /**
     * Return a scalar variable of the same length as `x`, where `x` is
@@ -41,17 +40,13 @@ return function(loader) {
     * options object with possible properties `min`, `max`, log, and
     * lowerTail.
     */
-   loader.addModuleMethod('stats', 'punif', function punif(x, opt) {
-      opt = getOptionsUnif(opt);
-      return Variable.oneDimToVariable(x).map(function(val) {
-         var p;
-         p = val < opt.min ? 0 :
-             val > opt.max ? 1 :
-            (val - opt.min) / (opt.max - opt.min);
-         p = opt.lowerTail ? p : 1 - p;
-         return opt.log ? Math.log(p) : p;
-      });
-   });
+   loader.addModuleMethod('stats', 'punif',
+      makeCdf(function(val, opt) {
+         return val < opt.min ? 0 :
+                val > opt.max ? 1 :
+                (val - opt.min) / (opt.max - opt.min);
+      }, { min: 0, max: 1 })
+   );
 
    /**
     * Return a scalar variable of the same length as `p`, where `p` is
@@ -59,26 +54,74 @@ return function(loader) {
     * options object with possible properties `min`, `max`, log, and
     * lowerTail.
     */
-   loader.addModuleMethod('stats', 'qunif', function qunif(p, opt) {
-      opt = getOptionsUnif(opt);
-      return Variable.oneDimToVariable(p).map(function(val) {
-         if (utils.isMissing(val)) { return utils.missing; }
-         val = opt.log ? Math.exp(val) : val;
-         val = opt.lowerTail ? val : 1 - val;
-         if (val <= 0) { return opt.min; }
-         if (val >= 1) { return opt.max; }
-         return val * (opt.max - opt.min) + opt.min;
-      });
-   });
+   loader.addModuleMethod('stats', 'qunif',
+      makeInvCdf(function(p, opt) {
+         return p <= 0 ? opt.min :
+                p >= 1 ? opt.max :
+                p * (opt.max - opt.min) + opt.min;
+      }, { min: 0, max: 1 })
+   );
 
    // Helper Methods
-   function getOptionsUnif(opt) {
-      return utils.mixin({}, opt, {
-         min: 0,
-         max: 1,
-         log: false,
-         lowerTail: true
+
+   // Standardizes the options object `opt` mixing in the distribution
+   // defaults `defs` along with defaults for `lowerTail` and `log`
+   function getOptions(opt, defs) {
+      return utils.mixin({}, opt, defs, {
+         lowerTail: true,
+         log: false
       });
+   }
+
+   // Create the `r*` distribution function based on distribution defaults
+   // `defs`. The function `f(opt)` returns a function that produces the
+   // random deviates based on parameters `opt`.
+   function makeRandom(f, defs) {
+      return function(n, opt) {
+         opt = getOptions(opt, defs);
+         return new Variable(f(opt), { length: n });
+      };
+   }
+
+   // Create the `d*` density function based on distribution defaults `defs`.
+   // The function `f(val, opt)` returns the density value for `x=val` and
+   // parameters `opt`.
+   function makePdf(f, defs) {
+      return function(x, opt) {
+         opt = getOptions(opt, defs);
+         return Variable.oneDimToVariable(x).map(function(val) {
+            return opt.log ? Math.log(f(val, opt))
+                           : f(val, opt);
+         }, true /* skipMissing */);
+      };
+   }
+
+   // Create the `p*` cdf based on distribution defaults `defs`.
+   // The function `f(val, opt)` returns the cdf value for `x=val` and
+   // parameters `opt`.
+   function makeCdf(f, defs) {
+      return function(x, opt) {
+         opt = getOptions(opt, defs);
+         return Variable.oneDimToVariable(x).map(function(val) {
+            var p = f(val, opt);
+            p = opt.lowerTail ? p : 1 - p;
+            return opt.log ? Math.log(p) : p;
+         }, true /* skipMissing */);
+      };
+   }
+
+   // Create the `q*` inverse cdf based on distribution defaults `defs`.
+   // The function `f(p, opt)` returns the percentile for `p` and
+   // parameters `opt`.
+   function makeInvCdf(f, defs) {
+      return function(p, opt) {
+         opt = getOptions(opt, defs);
+         return Variable.oneDimToVariable(p).map(function(val) {
+            val = opt.log ? Math.exp(val) : val;
+            val = opt.lowerTail ? val : 1 - val;
+            return f(val, opt);
+         }, true /* skipMissing */);
+      };
    }
 
 };
