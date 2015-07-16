@@ -28,9 +28,12 @@ return function(loader) {
     * options object with possible properties `min`, `max`, and log.
     */
    loader.addModuleMethod('stats', 'dunif',
-      makePdf(function(val, opt) {
-         return val <= opt.max && val >= opt.min ? 1 / (opt.max - opt.min)
-                                                 : 0;
+      makePdf(function(opt) {
+         return function(val) {
+            return val <= opt.max && val >= opt.min ?
+                   1 / (opt.max - opt.min) :
+                   0;
+         };
       }, { min: 0, max: 1 })
    );
 
@@ -41,10 +44,12 @@ return function(loader) {
     * lowerTail.
     */
    loader.addModuleMethod('stats', 'punif',
-      makeCdf(function(val, opt) {
-         return val < opt.min ? 0 :
-                val > opt.max ? 1 :
-                (val - opt.min) / (opt.max - opt.min);
+      makeCdf(function(opt) {
+         return function(val) {
+            return val < opt.min ? 0 :
+                   val > opt.max ? 1 :
+                   (val - opt.min) / (opt.max - opt.min);
+         };
       }, { min: 0, max: 1 })
    );
 
@@ -55,10 +60,12 @@ return function(loader) {
     * lowerTail.
     */
    loader.addModuleMethod('stats', 'qunif',
-      makeInvCdf(function(p, opt) {
-         return p <= 0 ? opt.min :
-                p >= 1 ? opt.max :
-                p * (opt.max - opt.min) + opt.min;
+      makeInvCdf(function(opt) {
+         return function(p) {
+            return p <= 0 ? opt.min :
+                   p >= 1 ? opt.max :
+                   p * (opt.max - opt.min) + opt.min;
+         };
       }, { min: 0, max: 1 })
    );
 
@@ -88,10 +95,11 @@ return function(loader) {
    // parameters `opt`.
    function makePdf(f, defs) {
       return function(x, opt) {
+         var dens;
          opt = getOptions(opt, defs);
+         dens = f(opt);
          return Variable.oneDimToVariable(x).map(function(val) {
-            return opt.log ? Math.log(f(val, opt))
-                           : f(val, opt);
+            return opt.log ? Math.log(dens(val)) : dens(val);
          }, true /* skipMissing */);
       };
    }
@@ -101,10 +109,11 @@ return function(loader) {
    // parameters `opt`.
    function makeCdf(f, defs) {
       return function(x, opt) {
+         var cdf;
          opt = getOptions(opt, defs);
+         cdf = f(opt);
          return Variable.oneDimToVariable(x).map(function(val) {
-            var p = f(val, opt);
-            p = opt.lowerTail ? p : 1 - p;
+            var p = opt.lowerTail ? cdf(val) : 1 - cdf(val);
             return opt.log ? Math.log(p) : p;
          }, true /* skipMissing */);
       };
@@ -115,11 +124,13 @@ return function(loader) {
    // parameters `opt`.
    function makeInvCdf(f, defs) {
       return function(p, opt) {
+         var invCdf;
          opt = getOptions(opt, defs);
+         invCdf = f(opt);
          return Variable.oneDimToVariable(p).map(function(val) {
             val = opt.log ? Math.exp(val) : val;
             val = opt.lowerTail ? val : 1 - val;
-            return f(val, opt);
+            return invCdf(val);
          }, true /* skipMissing */);
       };
    }
