@@ -4,10 +4,11 @@ define(function(require) {
 // Add standard distribution functions
 
 return function(loader) {
-   var utils, Variable, rgen;
+   var utils, Variable, rgen, panthrMath;
 
    utils = require('../utils');
    rgen = require('rgen');
+   panthrMath = require('panthrMath');
 
    Variable = loader.getClass('Variable');
 
@@ -69,6 +70,32 @@ return function(loader) {
          };
       }, { min: 0, max: 1 })
    );
+
+   //
+   // NORMAL
+   //
+   loader.addModuleMethod('stats', 'rnorm',
+      makeRandom(function(opt) {
+         return rgen.normal(opt.mu, opt.sigma);
+      }, { mu: 0, sigma: 1 })
+   );
+   loader.addModuleMethod('stats', 'dnorm',
+      makePdf(function(opt) {
+         return panthrMath.dnorm(opt.mu, opt.sigma);
+      }, { mu: 0, sigma: 1 })
+   );
+   loader.addModuleMethod('stats', 'pnorm',
+      makeCdf(function(opt) {
+         return panthrMath.pnorm(opt.mu, opt.sigma);
+      }, { mu: 0, sigma: 1 })
+   );
+   loader.addModuleMethod('stats', 'qnorm',
+      makeInvCdf(function(opt) {
+         return panthrMath.qnorm(opt.mu, opt.sigma);
+      }, { mu: 0, sigma: 1 })
+   );
+
+
 
    // Helper Methods
 

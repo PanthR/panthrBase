@@ -106,4 +106,37 @@ describe('available distributions: ', function() {
       // TODO make an `it` for whether p and q are inverse functions
       // TODO make an `it` for out-of-range input
    });
+   describe('normal', function() {
+      var arr = ['rnorm', 'dnorm', 'pnorm', 'qnorm'];
+      it('[rdpq]norm exist and are functions', function() {
+         arr.forEach(function(key) {
+            expect(stats).to.have.ownProperty(key);
+            expect(stats[key]).to.be.a('function');
+         });
+      });
+      it('[rdpq]norm return a scalar Variable of correct length', function() {
+         var len;
+         len = randomInt(100);
+         [
+            stats.rnorm(len),
+            stats.dnorm(Variable.tabulate(function() { return 1; }, 1, len)),
+            stats.pnorm(Variable.tabulate(function() { return 1; }, 1, len)),
+            stats.qnorm(Variable.tabulate(function() { return 1; }, 1, len))
+         ].forEach(function(v) {
+            expect(v).to.be.an.instanceOf(Variable);
+            expect(v.length()).to.equal(len);
+            expect(v.mode()).to.equal('scalar');
+         });
+      });
+      it('parameters `mu` and `sigma` default to 0 and 1, resp.', function() {
+         var vals = [-3, -1.4, 0.1, 2.1];
+         var ps = [0.001, 0.13, 0.4, 0.6, 0.99];
+         expect(stats.dnorm(vals).toArray()).to.deep.equal(
+                stats.dnorm(vals, { mu: 0, sigma: 1 }).toArray());
+         expect(stats.pnorm(vals).toArray()).to.deep.equal(
+                stats.pnorm(vals, { mu: 0, sigma: 1 }).toArray());
+         expect(stats.qnorm(ps).toArray()).to.deep.equal(
+                stats.qnorm(ps, { mu: 0, sigma: 1 }).toArray());
+      });
+   });
 });
