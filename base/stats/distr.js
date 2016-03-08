@@ -44,17 +44,17 @@ return function(loader) {
    );
    loader.addModuleMethod('stats', 'dunif',
       makePdf(function(opt) {
-         return panthrMath.dunif(opt.min, opt.max);
+         return panthrMath.dunif(opt.min, opt.max, opt.log);
       }, { min: 0, max: 1 })
    );
    loader.addModuleMethod('stats', 'punif',
       makeCdf(function(opt) {
-         return panthrMath.punif(opt.min, opt.max);
+         return panthrMath.punif(opt.min, opt.max, opt.lowerTail, opt.log);
       }, { min: 0, max: 1 })
    );
    loader.addModuleMethod('stats', 'qunif',
       makeInvCdf(function(opt) {
-         return panthrMath.qunif(opt.min, opt.max);
+         return panthrMath.qunif(opt.min, opt.max, opt.lowerTail, opt.log);
       }, { min: 0, max: 1 })
    );
 
@@ -68,17 +68,17 @@ return function(loader) {
    );
    loader.addModuleMethod('stats', 'dnorm',
       makePdf(function(opt) {
-         return panthrMath.dnorm(opt.mu, opt.sigma);
+         return panthrMath.dnorm(opt.mu, opt.sigma, opt.log);
       }, { mu: 0, sigma: 1 })
    );
    loader.addModuleMethod('stats', 'pnorm',
       makeCdf(function(opt) {
-         return panthrMath.pnorm(opt.mu, opt.sigma);
+         return panthrMath.pnorm(opt.mu, opt.sigma, opt.lowerTail, opt.log);
       }, { mu: 0, sigma: 1 })
    );
    loader.addModuleMethod('stats', 'qnorm',
       makeInvCdf(function(opt) {
-         return panthrMath.qnorm(opt.mu, opt.sigma);
+         return panthrMath.qnorm(opt.mu, opt.sigma, opt.lowerTail, opt.log);
       }, { mu: 0, sigma: 1 })
    );
 
@@ -113,9 +113,7 @@ return function(loader) {
          var dens;
          opt = getOptions(opt, defs);
          dens = f(opt);
-         return Variable.oneDimToVariable(x).map(function(val) {
-            return opt.log ? Math.log(dens(val)) : dens(val);
-         }, true /* skipMissing */);
+         return Variable.oneDimToVariable(x).map(dens, true /* skipMissing */);
       };
    }
 
@@ -127,10 +125,7 @@ return function(loader) {
          var cdf;
          opt = getOptions(opt, defs);
          cdf = f(opt);
-         return Variable.oneDimToVariable(x).map(function(val) {
-            var p = opt.lowerTail ? cdf(val) : 1 - cdf(val);
-            return opt.log ? Math.log(p) : p;
-         }, true /* skipMissing */);
+         return Variable.oneDimToVariable(x).map(cdf, true /* skipMissing */);
       };
    }
 
@@ -142,11 +137,7 @@ return function(loader) {
          var invCdf;
          opt = getOptions(opt, defs);
          invCdf = f(opt);
-         return Variable.oneDimToVariable(p).map(function(val) {
-            val = opt.log ? Math.exp(val) : val;
-            val = opt.lowerTail ? val : 1 - val;
-            return invCdf(val);
-         }, true /* skipMissing */);
+         return Variable.oneDimToVariable(p).map(invCdf, true /* skipMissing */);
       };
    }
 
