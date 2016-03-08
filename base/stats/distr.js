@@ -7,8 +7,7 @@ return function(loader) {
    var utils, Variable, rgen, panthrMath;
 
    utils = require('../utils');
-   rgen = require('rgen');
-   panthrMath = require('panthrMath');
+   panthrMath = require('panthr-math');
 
    Variable = loader.getClass('Variable');
 
@@ -40,34 +39,22 @@ return function(loader) {
    //
    loader.addModuleMethod('stats', 'runif',
       makeRandom(function(opt) {
-         return rgen.uniform(opt.min, opt.max);
+         return panthrMath.runif(opt.min, opt.max);
       }, { min: 0, max: 1 })
    );
    loader.addModuleMethod('stats', 'dunif',
       makePdf(function(opt) {
-         return function(val) {
-            return val <= opt.max && val >= opt.min ?
-                   1 / (opt.max - opt.min) :
-                   0;
-         };
+         return panthrMath.dunif(opt.min, opt.max);
       }, { min: 0, max: 1 })
    );
    loader.addModuleMethod('stats', 'punif',
       makeCdf(function(opt) {
-         return function(val) {
-            return val < opt.min ? 0 :
-                   val > opt.max ? 1 :
-                   (val - opt.min) / (opt.max - opt.min);
-         };
+         return panthrMath.punif(opt.min, opt.max);
       }, { min: 0, max: 1 })
    );
    loader.addModuleMethod('stats', 'qunif',
       makeInvCdf(function(opt) {
-         return function(p) {
-            return p <= 0 ? opt.min :
-                   p >= 1 ? opt.max :
-                   p * (opt.max - opt.min) + opt.min;
-         };
+         return panthrMath.qunif(opt.min, opt.max);
       }, { min: 0, max: 1 })
    );
 
@@ -76,7 +63,7 @@ return function(loader) {
    //
    loader.addModuleMethod('stats', 'rnorm',
       makeRandom(function(opt) {
-         return rgen.normal(opt.mu, opt.sigma);
+         return panthrMath.rnorm(opt.mu, opt.sigma);
       }, { mu: 0, sigma: 1 })
    );
    loader.addModuleMethod('stats', 'dnorm',
