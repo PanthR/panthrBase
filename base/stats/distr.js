@@ -36,6 +36,8 @@ return function(loader) {
     * - gamma: a = 1, s = 1
     * - t: df = 10
     * - chisq: df = 10
+    * - binom: size = 10, p = 0.5
+    * - pois: lambda = 1
     */
 
    //
@@ -176,6 +178,52 @@ return function(loader) {
       makeInvCdf(function(opt) {
          return panthrMath.qchisq(opt.df, opt.lowerTail, opt.log);
       }, { df: 10 })
+   );
+   //
+   // Binomial
+   //
+   loader.addModuleMethod('stats', 'rbinom',
+      makeRandom(function(opt) {
+         return panthrMath.rbinom(opt.size, opt.p);
+      }, { size: 10, p: 0.5 })
+   );
+   loader.addModuleMethod('stats', 'dbinom',
+      makePdf(function(opt) {
+         return panthrMath.dbinom(opt.size, opt.p, opt.log);
+      }, { size: 10, p: 0.5 })
+   );
+   loader.addModuleMethod('stats', 'pbinom',
+      makeCdf(function(opt) {
+         return panthrMath.pbinom(opt.size, opt.p, opt.lowerTail, opt.log);
+      }, { size: 10, p: 0.5 })
+   );
+   loader.addModuleMethod('stats', 'qbinom',
+      makeInvCdf(function(opt) {
+         return panthrMath.qbinom(opt.size, opt.p, opt.lowerTail, opt.log);
+      }, { size: 10, p: 0.5 })
+   );
+   //
+   // Poisson
+   //
+   loader.addModuleMethod('stats', 'rpois',
+      makeRandom(function(opt) {
+         return panthrMath.rpois(opt.lambda);
+      }, { lambda: 1 })
+   );
+   loader.addModuleMethod('stats', 'dpois',
+      makePdf(function(opt) {
+         return panthrMath.dpois(opt.lambda, opt.log);
+      }, { lambda: 1 })
+   );
+   loader.addModuleMethod('stats', 'ppois',
+      makeCdf(function(opt) {
+         return panthrMath.ppois(opt.lambda, opt.lowerTail, opt.log);
+      }, { lambda: 1 })
+   );
+   loader.addModuleMethod('stats', 'qpois',
+      makeInvCdf(function(opt) {
+         return panthrMath.qpois(opt.lambda, opt.lowerTail, opt.log);
+      }, { lambda: 1 })
    );
 
 
