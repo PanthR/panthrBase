@@ -58,7 +58,7 @@
       "moment": "*",
       "handlebars": "*",
       "browserify": "*",
-      "panthrMath": "*",
+      "panthr-math": "*",
       "rgen": "*"
    }
 }
