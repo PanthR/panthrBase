@@ -32,6 +32,10 @@ return function(loader) {
     *
     * - unif: min = 0, max = 1
     * - norm: mu = 0, sigma = 1
+    * - beta: a = 2, b = 2
+    * - gamma: a = 1, s = 1
+    * - t: df = 10
+    * - chisq: df = 10
     */
 
    //
@@ -80,6 +84,98 @@ return function(loader) {
       makeInvCdf(function(opt) {
          return panthrMath.qnorm(opt.mu, opt.sigma, opt.lowerTail, opt.log);
       }, { mu: 0, sigma: 1 })
+   );
+   //
+   // BETA
+   //
+   loader.addModuleMethod('stats', 'rbeta',
+      makeRandom(function(opt) {
+         return panthrMath.rbeta(opt.a, opt.b);
+      }, { a: 2, b: 2 })
+   );
+   loader.addModuleMethod('stats', 'dbeta',
+      makePdf(function(opt) {
+         return panthrMath.dbeta(opt.a, opt.b, opt.log);
+      }, { a: 2, b: 2 })
+   );
+   loader.addModuleMethod('stats', 'pbeta',
+      makeCdf(function(opt) {
+         return panthrMath.pbeta(opt.a, opt.b, opt.lowerTail, opt.log);
+      }, { a: 2, b: 2 })
+   );
+   loader.addModuleMethod('stats', 'qbeta',
+      makeInvCdf(function(opt) {
+         return panthrMath.qbeta(opt.a, opt.b, opt.lowerTail, opt.log);
+      }, { a: 2, b: 2 })
+   );
+   //
+   // GAMMA
+   //
+   loader.addModuleMethod('stats', 'rgamma',
+      makeRandom(function(opt) {
+         return panthrMath.rgamma(opt.a, opt.s);
+      }, { a: 1, s: 1 })
+   );
+   loader.addModuleMethod('stats', 'dgamma',
+      makePdf(function(opt) {
+         return panthrMath.dgamma(opt.a, opt.s, opt.log);
+      }, { a: 1, s: 1 })
+   );
+   loader.addModuleMethod('stats', 'pgamma',
+      makeCdf(function(opt) {
+         return panthrMath.pgamma(opt.a, opt.s, opt.lowerTail, opt.log);
+      }, { a: 1, s: 1 })
+   );
+   loader.addModuleMethod('stats', 'qgamma',
+      makeInvCdf(function(opt) {
+         return panthrMath.qgamma(opt.a, opt.s, opt.lowerTail, opt.log);
+      }, { a: 1, s: 1 })
+   );
+   //
+   // Student's t
+   //
+   loader.addModuleMethod('stats', 'rt',
+      makeRandom(function(opt) {
+         return panthrMath.rt(opt.df);
+      }, { df: 10 })
+   );
+   loader.addModuleMethod('stats', 'dt',
+      makePdf(function(opt) {
+         return panthrMath.dt(opt.df, opt.log);
+      }, { df: 10 })
+   );
+   loader.addModuleMethod('stats', 'pt',
+      makeCdf(function(opt) {
+         return panthrMath.pt(opt.df, opt.lowerTail, opt.log);
+      }, { df: 10 })
+   );
+   loader.addModuleMethod('stats', 'qt',
+      makeInvCdf(function(opt) {
+         return panthrMath.qt(opt.df, opt.lowerTail, opt.log);
+      }, { df: 10 })
+   );
+   //
+   // Chi-squared
+   //
+   loader.addModuleMethod('stats', 'rchisq',
+      makeRandom(function(opt) {
+         return panthrMath.rchisq(opt.df);
+      }, { df: 10 })
+   );
+   loader.addModuleMethod('stats', 'dchisq',
+      makePdf(function(opt) {
+         return panthrMath.dchisq(opt.df, opt.log);
+      }, { df: 10 })
+   );
+   loader.addModuleMethod('stats', 'pchisq',
+      makeCdf(function(opt) {
+         return panthrMath.pchisq(opt.df, opt.lowerTail, opt.log);
+      }, { df: 10 })
+   );
+   loader.addModuleMethod('stats', 'qchisq',
+      makeInvCdf(function(opt) {
+         return panthrMath.qchisq(opt.df, opt.lowerTail, opt.log);
+      }, { df: 10 })
    );
 
 

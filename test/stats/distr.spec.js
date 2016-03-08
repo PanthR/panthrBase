@@ -139,4 +139,17 @@ describe('available distributions: ', function() {
                 stats.qnorm(ps, { mu: 0, sigma: 1 }).toArray());
       });
    });
+   describe('other distributions', function() {
+      var arr = ['r', 'd', 'p', 'q'];
+      function makeTest(name) {
+         return it(name + ' created', function() {
+            arr.forEach(function(key) {
+               key = key + name;
+               expect(stats).to.have.ownProperty(key);
+               expect(stats[key]).to.be.a('function');
+            });
+         });
+      }
+      ['beta', 'gamma', 't', 'chisq'].forEach(makeTest);
+   });
 });
