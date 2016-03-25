@@ -4,7 +4,7 @@ define(function(require) {
 // Add standard distribution functions
 
 return function(loader) {
-   var utils, Variable, rgen, panthrMath;
+   var utils, Variable, panthrMath;
 
    utils = require('../utils');
    panthrMath = require('panthr-math');
