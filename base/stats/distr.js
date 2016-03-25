@@ -226,6 +226,53 @@ return function(loader) {
       }, { lambda: 1 })
    );
 
+   //
+   // Geometric
+   //
+   loader.addModuleMethod('stats', 'rgeom',
+      makeRandom(function(opt) {
+         return panthrMath.rgeom(opt.prob);
+      }, { prob: 0.5 })
+   );
+   loader.addModuleMethod('stats', 'dgeom',
+      makePdf(function(opt) {
+         return panthrMath.dgeom(opt.prob, opt.log);
+      }, { prob: 0.5 })
+   );
+   loader.addModuleMethod('stats', 'pgeom',
+      makeCdf(function(opt) {
+         return panthrMath.pgeom(opt.prob, opt.lowerTail, opt.log);
+      }, { prob: 0.5 })
+   );
+   loader.addModuleMethod('stats', 'qgeom',
+      makeInvCdf(function(opt) {
+         return panthrMath.qgeom(opt.prob, opt.lowerTail, opt.log);
+      }, { prob: 0.5 })
+   );
+
+   //
+   // Exponential
+   //
+   loader.addModuleMethod('stats', 'rexp',
+      makeRandom(function(opt) {
+         return panthrMath.rexp(opt.rate);
+      }, { rate: 1 })
+   );
+   loader.addModuleMethod('stats', 'dexp',
+      makePdf(function(opt) {
+         return panthrMath.dexp(opt.rate, opt.log);
+      }, { rate: 1 })
+   );
+   loader.addModuleMethod('stats', 'pexp',
+      makeCdf(function(opt) {
+         return panthrMath.pexp(opt.rate, opt.lowerTail, opt.log);
+      }, { rate: 1 })
+   );
+   loader.addModuleMethod('stats', 'qexp',
+      makeInvCdf(function(opt) {
+         return panthrMath.qexp(opt.rate, opt.lowerTail, opt.log);
+      }, { rate: 1 })
+   );
 
 
    // Helper Methods

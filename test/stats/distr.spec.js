@@ -150,6 +150,6 @@ describe('available distributions: ', function() {
             });
          });
       }
-      ['beta', 'gamma', 't', 'chisq', 'binom', 'pois'].forEach(makeTest);
+      ['beta', 'gamma', 't', 'chisq', 'binom', 'pois', 'geom', 'exp'].forEach(makeTest);
    });
 });
