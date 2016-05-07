@@ -180,6 +180,22 @@ define(function(require) {
    };
 
    /**
+    * Pushes a new (unnamed) value at the end of a list
+    */
+   List.prototype.push = function push(val) {
+      return this._set(this.length() + 1, val);
+   }
+
+   /**
+    * Returns a boolean indicating whether the given index or name
+    * exists in the list.
+    */
+   List.prototype.has = function has(i) {
+      return typeof i === 'number' ? i <= this.length()
+                                   : !utils.isMissing(this.getIndexOf(i));
+   }
+
+   /**
     * Delete the item at index/name `i`. `i` may be a positive integer or string name.
     */
    List.prototype.delete = function _delete(i) {

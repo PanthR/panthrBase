@@ -85,7 +85,7 @@ describe('List set', function() {
       expect(l.length()).to.equal(4);
    });
    it('works when i is an object of name-value pairs', function() {
-      var l = new List({a: 4, b: 7, c: -1}); 
+      var l = new List({a: 4, b: 7, c: -1});
       var obj = {b: 22, d: -3};
       expect(l.set(obj).get('b')).to.equal(obj.b);
       expect(l.get('d')).to.equal(obj.d);
@@ -93,7 +93,7 @@ describe('List set', function() {
       expect(l.get(4)).to.equal(obj.d);
    });
    it('works when i is an array of values to append', function() {
-      var l = new List({a: 4, b: 7, c: -1}); 
+      var l = new List({a: 4, b: 7, c: -1});
       expect(l.set([3.2, 3.3, 3.4, 3.5]).get(7)).to.equal(3.5);
       expect(l.length()).to.equal(7);
       //l.names(['x','y','z','p',,,'a']);
@@ -119,5 +119,31 @@ describe('List delete', function() {
       expect(l.names().toArray()).to.deep.equal(['a', 'c']);
       expect(l.delete('d').length()).to.equal(2);
       expect(l.names().toArray()).to.deep.equal(['a', 'c']);
+   });
+});
+describe('List push:', function() {
+   it('works by specifying just a value', function() {
+      var l = new List({a: 4, b: 7, c: -1});
+      expect(l).to.respondTo('push');
+      expect(function() { l.push(5); }).to.not.throw(Error);
+      expect(l.length()).to.equal(4);
+      expect(l.get(4)).to.equal(5);
+      expect(l.names().toArray()).to.deep.equal(['a', 'b', 'c']);
+   });
+});
+describe('List has:', function() {
+   it('finds named entry by index', function() {
+      var l = new List({a: 4, b: 7, c: -1});
+      expect(l).to.respondTo('has');
+      expect(function() { l.has(2); }).to.not.throw(Error);
+      expect(l.has(2)).to.equal(true);
+      expect(l.has(4)).to.equal(false);
+   });
+   it('finds named entry', function() {
+      var l = new List({a: 4, b: 7, c: -1});
+      expect(l).to.respondTo('has');
+      expect(function() { l.has('b'); }).to.not.throw(Error);
+      expect(l.has('b')).to.equal(true);
+      expect(l.has('d')).to.equal(false);
    });
 });
