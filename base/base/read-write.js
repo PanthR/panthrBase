@@ -1,4 +1,5 @@
-(function(define) {'use strict';
+(function(define) {
+'use strict';
 define(function(require) {
 
 // Module that contains methods for reading and writing datasets and variables.
@@ -27,13 +28,13 @@ return function(loader) {
    reString.datasetSeparators = '[\\t;,]| +';  // tab, semicolon, comma, or spaces
    reString.regularTerm = '[^\\s\\n;,]+';
    reString.variableTerm = reString.variableSeparators + '(?:' +
-                           '"(' + reString.doubleQuoteContent + ')"' + '|' +
-                           "'(" + reString.singleQuoteContent + ")'" + '|' +
+                           '"(' + reString.doubleQuoteContent + ')"|' +
+                           "'(" + reString.singleQuoteContent + ")'|" +
                            '(' + reString.regularTerm + ')' +
                          ')';
    reString.datasetTerm = '(?:' +
-                           '"(' + reString.doubleQuoteContent + ')"' + '|' +
-                           "'(" + reString.singleQuoteContent + ")'" + '|' +
+                           '"(' + reString.doubleQuoteContent + ')"|' +
+                           "'(" + reString.singleQuoteContent + ")'|" +
                            '(' + reString.regularTerm + ')' +
                          ')';
    reString.numberlike = '^\\s*[+-]?(?:\\d+\\.?|\\.\\d+)\\d*(?:[eE][+-]?\\d+)?\\s*$';
@@ -94,6 +95,7 @@ return function(loader) {
     */
    loader.addClassMethod('Dataset', 'read', function read(vals, options) {
       var terms, headings;
+
       options = options || {};
       vals = vals.replace(/\r/g, '').split('\n');
       if (!options.sep) {
@@ -135,6 +137,7 @@ return function(loader) {
     */
    loader.addInstanceMethod('Dataset', 'write', function write(options) {
       var rows, row, cols;
+
       options = utils.mixin({}, options, writeDefaults);
       function addHeader(arr, name) {
          if (options.header) { arr.unshift(quote(options)(name)); }
@@ -156,6 +159,7 @@ return function(loader) {
    // helper methods
    function quote(options) {
       var replacements;
+
       // Underscores added because of @name bug in JsDoc
       replacements = {
          '_\\': '\\\\',
@@ -202,6 +206,7 @@ return function(loader) {
    // - spaces (' ')
    function inferSep(terms) {
       var sepCounts, seps;
+
       // Underscores added because of @name bug in JsDoc
       sepCounts = { '_\t': [], '_,': [], '_;': [], '_ ': [] };
       seps = Object.keys(sepCounts);
@@ -228,16 +233,21 @@ return function(loader) {
     * on each match array before appending to the results.
     */
    function tokenize(re, s, f) {
-      var m, arr = [];
+      var m, arr;
+
+      arr = [];
       if (typeof f === 'undefined') { f = function(x) { return x; }; }
       re.lastIndex = 0;  // resets the reg exp
-      while ((m = re.exec(s)) !== null && m[0] !== '') { arr.push(f(m)); }
+      for (m = re.exec(s); m !== null && m[0] !== ''; m = re.exec(s)) {
+         arr.push(f(m));
+      }
       return arr;
    }
 
    // for inferring separator type
    function tokenizeDatasetLine(line) {
       var obj;
+
       // Underscores added because of @name bug in JsDoc
       obj = { tokens: [], separators: { '_\t': 0, '_,': 0, '_;': 0, '_ ': 0 } };
       obj.line = line.replace(regexp.datasetTerm, function(m, p1, p2, p3) {
@@ -255,6 +265,7 @@ return function(loader) {
    // tokenizing one line of a dataset
    function makeLineTokenizer(str) {
       var obj, pattern, pattern2;
+
       function preprocess(line) {
          return line.replace(pattern2, function(m, s) {
             return s ? s : '';
@@ -268,14 +279,14 @@ return function(loader) {
          '_ ': { term: '([^\\s]*)', sep: '[ \\t]+', junk: '' }
       };
       pattern = '(?:' +
-                     '"(' + reString.doubleQuoteContent + ')"' + '|' +
-                     '\'(' + reString.singleQuoteContent + ')\'' + '|' +
+                     '"(' + reString.doubleQuoteContent + ')"|' +
+                     '\'(' + reString.singleQuoteContent + ')\'|' +
                      obj[str].term +
-                     ')' + '(?:' + obj[str].sep +
+                     ')(?:' + obj[str].sep +
                 ')?';
       pattern = new RegExp(pattern, 'g');
-      pattern2 = obj[str].junk + '(' + obj[str].sep + ')' + obj[str].junk + '|' +
-                 '^' + obj[str].junk + '|' +
+      pattern2 = obj[str].junk + '(' + obj[str].sep + ')' + obj[str].junk + '|^' +
+                 obj[str].junk + '|' +
                  obj[str].junk + '$';
       pattern2 = new RegExp(pattern2, 'g');
       return function(line) {
@@ -287,6 +298,7 @@ return function(loader) {
    // corresponding and uniform array of column arrays
    function columnize(rows) {
       var numCol, i, cols;
+
       cols = [];
       numCol = rows.reduce(function(maxLen, row) {
          return Math.max(row.length, maxLen);
@@ -319,6 +331,7 @@ return function(loader) {
     */
    quoteUnescape = (function(dict) {
       var obj;
+
       obj = { '\\n': '\n',
               '\\t': '\t',
               '\\r': '\r',

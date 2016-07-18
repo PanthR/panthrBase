@@ -10,10 +10,13 @@
  * @module utils
  * @author Haris Skiadas <skiadas@hanover.edu>, Barb Wahl <wahl@hanover.edu>
  */
-(function(define) {'use strict';
+(function(define) {
+'use strict';
 define(function(require) {
 
-   var utils = {};
+   var utils;
+
+   utils = {};
 
    /**
     * Mixes into the first object the key-value pairs from the other objects.
@@ -21,7 +24,9 @@ define(function(require) {
     * NOTE: Only mixes in values for "new" properties (safe mixin).
     */
    utils.mixin = function(target) {
-      var rest = [].slice.call(arguments, 1);
+      var rest;
+
+      rest = [].slice.call(arguments, 1);
       rest.forEach(function(o) {
          if (o) {
             Object.keys(o).forEach(function(key) {
@@ -66,8 +71,9 @@ define(function(require) {
     */
    utils.makePreserveMissing = function makePreserveMissing(f) {
       return function(val) {
-         return utils.isMissing(val) ? utils.missing :
-               utils.singleMissing(f.apply(null, [].slice.call(arguments)));
+         return utils.isMissing(val) ?
+            utils.missing
+            : utils.singleMissing(f.apply(null, [].slice.call(arguments)));
       };
    };
 
@@ -100,6 +106,7 @@ define(function(require) {
     */
    utils.areEqualArrays = function areEqualArrays(A, B) {
       var i;
+
       if (A.length !== B.length) { return false; }
       for (i = 0; i < A.length; i += 1) {
          if (!utils.equal(A[i], B[i])) { return false; }
@@ -110,6 +117,7 @@ define(function(require) {
    /* "Reverse lookup" for an array. */
    utils.arrayToObject = function arrayToObject(arr) {
       var obj;
+
       obj = {};
       arr.forEach(function(k, i) { obj[k] = i + 1; });
       return obj;
@@ -126,7 +134,9 @@ define(function(require) {
     * Create an array of sequential values. Similar options to `Variable.seq`.
     */
    utils.seq = function seq(from, to, step) {
-      var arr = [];
+      var arr;
+
+      arr = [];
       if (arguments.length === 1) { to = from; from = 1; }
       if (arguments.length < 3) { step = to >= from ? 1 : -1; }
       while ((to - from) * step >= 0) {
@@ -170,6 +180,7 @@ define(function(require) {
     */
    utils.getOption = function getOption(s, optList, deflt) {
       var i;
+
       if (s == null || s === '') { return deflt; }
       s = s.toLowerCase();
       for (i = 0; i < optList.length; i += 1) {

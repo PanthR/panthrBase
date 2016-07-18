@@ -4,7 +4,9 @@
  * @author Haris Skiadas <skiadas@hanover.edu>
  * Barb Wahl <wahl@hanover.edu>
  */
-(function(define) {'use strict';
+(function(define) {
+'use strict';
+/* eslint-disable max-statements */
 define(function(require) {
 
    var Vector, utils;
@@ -40,6 +42,7 @@ define(function(require) {
     */
    function Variable(values, options) {
       var ret;
+
       if (values instanceof Variable) { return values.clone(); }
       options = utils.getDefault(options, {});
       if (typeof values === 'function') {
@@ -72,12 +75,12 @@ define(function(require) {
    // mode values are the keys for Variable.modes
    // the corresponding constructors are stored as values
    Variable.modes = {
-      'scalar': Variable.ScalarVar,
-      'logical': Variable.LogicalVar,
-      'string': Variable.StringVar,
-      'factor': Variable.FactorVar,
-      'ordinal': Variable.OrdinalVar,
-      'dateTime': Variable.DateTimeVar
+      scalar: Variable.ScalarVar,
+      logical: Variable.LogicalVar,
+      string: Variable.StringVar,
+      factor: Variable.FactorVar,
+      ordinal: Variable.OrdinalVar,
+      dateTime: Variable.DateTimeVar
    };
    // give a mode property to each Variable subclass
    Object.keys(Variable.modes).forEach(function(key) {
@@ -136,6 +139,7 @@ define(function(require) {
     */
    Variable.tabulate = function tabulate(f, from, to, options) {
       var arr, i;
+
       arr = [];
       for (i = from; i <= to; i += 1) {
          arr.push(f(i));
@@ -161,6 +165,7 @@ define(function(require) {
     */
    Variable.seq = function seq(from, to, step, options) {
       var args, v;
+
       args = Array.prototype.slice.call(arguments);
       if (typeof args[args.length - 1] === 'object') {
          options = args.pop();
@@ -179,14 +184,15 @@ define(function(require) {
     */
    Variable.concat = function concat(vars) {
       var commonMode, converters, names;
+
       if (arguments.length === 0) { return Variable.scalar([]); }
       if (arguments.length === 1) { return arguments[0]; }
       vars = [].slice.call(arguments);  // at least 2 variables
       commonMode = vars.map(function(v) { return v.mode(); }).reduce(_lcMode);
       converters = {
-         'scalar': function(v) { return v.asScalar(); },
-         'string': function(v) { return v.asString(); },
-         'factor': function(v) { return v.asString(); }
+         scalar: function(v) { return v.asScalar(); },
+         string: function(v) { return v.asString(); },
+         factor: function(v) { return v.asString(); }
       };
       // make all vars the same type & concatenate their values and names
       names = utils.missing;
@@ -263,7 +269,7 @@ define(function(require) {
     */
    Variable.prototype.asString = function asString() {
       return Variable.string(this.values.map(utils.makePreserveMissing(
-         function(val) { return '' + val; }
+         function(val) { return String(val); }
       ))).names(this.names());
    };
 
@@ -363,7 +369,9 @@ define(function(require) {
     * will be used on the names.
     */
    Variable.prototype.names = function names(newNames) {
-      var len = this.length();
+      var len;
+
+      len = this.length();
       if (arguments.length === 0) { return this._names; }
       this._names = utils.optionMap(newNames,
          function(nms) { return Variable.string(nms).resize(len); }
@@ -424,6 +432,7 @@ define(function(require) {
     */
    Variable.prototype.reproduce = function reproduce(newValues, newNames) {
       var newVar;
+
       newVar = new Variable(newValues, {
          mode: this.mode(), label: this.label
       });
@@ -437,8 +446,8 @@ define(function(require) {
    Variable.prototype.select = function select(indices) {
       indices = Variable.oneDimToArray(indices);
       return !utils.isMissing(this._names) ?
-         this.reproduce(this.values.get(indices), this.names().get(indices)) :
-         this.reproduce(this.values.get(indices));
+         this.reproduce(this.values.get(indices), this.names().get(indices))
+         : this.reproduce(this.values.get(indices));
    };
 
    /**
@@ -489,8 +498,10 @@ define(function(require) {
     */
    Variable.prototype.each = function each(f, skipMissing) {
       var f2;
-      f2 = skipMissing !== true ? f :
-               function(val, i) { if (utils.isNotMissing(val)) { f(val, i); } };
+
+      f2 = skipMissing !== true ?
+         f
+         : function(val, i) { if (utils.isNotMissing(val)) { f(val, i); } };
       this.values.each(f2);
    };
 
@@ -504,8 +515,10 @@ define(function(require) {
     */
    Variable.prototype.reduce = function reduce(f, initial, skipMissing) {
       var f2;
-      f2 = skipMissing !== true ? f :
-            function(acc, val, i) { return utils.isMissing(val) ? acc : f(acc, val, i); };
+
+      f2 = skipMissing !== true ?
+         f
+         : function(acc, val, i) { return utils.isMissing(val) ? acc : f(acc, val, i); };
       return utils.singleMissing(this.values.reduce(f2, initial));
    };
 
@@ -517,11 +530,12 @@ define(function(require) {
     */
    Variable.prototype.map = function map(f, skipMissing, mode) {
       var f2;
+
       if (arguments.length === 2 && typeof skipMissing === 'string') {
          mode = skipMissing;
          skipMissing = false;
       }
-      if (mode) { mode = { 'mode': mode }; }
+      if (mode) { mode = { mode: mode }; }
       f2 = skipMissing !== true ? f : utils.makePreserveMissing(f);
       return (new Variable(this.values.map(f2), mode)).names(this.names());
    };
@@ -532,6 +546,7 @@ define(function(require) {
     */
    Variable.prototype.filter = function filter(pred) {
       var arr;
+
       arr = [];
       this.values.each(function(val, i) {
          if (pred(val, i)) { arr.push(i); }
@@ -579,6 +594,7 @@ define(function(require) {
     */
    function normalizeValue(val, ind) {
       var i;
+
       if (typeof val === 'function') {
          return Array.isArray(ind) ? ind.map(val) : val(ind);
       }
@@ -595,6 +611,7 @@ define(function(require) {
     */
    function normalizeIndices(v, ind) {
       var allNonPos, allNonNeg;
+
       if (ind instanceof Variable && ind.mode() === 'logical') {
          if (!v.sameLength(ind)) { throw new Error('incompatible lengths'); }
          ind = ind.which();    // to scalar variable
@@ -619,7 +636,9 @@ define(function(require) {
 
    // values is an array!
    function inferMode(values) {
-      var i = 0;
+      var i;
+
+      i = 0;
       while (i < values.length && utils.isMissing(values[i])) { i += 1; }
       if (i >= values.length || typeof values[i] === 'number') { return 'scalar'; }
       return typeof values[i] === 'boolean' ? 'logical' : 'factor';
@@ -639,8 +658,8 @@ define(function(require) {
    }
 
    return Variable;
-
 });
+/* eslint-enable max-statements */
 
 }(typeof define === 'function' && define.amd ? define : function(factory) {
    'use strict';

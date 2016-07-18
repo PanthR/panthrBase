@@ -1,4 +1,5 @@
-(function(define) {'use strict';
+(function(define) {
+'use strict';
 define(function(require) {
 
 return function(loader) {
@@ -21,7 +22,9 @@ return function(loader) {
     * If an empty group of rows is created by `select`, it will generate an empty `Dataset`.
     */
    loader.addInstanceMethod('Dataset', 'split', function split(select) {
-      var that = this;
+      var that;
+
+      that = this;
       if (typeof select === 'function') {
          select = Variable.tabulate(function(i) {
             return select(that.rowFun(i), i);
@@ -42,7 +45,9 @@ return function(loader) {
     *     Variable.factor(['a','a','b']).groupIndices(); // { a: [1, 2], b: [3] }
     */
    loader.addInstanceMethod('Variable', 'groupIndices', function groupIndices() {
-      var that = this, arr, levels;
+      var that, arr, levels;
+
+      that = this;
       if (that.mode !== 'factor' && that.mode !== 'ordinal') {
          /* eslint-disable consistent-this */
          that = Variable.factor(that.toArray());

@@ -1,9 +1,11 @@
-(function(define) {'use strict';
+(function(define) {
+'use strict';
 define(function(require) {
 
 // Module that contains methods for displaying and formatting variables/datasets
 return function(loader) {
    var utils, Handlebars, variableTemplate;
+
    utils = require('../utils');
    Handlebars = require('handlebars');
    variableTemplate = Handlebars.compile([
@@ -35,6 +37,7 @@ return function(loader) {
     */
    loader.addInstanceMethod('Variable', 'layOut', function layOut(ncol) {
       var rows, currentRow, i, stringVar, names;
+
       names = this.names();
       stringVar = this.asString();
       ncol = Math.floor(ncol);
@@ -76,6 +79,7 @@ return function(loader) {
     */
    loader.addInstanceMethod('Variable', 'toHTML', function toHTML(options) {
       var defaults;
+
       defaults = {
          ncol: 1,
          withNames: false,
@@ -103,6 +107,7 @@ return function(loader) {
     */
    loader.addInstanceMethod('Variable', 'format', function format(options) {
       var v, maxDigits;
+
       v = this.asScalar().names(this.names());
       function nDigits(x) {
          return x === 0 ? 1 : Math.abs(Math.log(Math.abs(x)) / Math.LN10);

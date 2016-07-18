@@ -1,4 +1,5 @@
-(function(define) {'use strict';
+(function(define) {
+'use strict';
 define(function(require) {
 
 return function(Variable) {
@@ -21,6 +22,7 @@ return function(Variable) {
    // Duplicates in `arr` are ignored.
    FactorVar.prototype.levels = function levels(arr) {
       var i;
+
       if (arguments.length === 0) { return this.c2v.slice(1); }
       // build this.v2c and this.c2v from arr
       this.c2v = [utils.missing];     // codes for levels begin from 1, not 0.
@@ -37,16 +39,22 @@ return function(Variable) {
    // Given an array of string values, `values`, returns the
    // corresponding array of numerical codes.
    FactorVar.prototype.getCodes = function getCodes(values) {
-      var v2c = this.v2c;
+      var v2c;
+
+      v2c = this.v2c;
       return values.map(utils.makePreserveMissing(
          function(val) { return v2c[val]; }
       ));
    };
 
    FactorVar.prototype._get = function _get(i) {
-      var c2v = this.c2v;
+      var c2v;
+
+      c2v = this.c2v;
       if (utils.isMissing(i)) { i = null; } // Want to pass null, not NaN, to Vector#get
-      if (typeof i === 'number') { return utils.singleMissing(c2v[ this.values.get(i) ]); }
+      if (typeof i === 'number') {
+         return utils.singleMissing(c2v[this.values.get(i)]);
+      }
       return this.values.get(i).map(utils.makePreserveMissing(
          function(code) { return c2v[code]; }
       ));
@@ -55,8 +63,10 @@ return function(Variable) {
    // Val can be an array of values or a single value.
    // Those values can be the numeric codes or the string labels.
    FactorVar.prototype._set = function _set(i, val) {
-      var c2v = this.c2v;
-      var v2c = this.v2c;
+      var c2v, v2c;
+
+      c2v = this.c2v;
+      v2c = this.v2c;
       /* eslint-disable complexity */
       function getCode(v) {
          if (Array.isArray(v)) { return v.map(getCode); }
@@ -83,6 +93,7 @@ return function(Variable) {
 
    FactorVar.prototype.reproduce = function reproduce(newValues, newNames) {
       var newVar;
+
       newValues = newValues.map(function(code) { return this.c2v[code]; }.bind(this));
       newVar = new Variable(newValues, {
          mode: this.mode(), label: this.label, levels: this.levels()

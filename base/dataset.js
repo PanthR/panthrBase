@@ -4,7 +4,8 @@
  * @author Haris Skiadas <skiadas@hanover.edu>
  * Barb Wahl <wahl@hanover.edu>
  */
-(function(define) {'use strict';
+(function(define) {
+'use strict';
 define(function(require) {
 
    var List, Variable, utils;
@@ -51,6 +52,7 @@ define(function(require) {
     */
    Dataset.prototype.names = function names(i, newNames) {
       var res;
+
       res = List.prototype.names.apply(this, [].slice.call(arguments));
       if (res !== this) { return res; }
       return sanitizeNames(this);
@@ -70,7 +72,9 @@ define(function(require) {
     *     l.rowFun(2)(2)   // Returns the second value in the second column.
     */
    Dataset.prototype.rowFun = function rowFun(i) {
-      var that = this;
+      var that;
+
+      that = this;
       return function(j) { return that.getVar(j).get(i); };
    };
 
@@ -113,7 +117,9 @@ define(function(require) {
     * appropriate entries.
     */
    Dataset.prototype.get = function get(rows, cols) {
-      var that = this;
+      var that;
+
+      that = this;
       if (arguments.length === 0) { return that.toArray(); }
       // return single value
       if (typeof cols === 'string' || typeof cols === 'number') {
@@ -161,13 +167,17 @@ define(function(require) {
     *     and `name` is a column name.
     */
    Dataset.prototype.set = function set(rows, cols, vals) {
-      var that = this;
+      var that;
+
+      that = this;
       cols = getColumns(cols, this);
       rows = getRows(rows, this);
       vals = getValsFunction(vals, rows, cols);
       // From this point on, `vals` is a function: `vals(i, j, name)`.
       cols.forEach(function(j) {
-         var myVar = List.prototype.get.call(that, j);
+         var myVar;
+
+         myVar = List.prototype.get.call(that, j);
          myVar.set(rows, function(i) {
             return vals(i, j, that.names(j));
          });
@@ -192,6 +202,7 @@ define(function(require) {
     */
    Dataset.prototype.appendRows = function appendRows(rows, values) {
       var oldnrow;
+
       if (arguments.length === 1) {
          values = rows;
          rows = values.nrow == null ? 1 : values.nrow;
@@ -207,7 +218,7 @@ define(function(require) {
       oldnrow = this.nrow;
       if (typeof values === 'function') {
          values = (function(oldValues) {
-            return function (i, j, colName) {
+            return function(i, j, colName) {
                return oldValues(i - oldnrow, j, colName);
             };
          }(values));
@@ -232,8 +243,10 @@ define(function(require) {
     *  - A function `f(i)` for computing the values in the new column.
     */
    Dataset.prototype.appendCols = function appendCols(names, values) {
-      var that = this;
-      var len = that.length();
+      var that, len;
+
+      that = this;
+      len = that.length();
       if (arguments.length === 1) {
          values = names;
          names = utils.missing;
@@ -274,8 +287,9 @@ define(function(require) {
     * - A predicate function `f(row, i)`.
     */
    Dataset.prototype.deleteRows = function deleteRows(rows) {
-      var that = this;
-      var indices;
+      var that, indices;
+
+      that = this;
       if (typeof rows === 'function') { rows = that.which(rows); }
       rows = Variable.ensureArray(rows);
       indices = that.which(function(row, i) { return rows.indexOf(i) === -1; });
@@ -291,12 +305,13 @@ define(function(require) {
     */
    Dataset.prototype.deleteCols = function deleteCols(cols) {
       var del;
+
       del = List.prototype.delete.bind(this);
       cols = List.prototype.getIndexOf.call(this, cols);
       if (!Array.isArray(cols)) {
          del(cols);
       } else {
-         cols.sort(function (a, b) { return a < b; }).forEach(del);
+         cols.sort(function(a, b) { return a < b; }).forEach(del);
       }
       this.ncol = this.length();
       return this;
@@ -332,6 +347,7 @@ define(function(require) {
 
    function normalizeList(list) {
       var listSet;
+
       listSet = List.prototype.set;
       list.each(function(val, i, name) {
          if (val instanceof List) {
@@ -421,9 +437,13 @@ define(function(require) {
    // Ensures that names for all variables exist and are unique.
    // Will add a .1, .2 etc as needed, and an X1, X2, X3 as needed
    function sanitizeNames(dset) {
-      var cache = {};
+      var cache;
+
+      cache = {};
       function ensureUnique(name) {
-         var j = 1;
+         var j;
+
+         j = 1;
          if (cache[name]) {
             while (cache[name + '.' + j]) { j += 1; }
             name = name + '.' + j;

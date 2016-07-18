@@ -1,9 +1,12 @@
-(function(define) {'use strict';
+(function(define) {
+'use strict';
 define(function(require) {
 
 return function(Variable) {
 
-   var moment, utils;       // date-time module
+   // date-time module
+   var moment, utils;
+
    moment = require('moment');
    utils = require('./../utils');
 
@@ -42,8 +45,10 @@ return function(Variable) {
    // `i` should be required here.
    // `val` is single string or number or array thereof
    DateTimeVar.prototype._set = function _set(i, val, format) {
-      var f = format == null ? function(s) { return moment(s); }
-                             : function(s) { return moment(s, format); };
+      var f;
+
+      f = format == null ? function(s) { return moment(s); }
+                         : function(s) { return moment(s, format); };
       function getMillis(v) {
          if (Array.isArray(v)) { return v.map(getMillis); }
          return utils.singleMissing(typeof v === 'string' ? f(v) : v);

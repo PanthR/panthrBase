@@ -1,4 +1,5 @@
-(function(define) {'use strict';
+(function(define) {
+'use strict';
 define(function(require) {
 
 return function(loader) {
@@ -25,6 +26,7 @@ return function(loader) {
       }
       return function(x) {
          var i, gamma;
+
          if (x < xs[0] || x > xs[xs.length - 1]) { return utils.missing; }
          if (x === xs[xs.length - 1]) { return ys[xs.length - 1]; }
          i = -1;

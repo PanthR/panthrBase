@@ -1,4 +1,5 @@
-(function(define) {'use strict';
+(function(define) {
+'use strict';
 define(function(require) {
 
 return function(Variable) {
@@ -22,6 +23,7 @@ return function(Variable) {
    LogicalVar.prototype.which = function which() {
       // `false` -> goes away; `true` -> the array index plus 1; and missing -> missing
       var arr;
+
       arr = [];
       this.values.forEach(function(v, i) {
          if (v !== false) { arr.push(v === true ? i : utils.missing); }

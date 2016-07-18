@@ -1,4 +1,5 @@
-(function(define) {'use strict';
+(function(define) {
+'use strict';
 define(function(require) {
 
 return function(loader) {
@@ -25,6 +26,7 @@ return function(loader) {
     */
    loader.addInstanceMethod('Variable', 'mean', function mean(skipMissing) {
      var v;  // the variable whose mean we will return
+
      v = filterMissing(this.asScalar(), skipMissing);
      return utils.singleMissing(v.sum() / v.length());
    });
@@ -36,16 +38,17 @@ return function(loader) {
     */
    loader.addInstanceMethod('Variable', 'var', function variance(skipMissing) {
       var res, K;
+
       res = this.reduce(function(acc, val) {
          if (K == null) { K = val; } // Center around first value for stability
-         val = val - K;
+         val -= K;
          acc.sum += val;
          acc.sumSquares += val * val;
          acc.length += 1;
          return acc;
       }, { sum: 0, sumSquares: 0, length: 0 }, skipMissing);
-      return utils.singleMissing( (res.sumSquares - res.sum * res.sum / res.length) /
-                                  (res.length - 1)
+      return utils.singleMissing(
+         (res.sumSquares - res.sum * res.sum / res.length) / (res.length - 1)
       );
    });
 
@@ -114,6 +117,7 @@ return function(loader) {
    loader.addInstanceMethod('Variable', 'quantile',
    function quantile(probs, skipMissing) {
       var getQuant, quantiles, names;
+
       if (skipMissing === true) {
          return this.nonMissing().quantile(probs);
       } else if (this.hasMissing()) {
@@ -122,11 +126,12 @@ return function(loader) {
          );
       }
       probs = Variable.ensureArray(probs);
-      probs.forEach(function(p) { if (p < 0 || p > 1) {
-         throw new Error('"probs" outside [0, 1]');
-      }});
+      probs.forEach(function(p) {
+         if (p < 0 || p > 1) { throw new Error('"probs" outside [0, 1]'); }
+      });
       getQuant = function(p) {
          var g, k;
+
          p = p * (this.length() - 1) + 1;
          k = Math.floor(p);
          g = p - k; // fractional part of scaled prob
@@ -167,6 +172,7 @@ return function(loader) {
     */
    loader.addInstanceMethod('Variable', 'table', function table() {
       var factor, freqs, missing, names;
+
       factor = Variable.factor(this.toArray()).sort();
       freqs = [];
       missing = 0;
@@ -218,6 +224,7 @@ return function(loader) {
     */
    loader.addModuleMethod('stats', 'correlate', function correlate(xs, ys, skipMissing) {
       var M, MTM, V, validIndices; // V is vector [sumX, sumY]
+
       // calculate M, the cleaned-up 2-col matrix of xs & ys
       if (!xs.sameLength(ys)) {
          throw new Error('correlate requires same-length variables');

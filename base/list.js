@@ -4,7 +4,8 @@
  * @author Haris Skiadas <skiadas@hanover.edu>
  * Barb Wahl <wahl@hanover.edu>
  */
-(function(define) {'use strict';
+(function(define) {
+'use strict';
 define(function(require) {
 
    var Variable, utils;
@@ -103,6 +104,7 @@ define(function(require) {
     */
    List.prototype.getIndexOf = function getIndexOf(name) {
       var names;
+
       names = this._names;
       function tester(n) {
          if (typeof n === 'number') { return n; }
@@ -162,6 +164,7 @@ define(function(require) {
     */
    List.prototype._set = function _set(i, val) {
       var name;
+
       if (utils.isMissing(i)) { return this; }
       if (typeof i === 'number') {
          i = Math.floor(i);
@@ -184,7 +187,7 @@ define(function(require) {
     */
    List.prototype.push = function push(val) {
       return this._set(this.length() + 1, val);
-   }
+   };
 
    /**
     * Returns a boolean indicating whether the given index or name
@@ -193,7 +196,7 @@ define(function(require) {
    List.prototype.has = function has(i) {
       return typeof i === 'number' ? i <= this.length()
                                    : !utils.isMissing(this.getIndexOf(i));
-   }
+   };
 
    /**
     * Delete the item at index/name `i`. `i` may be a positive integer or string name.
@@ -214,6 +217,7 @@ define(function(require) {
    */
    List.prototype.each = function each(f) {
       var i;
+
       for (i = 1; i <= this.length(); i += 1) {
          f(this.values[i], i, this._names[i]);
       }
@@ -231,6 +235,7 @@ define(function(require) {
     */
    List.prototype.reduce = function reduce(f, initial) {
       var i, acc;
+
       acc = initial;
       for (i = 1; i <= this.length(); i += 1) {
          acc = f(acc, this.values[i], i, this._names[i]);
@@ -245,6 +250,7 @@ define(function(require) {
     */
    List.prototype.map = function map(f) {
       var arr;
+
       arr = [];
       this.each(function(val, i, name) {
          arr.push(f(val, i, name));
@@ -281,6 +287,7 @@ define(function(require) {
     */
    List.prototype.toVariable = function toVariable() {
       var resolvedEntries;
+
       resolvedEntries = this.get().map(function(val, i) {
          if (val instanceof List) { return val.toVariable(); }
          if (val instanceof Variable) { return val.clone(); }
@@ -308,6 +315,7 @@ define(function(require) {
     */
    List.prototype.unnest = function unnest(levels) {
       var i;
+
       if (arguments.length === 0) { levels = 1; }
       if (levels === 0) { return this; }
       if (levels > 1) {
@@ -332,7 +340,6 @@ define(function(require) {
       }
       return this;
    };
-
 
    /* Helper methods */
    function joinNames(itemName, valueNames, length) {
