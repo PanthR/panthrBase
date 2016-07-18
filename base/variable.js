@@ -19,14 +19,12 @@ define(function(require) {
     * - a variable (which is simply cloned)
     * - a function `f(i)` for generating the values, in which case `length` is
     *   a required option.
+    *
     * `options` is an object indicating properties of the variable:
     *  - `length`: Will be ignored if `values` is not a function
     *  - `label`: The label to use in graphs/tables/descriptions.
     *  - `mode`: A string describing what type of variable to create. If `mode` is missing
     * it will be determined based on the first non-missing entry in `values`.
-    *  - `_names`: An optional vector/array/variable of equal length containing names for
-    * the values. Access it via the `names` method.
-    *
     *
     * Further options depend on the particular mode chosen. See the subclass documentations
     * for details.
@@ -39,6 +37,8 @@ define(function(require) {
     * converted to `null`.
     *
     * If `values` is a `Variable` it will simply be cloned (`options` will be ignored).
+    *
+    * Variables also have names for their values. See `Variable.names`.
     */
    function Variable(values, options) {
       var ret;
@@ -359,8 +359,8 @@ define(function(require) {
    };
 
    /**
-    * Called with no arguments, return the names associated with the variable's
-    * entries.
+    * Called with no arguments, return the `Variable` of the names associated with
+    * this variable's entries.
     *
     * Otherwise `newNames` is passed to the `Variable` constructor to create a
     * string variable of the new names.
