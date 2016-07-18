@@ -215,4 +215,50 @@ describe('Variable iterators: ', function() {
          expect(v.filter(function(v) { return v < 4; }).names().toArray()).to.deep.equal(['B','C']);
       });
    });
+   describe('Variable.mapPair', function() {
+      var f, v1, v2, v;
+
+      f = function(x, y) { return x + y; }
+      v1 = new Variable([2, 3, 5]);
+      v2 = new Variable([1, 6, 7]);
+      v = Variable.mapPair(v1, v2, f, 'scalar');
+      it('returns a variable of the correct mode', function() {
+         expect(v).to.be.defined;
+         expect(v.mode()).to.equal('scalar');
+      });
+      it('returns the correct values', function() {
+         expect(v.values.values).to.deep.equal([3, 9, 12]);
+      });
+      it('infers the mode if not provided', function() {
+         expect(Variable.mapPair(v1, v2, f).mode())
+            .to.equal(v.mode());
+      });
+      it('errors on arguments of unequal lengths', function() {
+         var v3 = new Variable([3, 5]);
+
+         expect(function() { Variable.mapPair(v1, v3, f, 'scalar'); })
+            .to.throw(Error);
+      });
+      it('accepts one-dimensional objects as arguments', function() {
+         v = null;
+         expect(function() { v = Variable.mapPair(v1, v2.values, f, 'scalar'); })
+            .to.not.throw(Error);
+         expect(v.values.values).to.deep.equal([3, 9, 12]);
+         v = null;
+         expect(function() {
+            v = Variable.mapPair(v1.values, v2.values.values, f, 'scalar');
+         }).to.not.throw(Error);
+         expect(v.values.values).to.deep.equal([3, 9, 12]);
+      });
+      it('maintains names from the first suitable argument', function() {
+         v1.names(['A', 'B', 'C']);
+         v = Variable.mapPair(v1, v2, f, 'scalar');
+         expect(v.names().values.values).to.deep.equal(['A', 'B', 'C']);
+         v = Variable.mapPair(v2, v1, f, 'scalar');
+         expect(v.names().values.values).to.deep.equal(['A', 'B', 'C']);
+         v2.names(['D', 'E', 'F']);
+         v = Variable.mapPair(v2, v1, f, 'scalar');
+         expect(v.names().values.values).to.deep.equal(['D', 'E', 'F']);
+      });
+   });
 });

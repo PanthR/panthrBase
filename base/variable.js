@@ -211,6 +211,37 @@ define(function(require) {
                              .names(names);
    };
 
+   /**
+    * Applies the function `f(x, y, i)` pointwise on the variables/vectors/arrays
+    * `v1` and `v2` and returns a `Variable` object containing the resulting
+    * values and of mode `mode`.
+    *
+    * Both `mode` and `skipZeros` may be omitted.
+    *
+    * If no mode is provided, it will be inferred based on the first non-missing
+    * entry of the result.
+    *
+    * If `skipZeros` is set to `true` (default is `false`), the implementation
+    * may assume that the function `f` returns `0` whenever one of its arguments
+    * is `0`.
+    */
+   Variable.mapPair = function(v1, v2, f, mode, skipZeros) {
+      var options, v;
+
+      skipZeros = skipZeros === true;
+      options = mode == null ? {} : { mode: mode };
+      v1 = Variable.oneDimToVariable(v1);
+      v2 = Variable.oneDimToVariable(v2);
+      if (!v1 instanceof Variable || !v2 instanceof Variable) {
+         throw new Error('Variable.mapPair: Needs 1-dim arguments');
+      }
+
+      v = new Variable(v1.values.mapPair(v2.values, f, skipZeros), options);
+      v.names(utils.isMissing(v1.names()) ? v2.names() : v1.names());
+
+      return v;
+   };
+
    // The following methods used to simplify other methods
 
    /**
