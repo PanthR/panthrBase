@@ -236,8 +236,18 @@ define(function(require) {
          throw new Error('Variable.mapPair: Needs 1-dim arguments');
       }
 
-      v = new Variable(v1.values.mapPair(v2.values, f, skipZeros), options);
-      v.names(utils.isMissing(v1.names()) ? v2.names() : v1.names());
+      if (v2.length() === 1) {
+         v = v1.map(function(arg) {
+            return f(arg, v2.get(1));
+         });
+      } else if (v1.length() === 1) {
+         v = v2.map(function(arg) {
+            return f(v1.get(1), arg);
+         });
+      } else {
+         v = new Variable(v1.values.mapPair(v2.values, f, skipZeros), options);
+         v.names(utils.isMissing(v1.names()) ? v2.names() : v1.names());
+      }
 
       return v;
    };
