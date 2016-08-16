@@ -302,6 +302,34 @@ define(function(require) {
       return Variable.concat.apply(null, resolvedEntries);
    };
 
+   /*
+    * Attempts to concatenate the list's entries into a simpler object.
+    * Performs the following steps:
+    * - If the list is empty, an empty list is returned.
+    * - If `recursive` is set to `true` (defaults to `false`) then the list is
+    *     fully unnested.
+    * - Any one-dimensional (Variable/Vector/array) entries at the (new) top
+    *     level are converted to `Variable`.
+    * - If all top-level entries are now Variables, a single variable is created
+    *     via `Variable.concat`.
+    * - The resulting value (a `Variable` or a `List`) is returned.
+    */
+   List.prototype.concat = function concat(recursive) {
+      var lst, i;
+
+      recursive = recursive === true;
+
+      if (this.length() === 0) { return this; }
+      if (recursive) { this.unnest(Infinity); }
+
+      lst = this.map(Variable.oneDimToVariable);
+      for (i = 1; i <= lst.length(); i += 1) {
+         if (!(lst.get(i) instanceof Variable)) { return lst; }
+      }
+
+      return lst.toVariable();
+   }
+
    /**
     * Unnest a number of levels out of a nested list, starting at the
     * top level. `levels` is the number of levels it will attempt to unnest.

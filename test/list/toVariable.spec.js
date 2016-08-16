@@ -124,3 +124,36 @@ describe('List#clone', function() {
       expect(utils.isMissing(l2.get('a').names())).to.be.true;
    });
 });
+
+describe('concat', function() {
+   var v1 = new Variable([3, 5, 8]);
+   var v2 = new Variable([true, true, false]);
+
+   it('returns correct variable if all elements are 1-dim', function() {
+      var l1 = new List({ a: v1, b: v2 });
+      expect(l1.concat()).to.be.an.instanceof(Variable);
+      expect(l1.concat().toArray()).to.deep.equal([3, 5, 8, 1, 1, 0]);
+   });
+   it('returns a list if not all elements are 1-dim', function() {
+      var l1 = new List({ a: v1, b: new List({ c: v2 }) });
+      var l2 = new List({ a: v1, b: function() {} });
+
+      expect(l1.concat()).to.be.an.instanceof(List);
+      expect(l1.get('a')).to.equal(v1);
+      expect(l1.get('b').get('c')).to.equal(v2);
+      expect(l1.length()).to.equal(2);
+
+      expect(l2.concat()).to.be.an.instanceof(List);
+      expect(l2.concat(true)).to.be.an.instanceof(List);
+   });
+   it('unnests when it should', function() {
+      var l1 = new List({ a: v1, b: new List({ c: v2 }) });
+      var l2 = l1.concat(true);
+      expect(l2).to.be.an.instanceof(Variable);
+      expect(l2.toArray()).to.deep.equal([3, 5, 8, 1, 1, 0]);
+   });
+   it('returns an empty list when called on an empty list', function() {
+      expect((new List()).concat()).to.be.an.instanceof(List);
+      expect((new List()).concat().length()).to.equal(0);
+   });
+});
