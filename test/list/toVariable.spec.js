@@ -123,6 +123,15 @@ describe('List#clone', function() {
       expect(l2.get('a').get(2)).to.equal(l1.get('a').get(2));
       expect(utils.isMissing(l2.get('a').names())).to.be.true;
    });
+   it('works with non-object values', function() {
+      var l1 = new List({ a: 5, b: null, c: undefined, d: NaN, e: function() {} });
+      var l2;
+      expect(function() { l2 = l1.clone(); }).to.not.throw(Error);
+      expect(l2.get('a')).to.equal(5);
+      expect(l2.get('e')).to.equal(l1.get('e'));
+      expect(l2.get('b')).to.equal(null);
+      expect(l2.get('c')).to.equal(undefined);
+   });
 });
 
 describe('concat', function() {
