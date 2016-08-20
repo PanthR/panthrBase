@@ -348,7 +348,7 @@ define(function(require) {
       }
 
       return lst.toVariable();
-   }
+   };
 
    /**
     * Unnest a number of levels out of a nested list, starting at the
