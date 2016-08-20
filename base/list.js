@@ -127,6 +127,24 @@ define(function(require) {
    };
 
    /**
+    * Recursively descends a list specified by an array of indices. The parameter `v`
+    * can be any one-dimensional object whose entries are numeric or string indices.
+    * These indices will then be used in succession to descend into the nested list.
+    */
+   List.prototype.deepGet = function deepGet(v) {
+      return Variable.oneDimToArray(v).reduce(function(lst, index, i, array) {
+         var next;
+
+         if (!lst.has(index)) {
+            throw new Error('List object ' + lst + ' has no index ' + index);
+         }
+         next = lst.get(index);
+         if (i === array.length || next instanceof List) { return next; }
+         throw new Error('Trying to index non-list object: ' + next);
+      }, this);
+   };
+
+   /**
     * Called with two arguments `i`, `val`. Set the list item at a given index `i`.
     * `i` can be:
     * - a positive number. If `i` is greater than the length of the list,
