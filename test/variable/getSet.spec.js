@@ -142,6 +142,25 @@ describe('Variable set', function() {
       expect(v1.get()).to.deep.equal([2.12, 3, 9, 23]);
    });
 });
+describe('Variable#has', function() {
+   var v1 = new Variable([2, 4, 6]);
+   v1.names(['A', 'B', 'C']);
+   it('works on valid number/string indices', function() {
+      expect(v1).to.respondTo('has');
+      expect(v1.has(0)).to.be.false;
+      expect(v1.has(1)).to.be.true;
+      expect(v1.has(2)).to.be.true;
+      expect(v1.has(3)).to.be.true;
+      expect(v1.has(4)).to.be.false;
+      expect(v1.has('C')).to.be.true;
+      expect(v1.has('D')).to.be.false;
+   });
+   it('returns false for missing/NaN indices', function() {
+      expect(v1.has(NaN)).to.be.false;
+      expect(v1.has(null)).to.be.false;
+      expect(v1.has()).to.be.false;
+   });
+});
 describe('Variable select', function() {
    var v1 = new Variable([2.12, -12.2, 3, 23]);
    v1.names(["a","b","c","d"]);

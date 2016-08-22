@@ -341,6 +341,15 @@ define(function(require) {
    Variable.prototype._get = function _get(i) {
       return utils.isMissing(i) ? utils.missing : this.values.get(i);
    };
+
+   /**
+    * Returns a boolean indicating if the variable has a value at "position" `i`.
+    * `i` must be an integer or a string name.
+    */
+   Variable.prototype.has = function has(i) {
+      i = resolveIndex(this.names())(i);
+
+      return typeof i === 'number' && i > 0 && i <= this.length();
    };
 
    /**
