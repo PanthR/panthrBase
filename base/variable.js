@@ -675,7 +675,7 @@ define(function(require) {
       // single numbers fall through to end
       if (Array.isArray(ind)) {
          allNegOrZero = ind.every(function(val) {
-            return utils.isMissing(val) || (typeof val === 'number' && val <= 0);
+            return utils.isMissing(val) || typeof val === 'number' && val <= 0;
          });
          someNegatives = ind.some(function(val) {
             return typeof val === 'number' && val < 0;
@@ -699,6 +699,8 @@ define(function(require) {
       var cachedNames;
 
       function buildNames() {
+         var i;
+
          cachedNames = {};
          names = utils.isMissing(names) ? [] : names.toArray();
 
