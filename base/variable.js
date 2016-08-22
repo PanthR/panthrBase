@@ -315,9 +315,10 @@ define(function(require) {
    };
 
    /**
-    * Return the values(s) indicated by `i`.  (Keep in mind that variables
-    * are indexed starting from 1.)
+    * Return the values(s) indicated by `i`, as an array or a single value.
+    * (Keep in mind that variables are indexed starting from 1.)
     *
+    * - If `i` is not provided, an array of all values is returned.
     * - If `i` is a positive integer, return the value at index `i`.
     * - If `i` is an array of non-negative integers, return an array of
     * the corresponding values (skipping indices of value 0).
@@ -331,11 +332,15 @@ define(function(require) {
     * For factor variables, the values are returned, not the codes.
     */
    Variable.prototype.get = function get(i) {
+      if (arguments.length === 0) { return this.toArray(); }
+
       return this._get(normalizeIndices(this, i));
    };
 
+   // This is overrideable by the various Variable subclasses
    Variable.prototype._get = function _get(i) {
-      return utils.isMissing(i) ? this.values.toArray() : this.values.get(i);
+      return utils.isMissing(i) ? utils.missing : this.values.get(i);
+   };
    };
 
    /**
@@ -344,7 +349,7 @@ define(function(require) {
     * For factor variables, the values are returned.
     */
    Variable.prototype.toArray = function toArray() {
-      return this.get();
+      return this.values.toArray();
    };
 
    /**
@@ -673,10 +678,37 @@ define(function(require) {
          } else if (someNegatives) {
             throw new Error('Cannot use both positive and negative indices.');
          }
-         // ind contains only null, nonnegative integers at this point
-         ind = ind.filter(function(val) { return val !== 0; }); // drop the zeros
+         // ind contains only null, nonnegative integers, or strings at this point
+         ind = ind.map(resolveIndex(v.names()))
+            .filter(function(val) { return val !== 0; }); // drop the zeros
       }
-      return ind;
+      return resolveIndex(v.names())(ind);
+   }
+
+   // Allows strings as indices, and looks them up in the names
+   function resolveIndex(names) {
+      var cachedNames;
+
+      function buildNames() {
+         cachedNames = {};
+         names = names.toArray();
+
+         for (i = 0; i < names.length; i += 1) {
+            if (!utils.isMissing(names[i])) {
+               cachedNames[names[i]] = i + 1;
+            }
+         }
+      }
+
+      return function(index) {
+         if (typeof index === 'string') {
+            if (cachedNames == null) { buildNames(); }
+            return cachedNames.hasOwnProperty(index) ? cachedNames[index]
+                                                     : utils.missing;
+         }
+
+         return index;
+      };
    }
 
    // values is an array!

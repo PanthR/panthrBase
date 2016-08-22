@@ -85,6 +85,13 @@ describe('Variable#get', function() {
          v1.get(S);
          expect(spy.lastCall.args[0]).to.deep.equal([1,2]);
       });
+      it('-- accepts strings as indices', function() {
+         var v1 = new Variable([2.12, -12.2, 3, undefined]);
+         v1.names(["A", "B", "C"]);
+         expect(v1.get(["A"])).to.deep.equal([2.12]);
+         expect(v1.get("A")).to.equal(2.12);
+         expect(utils.isMissing(v1.get("D"))).to.be.true;
+      });
    });
 });
 describe('Variable set', function() {

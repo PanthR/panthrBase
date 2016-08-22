@@ -105,6 +105,16 @@ return function(Variable) {
       return Variable.string(this.get()).names(this.names());
    };
 
+   FactorVar.prototype.toArray = function toArray() {
+      var c2v;
+
+      c2v = this.c2v;
+
+      return this.values.toArray().map(utils.makePreserveMissing(
+         function(code) { return c2v[code]; }
+      ));
+   };
+
    return FactorVar;
 };
 
