@@ -154,6 +154,8 @@ describe('Variable#has', function() {
       expect(v1.has(4)).to.be.false;
       expect(v1.has('C')).to.be.true;
       expect(v1.has('D')).to.be.false;
+      expect((new Variable([2, 4])).has(1)).to.be.true;
+      expect((new Variable([2, 4])).has('A')).to.be.false;
    });
    it('returns false for missing/NaN indices', function() {
       expect(v1.has(NaN)).to.be.false;

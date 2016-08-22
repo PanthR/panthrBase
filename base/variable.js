@@ -415,7 +415,7 @@ define(function(require) {
 
    /**
     * Called with no arguments, return the `Variable` of the names associated with
-    * this variable's entries.
+    * this variable's entries, or `utils.missing` if there are no names.
     *
     * Otherwise `newNames` is passed to the `Variable` constructor to create a
     * string variable of the new names.
@@ -700,7 +700,7 @@ define(function(require) {
 
       function buildNames() {
          cachedNames = {};
-         names = names.toArray();
+         names = utils.isMissing(names) ? [] : names.toArray();
 
          for (i = 0; i < names.length; i += 1) {
             if (!utils.isMissing(names[i])) {
