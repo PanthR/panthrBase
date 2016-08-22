@@ -147,3 +147,21 @@ describe('List has:', function() {
       expect(l.has('d')).to.equal(false);
    });
 });
+describe('List deepGet:', function() {
+   it('descends into lists', function() {
+      var l = new List({a: new Variable([2, 4]), b: List({c: 5, d: 2})});
+      expect(l.deepGet(["a"])).to.be.an.instanceof(Variable);
+      expect(l.deepGet(["b", "c"])).to.equal(5);
+      expect(l.deepGet([1, 1])).to.equal(2);
+      expect(l.deepGet([1])).to.be.an.instanceof(Variable);
+      expect(l.deepGet([2, 1])).to.equal(5);
+      expect(l.deepGet(new Variable([2, 1]))).to.equal(5);
+   });
+   it('errors if going too wide or deep', function() {
+      var l = new List({a: new Variable([2, 4]), b: List({c: 5, d: 2})});
+      expect(function() { l.deepGet([3]) }).to.throw(Error);
+      expect(function() { l.deepGet([1, 3]) }).to.throw(Error);
+      expect(function() { l.deepGet(["a", "c"]) }).to.throw(Error);
+      expect(function() { l.deepGet([2, 1, 1]) }).to.throw(Error);
+   });
+});

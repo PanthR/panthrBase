@@ -132,14 +132,14 @@ define(function(require) {
     * These indices will then be used in succession to descend into the nested list.
     */
    List.prototype.deepGet = function deepGet(v) {
-      return Variable.oneDimToArray(v).reduce(function(lst, index, i, array) {
+      return Variable.oneDimToArray(v).reduce(function(result, index, i, array) {
          var next;
 
-         if (!lst.has(index)) {
-            throw new Error('List object ' + lst + ' has no index ' + index);
+         if (!result.has(index)) {
+            throw new Error('Object ' + result + ' has no index ' + index);
          }
-         next = lst.get(index);
-         if (i === array.length || next instanceof List) { return next; }
+         next = result.get(index);
+         if (i === array.length - 1 || next instanceof List || next instanceof Variable) { return next; }
          throw new Error('Trying to index non-list object: ' + next);
       }, this);
    };
