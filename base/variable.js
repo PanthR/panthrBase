@@ -651,7 +651,7 @@ define(function(require) {
     * the positions we are interested in, with `NaN`s in for any "missing" indices.
     */
    function normalizeIndices(v, ind) {
-      var allNonPos, allNonNeg;
+      var allNegOrZero, someNegatives;
 
       if (ind instanceof Variable && ind.mode() === 'logical') {
          if (!v.sameLength(ind)) { throw new Error('incompatible lengths'); }
@@ -660,13 +660,17 @@ define(function(require) {
       ind = normalizeValue(Variable.oneDimToArray(ind));
       // single numbers fall through to end
       if (Array.isArray(ind)) {
-         allNonPos = ind.every(function(val) { return !(val > 0); });
-         allNonNeg = ind.every(function(val) { return !(val < 0); });
-         if (allNonPos) {
+         allNegOrZero = ind.every(function(val) {
+            return utils.isMissing(val) || (typeof val === 'number' && val <= 0);
+         });
+         someNegatives = ind.some(function(val) {
+            return typeof val === 'number' && val < 0;
+         });
+         if (allNegOrZero) {
             ind = v.values.map(function(val, k) {
                return ind.indexOf(-k) === -1 ? k : 0;
             }).toArray();
-         } else if (!allNonNeg) {
+         } else if (someNegatives) {
             throw new Error('Cannot use both positive and negative indices.');
          }
          // ind contains only null, nonnegative integers at this point
