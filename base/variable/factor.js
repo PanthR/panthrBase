@@ -9,7 +9,11 @@ return function(Variable) {
    utils = require('./../utils');
    // values _will_ be an array
    function FactorVar(values, options) {
-      this.levels(values.slice().sort());
+      if (options.hasOwnProperty('levels')) {
+         this.levels(options.levels);
+      } else {
+         this.levels(values.slice().sort());
+      }
       // the values of a factor "are" the corresponding codes
       this.values = new Variable.Vector(this.getCodes(values)).mutable(true);
    }

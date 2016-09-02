@@ -50,6 +50,16 @@ describe('Variables can be ', function() {
       expect(v2).to.be.instanceof(Variable.FactorVar);
       expect(utils.areEqualArrays(v2.values.toArray(), [2, 1, 1, utils.missing, 3, 2])).to.be.true;
       expect(v2.mode()).to.equal('factor');
+      // Setting custom levels
+      v1 = new Variable(['a', 'a', 'b'], { mode: 'factor', levels: ['b'] });
+      expect(v1).to.be.instanceof(Variable.FactorVar);
+      expect(utils.isMissing(v1.get(1))).to.be.ok;
+      expect(v1.get(3)).to.equal('b');
+      v1 = new Variable(['a', 'a', 'b'], { mode: 'factor', levels: ['c', 'b', 'a'] });
+      expect(v1).to.be.instanceof(Variable.FactorVar);
+      expect(v1.get(3)).to.equal('b');
+      expect(v1.get(2)).to.equal('a');
+      expect(v1.values.toArray()).to.deep.equal([3, 3, 2]);
    });
    it('ordinal', function() {
       var arr = ['b', 'a', 'a', 'c', 'b'];
