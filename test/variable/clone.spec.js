@@ -41,6 +41,7 @@ describe('Clone', function() {
             expect(v.reproduce([]).mode()).to.equal(v.mode());
             expect(v.reproduce([]).length()).to.equal(0);
          });
+         expect(A[3].levels()).to.deep.equal(A[3].reproduce([]).levels());
       });
       it('can make a new variable using a vector of values', function() {
          expect(A[3].reproduce(new Variable.Vector([1, 2, 1])).levels())
