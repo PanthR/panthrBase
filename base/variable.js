@@ -329,6 +329,9 @@ define(function(require) {
     * variable, in which case, return an array of the values which correspond to the
     * `true` values in `i`.
     *
+    * If the variable has names, then those string names can be used in place of
+    * the numeric indices.
+    *
     * For factor variables, the values are returned, not the codes.
     */
    Variable.prototype.get = function get(i) {
@@ -368,6 +371,39 @@ define(function(require) {
     */
    Variable.prototype.toVector = function toVector() {
       return this.values;
+   };
+
+   /**
+    * Returns a substructure of the variable as indicated by the
+    * provided indices.
+    *
+    * The function takes an arbitrary number of arguments, each representing
+    * an indexing dimension, and each of which is one of the following:
+    * - `undefined`, representing the idea of all entries in that dimension
+    *     being used.
+    * - `null`, representing the selection of no entries in that dimension
+    * - A `Variable`, which will be interpreted as numeric, logical or character
+    *     with appropriate coercion. Positions can be repeated, resulting in
+    *     those entries being repeated in the result.
+    *
+    * Right now only the one dimensional case is handled. In the long
+    * run variables would allow dimension/array indexing and then
+    * the number of arguments must match that dimensionality.
+    * (If there is only one provided argument, then the variable is treated
+    * as one-dimensional regardless of its dimension specification.)
+    */
+   Variable.prototype.index = function(indices) {
+      if (arguments.length > 1) {
+         throw new Error('Only one-dimensional indexing allowed at this time.');
+      }
+      /* eslint-disable no-undefined */
+      if (indices === undefined) { return this.clone(); }
+      /* eslint-enable no-undefined */
+      if (indices === null) { return this.reproduce([]); }
+
+      indices = normalizeIndices(this, indices);
+
+      return this.reproduce(this.values.get(indices));
    };
 
    /**

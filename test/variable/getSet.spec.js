@@ -1,4 +1,6 @@
-var Variable  = require('../../base/variable');
+var main = require('../../index');
+var Variable  = main.Variable;
+var List  = main.List;
 var utils  = require('../../base/utils');
 var chai = require('chai');
 var expect = chai.expect;
@@ -176,5 +178,61 @@ describe('Variable select', function() {
    });
    it('works when called with an array', function() {
       expect(w2.get()).to.deep.equal(["yes","yes","no"]);
+   });
+});
+
+describe('Variable#index', function() {
+   var v1 = new Variable([2, 4, 6]);
+   v1.names(['A', 'B', 'C']);
+   var v2 = new Variable(["A", "B", "C"]);
+   it('returns a clone if no arguments provided', function() {
+      var v = v1.index();
+      expect(v.length()).to.equal(3);
+      expect(v).to.not.equal(v1);
+      expect(v.mode()).to.equal(v1.mode());
+      expect(v.toArray()).to.deep.equal(v1.toArray());
+      v = v2.index();
+      expect(v.length()).to.equal(3);
+      expect(v).to.not.equal(v2);
+      expect(v.mode()).to.equal(v2.mode());
+      expect(v.toArray()).to.deep.equal(v2.toArray());
+   });
+   it('uses all entries at that dimension if an index equals "undefined"', function() {
+      var v = v1.index(undefined);
+      expect(v.length()).to.equal(3);
+      expect(v).to.not.equal(v1);
+      expect(v.mode()).to.equal(v1.mode());
+      expect(v.toArray()).to.deep.equal(v1.toArray());
+      v = v2.index(undefined);
+      expect(v.length()).to.equal(3);
+      expect(v).to.not.equal(v2);
+      expect(v.mode()).to.equal(v2.mode());
+      expect(v.toArray()).to.deep.equal(v2.toArray());
+   });
+   it('uses no entries at that dimension if an index equals "null"', function() {
+      var v = v1.index(null);
+      expect(v.length()).to.equal(0);
+      expect(v).to.not.equal(v1);
+      expect(v.mode()).to.equal(v1.mode());
+      v = v2.index(null);
+      expect(v.length()).to.equal(0);
+      expect(v).to.not.equal(v2);
+      expect(v.mode()).to.equal(v2.mode());
+   });
+   it('allows repeated values in indices', function() {
+      var v = v1.index(new Variable([3, 1, 1]));
+      expect(v.length()).to.equal(3);
+      expect(v.mode()).to.equal(v1.mode());
+      expect(v.toArray()).to.deep.equal([v1.get(3), v1.get(1), v1.get(1)]);
+      v = v2.index(new Variable([3, 1, 1]));
+      expect(v.length()).to.equal(3);
+      expect(v.mode()).to.equal(v2.mode());
+      expect(v.toArray()).to.deep.equal([v2.get(3), v2.get(1), v2.get(1)]);
+   });
+   it('uses named coordinates correctly', function() {
+      var v = v1.index(new Variable(['A', 'A', 'C']));
+      expect(v.length()).to.equal(3);
+      expect(v.mode()).to.equal(v1.mode());
+      expect(v.toArray()).to.deep.equal([v1.get(1), v1.get(1), v1.get(3)]);
    });
 });
