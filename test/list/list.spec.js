@@ -98,6 +98,16 @@ describe('List set', function() {
       expect(l.length()).to.equal(7);
       //l.names(['x','y','z','p',,,'a']);
    });
+   it('works when i is a List', function() {
+      var l = new List({a: 4, b: 7, c: -1});
+      var l2 = new List({b: 2 });
+      l2.set([6]);
+      l.set(l2);
+      expect(l.get(4)).to.equal(6);
+      expect(l.get(2)).to.equal(2);
+      expect(l.get('b')).to.equal(2);
+      expect(l.length()).to.equal(4);
+   });
 });
 describe('List delete', function() {
    it('by index', function() {

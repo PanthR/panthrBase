@@ -154,16 +154,25 @@ define(function(require) {
     * - an object of name-value pairs, causing a series of updates or appends, one for
     * each pair.
     * - an array of values, causing a series of appends of these (unnamed) items.
+    * - a `List` of values, causing a series  of updates or appends.
     *
-    * `val` can be any Javascript entity. If `i` is an object or array, then `val` is
-    * omitted.
+    * `val` can be any Javascript entity. If `i` is an object, array or `List`, then `val` is
+    * omitted/ignored.
     */
    List.prototype.set = function set(i, val) {
       if (utils.isMissing(i)) { return this; }
       if (typeof i === 'number' || typeof i === 'string') {
          return this._set(i, val);
       }
-      if (Array.isArray(i)) {
+      if (i instanceof List) {
+         i.each(function(v, ind, name) {
+            if (utils.isMissing(name)) {
+               this._set(this.length() + 1, v);
+            } else {
+               this._set(name, v);
+            }
+         }.bind(this));
+      } else if (Array.isArray(i)) {
          i.forEach(function(v) {
             this._set(this.length() + 1, v);
          }.bind(this));
