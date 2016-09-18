@@ -127,12 +127,12 @@ define(function(require) {
    };
 
    /**
-    * Recursively descends a list specified by an array of indices. The parameter `v`
+    * Recursively descends a list specified by an array of indices. The parameter `coords`
     * can be any one-dimensional object whose entries are numeric or string indices.
     * These indices will then be used in succession to descend into the nested list.
     */
-   List.prototype.deepGet = function deepGet(v) {
-      return Variable.oneDimToArray(v).reduce(function(result, index, i, array) {
+   List.prototype.deepGet = function deepGet(coords) {
+      return Variable.oneDimToArray(coords).reduce(function(result, index, i, array) {
          var next;
 
          if (!result.has(index)) {
@@ -142,6 +142,31 @@ define(function(require) {
          if (i === array.length - 1 || next instanceof List || next instanceof Variable) { return next; }
          throw new Error('Trying to index non-list object: ' + next);
       }, this);
+   };
+
+   /**
+    * Recursively descends a list specified by an array of indices. The parameter `coords`
+    * can be any one-dimensional object whose entries are numeric or string indices.
+    * At the last step of the descent, the assignment is made using `value`.
+    */
+   List.prototype.deepSet = function deepSet(coords, value) {
+      Variable.oneDimToArray(coords).reduce(function(result, index, i, array) {
+         var next;
+
+         if (i === array.length - 1) {
+            return result.set(index, value);
+         }
+         if (!result.has(index)) {
+            throw new Error('Object ' + result + ' has no index ' + index);
+         }
+         next = result.get(index);
+         if (next instanceof List || next instanceof Variable) {
+            return next;
+         }
+         throw new Error('Trying to index non-list object: ' + next);
+      }, this);
+
+      return this;
    };
 
    /**

@@ -175,3 +175,21 @@ describe('List deepGet:', function() {
       expect(function() { l.deepGet([2, 1, 1]) }).to.throw(Error);
    });
 });
+describe('List deepSet:', function() {
+   it('descends into lists and makes assignment', function() {
+      var l = new List({a: new Variable([2, 4]), b: List({c: 5, d: 2})});
+      l.deepSet([1, 1], 5);
+      expect(l.get('a').get(1)).to.equal(5);
+      l.deepSet(['b','c'], 20);
+      expect(l.get('b').get('c')).to.equal(20);
+      l.deepSet(['b','e'], 77);
+      expect(l.get('b').length()).to.equal(3);
+      expect(l.get('b').get('e')).to.equal(77);
+   });
+   it('errors if going too wide or deep', function() {
+      var l = new List({a: new Variable([2, 4]), b: List({c: 5, d: 2})});
+      expect(function() { l.deepSet([3, 1], 10) }).to.throw(Error);
+      expect(function() { l.deepSet([1, 3, 1], 10) }).to.throw(Error);
+      expect(function() { l.deepSet(["a", "c", "x"], 10) }).to.throw(Error);
+   });
+});
