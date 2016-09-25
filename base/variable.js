@@ -407,6 +407,39 @@ define(function(require) {
    };
 
    /**
+    * Assigns to a substructure of the variable as indicated by the
+    * provided indices.
+    *
+    * The function takes an arbitrary number of arguments. The first, `values`,
+    * is the Variable of values to assign. The remaining arguments represent
+    * indexing dimensions, and each of them is one of the following:
+    * - `undefined`, representing the idea of all entries in that dimension
+    *     being used.
+    * - `null`, representing the selection of no entries in that dimension
+    * - A `Variable`, which will be interpreted as numeric, logical or character
+    *     with appropriate coercion. Positions can be repeated, resulting in
+    *     those entries being repeated in the result.
+    *
+    * Right now only the one dimensional case is handled. In the long
+    * run variables would allow dimension/array indexing and then
+    * the number of arguments must match that dimensionality.
+    * (If there are only two provided arguments, then the variable is treated
+    * as one-dimensional regardless of its dimension specification.)
+    */
+   Variable.prototype.indexSet = function(values, indices) {
+      if (arguments.length > 2) {
+         throw new Error('Only one-dimensional indexing allowed at this time.');
+      }
+      /* eslint-disable no-undefined */
+      if (indices === undefined) {
+        // Global set
+        this.set(Variable.seq(1, this.length()), values);
+      /* eslint-enable no-undefined */
+      } else if (indices !== null) {
+        this.set(indices, values);
+      }
+   };
+   /**
      * Set the entries indicated by `i` to the values indicated by `val`.
      * (Keep in mind that Variables are indexed starting from 1.)
      *
