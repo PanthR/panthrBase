@@ -89,7 +89,7 @@ describe('Variable#get', function() {
       });
       it('-- accepts strings as indices', function() {
          var v1 = new Variable([2.12, -12.2, 3, undefined]);
-         v1.names(["A", "B", "C"]);
+         v1.names(['A', 'B', 'C']);
          expect(v1.get(["A"])).to.deep.equal([2.12]);
          expect(v1.get("A")).to.equal(2.12);
          expect(utils.isMissing(v1.get("D"))).to.be.true;
@@ -184,7 +184,7 @@ describe('Variable select', function() {
 describe('Variable#index', function() {
    var v1 = new Variable([2, 4, 6]);
    v1.names(['A', 'B', 'C']);
-   var v2 = new Variable(["A", "B", "C"]);
+   var v2 = new Variable(['A', 'B', 'C']);
    it('returns a clone if no arguments provided', function() {
       var v = v1.index();
       expect(v.length()).to.equal(3);
@@ -234,5 +234,64 @@ describe('Variable#index', function() {
       expect(v.length()).to.equal(3);
       expect(v.mode()).to.equal(v1.mode());
       expect(v.toArray()).to.deep.equal([v1.get(1), v1.get(1), v1.get(3)]);
+   });
+});
+
+describe('Variable#indexSet', function() {
+   it('changes all values if no arguments provided', function() {
+      var v1 = new Variable([2, 4, 6]);
+      v1.names(['A', 'B', 'C']);
+      var v2 = new Variable(['A', 'B', 'C']);
+      v1.indexSet([1, 2, 3]);
+      expect(v1.length()).to.equal(3);
+      expect(v1.toArray()).to.deep.equal([1, 2, 3]);
+
+      v2.indexSet(['C', 'B', 'A']);
+      expect(v2.length()).to.equal(3);
+      expect(v2.toArray()).to.deep.equal(['C', 'B', 'A']);
+   });
+   it('changes all entries at that dimension if an index equals "undefined"', function() {
+      var v1 = new Variable([2, 4, 6]);
+      v1.names(['A', 'B', 'C']);
+      var v2 = new Variable(['A', 'B', 'C']);
+      v1.indexSet([1, 2, 3], undefined);
+      expect(v1.length()).to.equal(3);
+      expect(v1.toArray()).to.deep.equal([1, 2, 3]);
+
+      v2.indexSet(['C', 'B', 'A'], undefined);
+      expect(v2.length()).to.equal(3);
+      expect(v2.toArray()).to.deep.equal(['C', 'B', 'A']);
+   });
+   it('changes nothing if a dimension equals "null"', function() {
+      var v1 = new Variable([2, 4, 6]);
+      v1.names(['A', 'B', 'C']);
+      var v2 = new Variable(['A', 'B', 'C']);
+      v1.indexSet([1, 2, 3], null);
+      expect(v1.length()).to.equal(3);
+      expect(v1.toArray()).to.deep.equal([2, 4, 6]);
+
+      v2.indexSet(['C', 'B', 'A'], null);
+      expect(v2.length()).to.equal(3);
+      expect(v2.toArray()).to.deep.equal(['A', 'B', 'C']);
+   });
+   it('allows repeated values in indices', function() {
+      var v1 = new Variable([2, 4, 6]);
+      v1.names(['A', 'B', 'C']);
+      var v2 = new Variable(['A', 'B', 'C']);
+      v1.indexSet([1, 2, 3], new Variable([3, 1, 1]));
+      expect(v1.length()).to.equal(3);
+      expect(v1.toArray()).to.deep.equal([3, 4, 1]);
+
+      v2.indexSet(['A', 'B', 'C'], new Variable([3, 1, 1]));
+      expect(v2.length()).to.equal(3);
+      expect(v2.toArray()).to.deep.equal(['C', 'B', 'A']);
+   });
+   it('uses named coordinates correctly', function() {
+      var v1 = new Variable([2, 4, 6]);
+      v1.names(['A', 'B', 'C']);
+      var v2 = new Variable(['A', 'B', 'C']);
+      v1.indexSet([7, 8, 9], new Variable(['A', 'A', 'C']));
+      expect(v1.length()).to.equal(3);
+      expect(v1.toArray()).to.deep.equal([8, 4, 9]);
    });
 });
