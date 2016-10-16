@@ -188,7 +188,7 @@ define(function(require) {
       if (arguments.length === 0) { return Variable.scalar([]); }
       if (arguments.length === 1) { return arguments[0]; }
       vars = [].slice.call(arguments);  // at least 2 variables
-      commonMode = vars.map(function(v) { return v.mode(); }).reduce(_lcMode);
+      commonMode = vars.map(function(v) { return v.mode(); }).reduce(Variable.commonMode);
       converters = {
          scalar: function(v) { return v.asScalar(); },
          string: function(v) { return v.asString(); },
@@ -292,6 +292,18 @@ define(function(require) {
    Variable.oneDimToVariable = function oneDimToVariable(val) {
       if (Array.isArray(val)) { return new Variable(val); }
       return val instanceof Vector ? new Variable(val) : val;
+   };
+   /**
+    * Given two mode strings `m1` and `m2`, returns the 'least common mode'.
+    * Helper for the `concat` method and possibly others.
+    * For example, Variable.commonMode('factor', 'logical') would be 'scalar'.
+    */
+   Variable.commonMode = function commonMode(m1, m2) {
+      if (m1 === 'ordinal') { m1 = 'factor'; }
+      if (m2 === 'ordinal') { m2 = 'factor'; }
+      if (m1 === m2) { return m1; }
+      if (m1 === 'string' || m2 === 'string') { return 'string'; }
+      return 'scalar';
    };
 
    /**
@@ -799,19 +811,6 @@ define(function(require) {
       while (i < values.length && utils.isMissing(values[i])) { i += 1; }
       if (i >= values.length || typeof values[i] === 'number') { return 'scalar'; }
       return typeof values[i] === 'boolean' ? 'logical' : 'factor';
-   }
-
-   /*
-    * Given two mode strings `m1` and `m2`, returns the 'least common mode'.
-    * Helper for the `concat` method and possibly others.
-    * For example, _lcMode('factor', 'logical') would be 'scalar'.
-    */
-   function _lcMode(m1, m2) {
-      if (m1 === 'ordinal') { m1 = 'factor'; }
-      if (m2 === 'ordinal') { m2 = 'factor'; }
-      if (m1 === m2) { return m1; }
-      if (m1 === 'string' || m2 === 'string') { return 'string'; }
-      return 'scalar';
    }
 
    return Variable;
