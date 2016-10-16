@@ -69,6 +69,24 @@ describe('Variable Conversion:', function() {
          expect(v.asScalar().names().toArray()).to.deep.equal(names);
       });
    });
+   it('generic "convert"', function() {
+      vs.forEach(function(v) {
+         expect(v.convert('scalar').mode()).to.equal('scalar');
+         expect(v.convert('scalar').toArray())
+            .to.deep.equal(v.asScalar().toArray());
+      });
+      vs.forEach(function(v) {
+         expect(v.convert('string').mode()).to.equal('string');
+         expect(v.convert('string').toArray())
+            .to.deep.equal(v.asString().toArray());
+      });
+      expect(vs[0].convert('logical').mode()).to.equal('logical');
+      expect(vs[0].convert('logical').toArray())
+         .to.deep.equal(vs[0].asLogical().toArray());
+      expect(vs[3].convert('logical').mode()).to.equal('logical');
+      expect(vs[3].convert('logical').toArray())
+         .to.deep.equal(vs[3].asLogical().toArray());
+   });
 });
 describe('Name labels', function() {
    var v = new Variable([2.12, -12.2, 3, undefined]);

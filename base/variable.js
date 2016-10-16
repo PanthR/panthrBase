@@ -307,6 +307,19 @@ define(function(require) {
    };
 
    /**
+    * Convert the variable to a target mode. Currently only offers the following
+    * target modes: logical, string, scalar
+    */
+   Variable.prototype.convert = function convert(mode) {
+      switch (mode) {
+         case 'scalar': return this.asScalar();
+         case 'logical': return this.asLogical();
+         case 'string': return this.asString();
+         default: throw new Error('Cannot convert to mode: ' + mode);
+      }
+   };
+
+   /**
     * Convert the variable to logical mode.
     */
    Variable.prototype.asLogical = function asLogical() {
