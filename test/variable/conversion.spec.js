@@ -43,6 +43,22 @@ describe('Variable Conversion:', function() {
       expect(utils.isMissing(vs[2].asScalar().get(3))).to.be.true;
       expect(utils.isMissing(vs[3].asScalar().get(3))).to.be.true;
    });
+   it('asLogical', function() {
+      vs.forEach(function(v) {
+         expect(v).to.respondTo('asLogical');
+      });
+      expect(vs[0].asLogical().mode()).to.equal('logical');
+      expect(vs[0].asLogical().length()).to.equal(vs[0].length());
+      expect(vs[3].asLogical().mode()).to.equal('logical');
+      expect(vs[3].asLogical().length()).to.equal(vs[3].length());
+      expect(vs[0].asLogical().get(2)).to.equal(true);
+      expect(function() { vs[1].asLogical(); }).to.throw(Error);
+      expect(function() { vs[2].asLogical(); }).to.throw(Error);
+      expect(function() { vs[4].asLogical(); }).to.throw(Error);
+      expect(function() { vs[5].asLogical(); }).to.throw(Error);
+      expect(vs[3].asLogical().get(2)).to.equal(false);
+      expect(utils.isMissing(vs[3].asLogical().get(3))).to.be.true;
+   });
    it('and they preserve names', function() {
       vs.forEach(function(v) {
          var names = v.asString().toArray();

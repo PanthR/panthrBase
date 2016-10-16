@@ -307,6 +307,13 @@ define(function(require) {
    };
 
    /**
+    * Convert the variable to logical mode.
+    */
+   Variable.prototype.asLogical = function asLogical() {
+      throw new Error('Cannot convert from ' + this.mode + ' to logical');
+   };
+
+   /**
     * Convert the variable to scalar mode.
     *
     * For factor variables, the codes are used.

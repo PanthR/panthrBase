@@ -20,6 +20,10 @@ return function(Variable) {
       )))).names(this.names());
    };
 
+   LogicalVar.prototype.asLogical = function asLogical() {
+      return this;
+   };
+
    LogicalVar.prototype.which = function which() {
       // `false` -> goes away; `true` -> the array index plus 1; and missing -> missing
       var arr;
