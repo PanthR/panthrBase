@@ -39,9 +39,9 @@ describe('Variable Conversion:', function() {
       expect(vs[2].asString().get(2)).to.equal('-12.2');
       expect(vs[3].asString().get(2)).to.equal('false');
       expect(vs[5].asString().get(2)).to.equal('A');
-      expect(utils.isMissing(vs[0].asScalar().get(4))).to.be.true;
-      expect(utils.isMissing(vs[2].asScalar().get(3))).to.be.true;
-      expect(utils.isMissing(vs[3].asScalar().get(3))).to.be.true;
+      expect(utils.isMissing(vs[0].asString().get(4))).to.be.true;
+      expect(utils.isMissing(vs[2].asString().get(3))).to.be.true;
+      expect(utils.isMissing(vs[3].asString().get(3))).to.be.true;
    });
    it('asLogical', function() {
       vs.forEach(function(v) {
