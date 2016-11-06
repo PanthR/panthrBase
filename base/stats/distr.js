@@ -46,8 +46,13 @@ return function(loader) {
    // UNIFORM
    //
    loader.addModuleMethod('stats', 'runif',
-      makeRandom(function(opt) {
-         return panthrMath.runif(opt.min, opt.max);
+      makeRandom(function(n, opt) {
+         return Variable.mapMulti(
+            [opt.min, opt.max],
+            function(min, max) { return panthrMath.runif(min, max)(); },
+            'scalar',
+            n
+         );
       }, { min: 0, max: 1 })
    );
    loader.addModuleMethod('stats', 'dunif',
@@ -70,8 +75,13 @@ return function(loader) {
    // NORMAL
    //
    loader.addModuleMethod('stats', 'rnorm',
-      makeRandom(function(opt) {
-         return panthrMath.rnorm(opt.mu, opt.sigma);
+      makeRandom(function(n, opt) {
+         return Variable.mapMulti(
+            [opt.mu, opt.sigma],
+            function(mean, sd) { return panthrMath.rnorm(mean, sd)(); },
+            'scalar',
+            n
+         );
       }, { mu: 0, sigma: 1 })
    );
    loader.addModuleMethod('stats', 'dnorm',
@@ -292,8 +302,16 @@ return function(loader) {
    // random deviates based on parameters `opt`.
    function makeRandom(f, defs) {
       return function(n, opt) {
+         if (n instanceof Variable) { n = n.length(); }
          opt = getOptions(opt, defs);
-         return new Variable(f(opt), { length: n });
+
+         Object.keys(opt).forEach(function(key) {
+            if (!(opt[key] instanceof Variable)) {
+               opt[key] = new Variable(opt[key]);
+            }
+         });
+
+         return f(n, opt);
       };
    }
 
