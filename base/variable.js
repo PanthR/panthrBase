@@ -252,6 +252,47 @@ define(function(require) {
       return v;
    };
 
+   /**
+    * Applies the function `f(x1, x2, ...., i)` pointwise on the variables
+    * in the array `vars` and returns a `Variable` object containing the resulting
+    * values and of mode `mode`.
+    *
+    * If no mode is provided, it will be inferred based on the first non-missing
+    * entry of the result.
+    *
+    * The variable values will be recycled as needed, up to a resulting length of
+    * `length`. If `length` is not provided, it will default to the length of
+    * the longest variable.
+    */
+   Variable.mapMulti = function(vars, f, mode, length) {
+      var varLengths, result, i, names;
+
+      varLengths = vars.map(function(v) { return v.length(); });
+      if (length == null) {
+         length = Math.max.apply(Math, varLengths);
+      }
+      result = [];
+
+      function getValue(v, j) {
+         return v.get(i % varLengths[j] + 1);
+      }
+
+      for (i = 0; i < length; i += 1) {
+         result.push(f.apply(null, vars.map(getValue)));
+      }
+
+      result = new Variable(result, mode == null ? {} : { mode: mode });
+
+      names = vars.reduce(function(prev, current) {
+         return utils.isMissing(prev) ? current.names() : prev;
+      }, utils.missing);
+      if (!utils.isMissing(names)) {
+         result.names(names.rep({ length: length }));
+      }
+
+      return result;
+   };
+
    // The following methods used to simplify other methods
 
    /**

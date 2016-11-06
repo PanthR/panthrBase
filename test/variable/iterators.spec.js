@@ -261,4 +261,42 @@ describe('Variable iterators: ', function() {
          expect(v.names().values.values).to.deep.equal(['D', 'E', 'F']);
       });
    });
+   describe('Variable.Multi', function() {
+      var f, v1, v2, v3, v;
+
+      f = function(x, y, z) { return x + y + z; }
+      v1 = new Variable([2, 3, 5]);
+      v2 = new Variable([1, 6, 7, 6]);
+      v3 = new Variable([3]);
+      v = Variable.mapMulti([v1, v2, v3], f, 'scalar');
+      it('returns a variable of the correct mode', function() {
+         expect(v).to.be.defined;
+         expect(v.mode()).to.equal('scalar');
+      });
+      it('returns the correct values', function() {
+         expect(v.values.values).to.deep.equal([6, 12, 15, 11]);
+      });
+      it('infers the mode if not provided', function() {
+         expect(Variable.mapMulti([v1, v2, v3], f).mode())
+            .to.equal(v.mode());
+      });
+      it('targets a predetermined length if one is provided', function() {
+         expect(Variable.mapMulti([v1, v2, v3], f, 'scalar', 7)
+            .values.values).to.deep.equal([6, 12, 15, 11, 7, 14, 12]);
+      });
+      it('maintains names from the first suitable argument', function() {
+         v1.names(['A', 'B', 'C']);
+         v = Variable.mapMulti([v1, v2, v3], f, 'scalar', 3);
+         expect(v.names().values.values).to.deep.equal(['A', 'B', 'C']);
+         v = Variable.mapMulti([v2, v1, v3], f, 'scalar', 3);
+         expect(v.names().values.values).to.deep.equal(['A', 'B', 'C']);
+         v = Variable.mapMulti([v2, v3, v1], f, 'scalar', 2);
+         expect(v.names().values.values).to.deep.equal(['A', 'B']);
+         v = Variable.mapMulti([v2, v3, v1], f, 'scalar', 7);
+         expect(v.names().values.values).to.deep.equal(['A', 'B', 'C', 'A', 'B', 'C', 'A']);
+         v2.names(['D', 'E', 'F', 'G']);
+         v = Variable.mapMulti([v2, v1, v3], f, 'scalar', 4);
+         expect(v.names().values.values).to.deep.equal(['D', 'E', 'F', 'G']);
+      });
+   });
 });
