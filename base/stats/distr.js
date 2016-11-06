@@ -103,8 +103,13 @@ return function(loader) {
    // BETA
    //
    loader.addModuleMethod('stats', 'rbeta',
-      makeRandom(function(opt) {
-         return panthrMath.rbeta(opt.a, opt.b);
+      makeRandom(function(n, opt) {
+         return Variable.mapMulti(
+            [opt.a, opt.b],
+            function(a, b) { return panthrMath.rbeta(a, b)(); },
+            'scalar',
+            n
+         );
       }, { a: 2, b: 2 })
    );
    loader.addModuleMethod('stats', 'dbeta',
@@ -126,9 +131,14 @@ return function(loader) {
    // GAMMA
    //
    loader.addModuleMethod('stats', 'rgamma',
-      makeRandom(function(opt) {
-         return panthrMath.rgamma(opt.a, opt.s);
-      }, { a: 1, s: 1 })
+      makeRandom(function(n, opt) {
+         return Variable.mapMulti(
+            [opt.a, opt.b],
+            function(a, b) { return panthrMath.rgamma(a, b)(); },
+            'scalar',
+            n
+         );
+      }, { a: 1, b: 1 })
    );
    loader.addModuleMethod('stats', 'dgamma',
       makePdf(function(opt) {
@@ -149,8 +159,13 @@ return function(loader) {
    // Student's t
    //
    loader.addModuleMethod('stats', 'rt',
-      makeRandom(function(opt) {
-         return panthrMath.rt(opt.df);
+      makeRandom(function(n, opt) {
+         return Variable.mapMulti(
+            [opt.df],
+            function(df) { return panthrMath.rt(df)(); },
+            'scalar',
+            n
+         );
       }, { df: 10 })
    );
    loader.addModuleMethod('stats', 'dt',
@@ -172,8 +187,13 @@ return function(loader) {
    // Chi-squared
    //
    loader.addModuleMethod('stats', 'rchisq',
-      makeRandom(function(opt) {
-         return panthrMath.rchisq(opt.df);
+      makeRandom(function(n, opt) {
+         return Variable.mapMulti(
+            [opt.df],
+            function(df) { return panthrMath.rchisq(df)(); },
+            'scalar',
+            n
+         );
       }, { df: 10 })
    );
    loader.addModuleMethod('stats', 'dchisq',
@@ -195,8 +215,13 @@ return function(loader) {
    // Binomial
    //
    loader.addModuleMethod('stats', 'rbinom',
-      makeRandom(function(opt) {
-         return panthrMath.rbinom(opt.size, opt.p);
+      makeRandom(function(n, opt) {
+         return Variable.mapMulti(
+            [opt.size, opt.p],
+            function(size, p) { return panthrMath.rbinom(size, p)(); },
+            'scalar',
+            n
+         );
       }, { size: 10, p: 0.5 })
    );
    loader.addModuleMethod('stats', 'dbinom',
@@ -218,8 +243,13 @@ return function(loader) {
    // Poisson
    //
    loader.addModuleMethod('stats', 'rpois',
-      makeRandom(function(opt) {
-         return panthrMath.rpois(opt.lambda);
+      makeRandom(function(n, opt) {
+         return Variable.mapMulti(
+            [opt.lambda],
+            function(lambda) { return panthrMath.rpois(lambda)(); },
+            'scalar',
+            n
+         );
       }, { lambda: 1 })
    );
    loader.addModuleMethod('stats', 'dpois',
@@ -242,8 +272,13 @@ return function(loader) {
    // Geometric
    //
    loader.addModuleMethod('stats', 'rgeom',
-      makeRandom(function(opt) {
-         return panthrMath.rgeom(opt.prob);
+      makeRandom(function(n, opt) {
+         return Variable.mapMulti(
+            [opt.prob],
+            function(prob) { return panthrMath.rgeom(prob)(); },
+            'scalar',
+            n
+         );
       }, { prob: 0.5 })
    );
    loader.addModuleMethod('stats', 'dgeom',
@@ -266,8 +301,13 @@ return function(loader) {
    // Exponential
    //
    loader.addModuleMethod('stats', 'rexp',
-      makeRandom(function(opt) {
-         return panthrMath.rexp(opt.rate);
+      makeRandom(function(n, opt) {
+         return Variable.mapMulti(
+            [opt.rate],
+            function(rate) { return panthrMath.rexp(rate)(); },
+            'scalar',
+            n
+         );
       }, { rate: 1 })
    );
    loader.addModuleMethod('stats', 'dexp',
