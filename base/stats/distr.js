@@ -56,8 +56,12 @@ return function(loader) {
       }, { min: 0, max: 1 })
    );
    loader.addModuleMethod('stats', 'dunif',
-      makePdf(function(opt) {
-         return panthrMath.dunif(opt.min, opt.max, opt.log);
+      makePdf(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.min, opt.max],
+            function(x, min, max) { return panthrMath.dunif(min, max, opt.log)(x); },
+            'scalar'
+         );
       }, { min: 0, max: 1 })
    );
    loader.addModuleMethod('stats', 'punif',
@@ -85,8 +89,12 @@ return function(loader) {
       }, { mu: 0, sigma: 1 })
    );
    loader.addModuleMethod('stats', 'dnorm',
-      makePdf(function(opt) {
-         return panthrMath.dnorm(opt.mu, opt.sigma, opt.log);
+      makePdf(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.mu, opt.sigma],
+            function(x, mean, sd) { return panthrMath.dnorm(mean, sd, opt.log)(x); },
+            'scalar'
+         );
       }, { mu: 0, sigma: 1 })
    );
    loader.addModuleMethod('stats', 'pnorm',
@@ -113,8 +121,12 @@ return function(loader) {
       }, { a: 2, b: 2 })
    );
    loader.addModuleMethod('stats', 'dbeta',
-      makePdf(function(opt) {
-         return panthrMath.dbeta(opt.a, opt.b, opt.log);
+      makePdf(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.a, opt.b],
+            function(x, a, b) { return panthrMath.dbeta(a, b, opt.log)(x); },
+            'scalar'
+         );
       }, { a: 2, b: 2 })
    );
    loader.addModuleMethod('stats', 'pbeta',
@@ -141,8 +153,12 @@ return function(loader) {
       }, { a: 1, b: 1 })
    );
    loader.addModuleMethod('stats', 'dgamma',
-      makePdf(function(opt) {
-         return panthrMath.dgamma(opt.a, opt.s, opt.log);
+      makePdf(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.a, opt.s],
+            function(x, a, s) { return panthrMath.dgamma(a, s, opt.log)(x); },
+            'scalar'
+         );
       }, { a: 1, s: 1 })
    );
    loader.addModuleMethod('stats', 'pgamma',
@@ -169,8 +185,12 @@ return function(loader) {
       }, { df: 10 })
    );
    loader.addModuleMethod('stats', 'dt',
-      makePdf(function(opt) {
-         return panthrMath.dt(opt.df, opt.log);
+      makePdf(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.df],
+            function(x, df) { return panthrMath.dt(df, opt.log)(x); },
+            'scalar'
+         );
       }, { df: 10 })
    );
    loader.addModuleMethod('stats', 'pt',
@@ -197,8 +217,12 @@ return function(loader) {
       }, { df: 10 })
    );
    loader.addModuleMethod('stats', 'dchisq',
-      makePdf(function(opt) {
-         return panthrMath.dchisq(opt.df, opt.log);
+      makePdf(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.df],
+            function(x, df) { return panthrMath.dchisq(df, opt.log)(x); },
+            'scalar'
+         );
       }, { df: 10 })
    );
    loader.addModuleMethod('stats', 'pchisq',
@@ -225,8 +249,12 @@ return function(loader) {
       }, { size: 10, p: 0.5 })
    );
    loader.addModuleMethod('stats', 'dbinom',
-      makePdf(function(opt) {
-         return panthrMath.dbinom(opt.size, opt.p, opt.log);
+      makePdf(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.size, opt.p],
+            function(x, size, p) { return panthrMath.dbinom(size, p, opt.log)(x); },
+            'scalar'
+         );
       }, { size: 10, p: 0.5 })
    );
    loader.addModuleMethod('stats', 'pbinom',
@@ -253,8 +281,12 @@ return function(loader) {
       }, { lambda: 1 })
    );
    loader.addModuleMethod('stats', 'dpois',
-      makePdf(function(opt) {
-         return panthrMath.dpois(opt.lambda, opt.log);
+      makePdf(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.lambda],
+            function(x, lambda) { return panthrMath.dpois(lambda, opt.log)(x); },
+            'scalar'
+         );
       }, { lambda: 1 })
    );
    loader.addModuleMethod('stats', 'ppois',
@@ -282,8 +314,12 @@ return function(loader) {
       }, { prob: 0.5 })
    );
    loader.addModuleMethod('stats', 'dgeom',
-      makePdf(function(opt) {
-         return panthrMath.dgeom(opt.prob, opt.log);
+      makePdf(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.prob],
+            function(x, prob) { return panthrMath.dgeom(prob, opt.log)(x); },
+            'scalar'
+         );
       }, { prob: 0.5 })
    );
    loader.addModuleMethod('stats', 'pgeom',
@@ -311,8 +347,12 @@ return function(loader) {
       }, { rate: 1 })
    );
    loader.addModuleMethod('stats', 'dexp',
-      makePdf(function(opt) {
-         return panthrMath.dexp(opt.rate, opt.log);
+      makePdf(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.rate],
+            function(x, rate) { return panthrMath.dexp(rate, opt.log)(x); },
+            'scalar'
+         );
       }, { rate: 1 })
    );
    loader.addModuleMethod('stats', 'pexp',
@@ -360,11 +400,16 @@ return function(loader) {
    // parameters `opt`.
    function makePdf(f, defs) {
       return function(x, opt) {
-         var dens;
-
          opt = getOptions(opt, defs);
-         dens = f(opt);
-         return Variable.oneDimToVariable(x).map(dens, true /* skipMissing */);
+
+         Object.keys(opt).forEach(function(key) {
+            if (key === 'log' || key === 'lowerTail') { return; }
+            if (!(opt[key] instanceof Variable)) {
+               opt[key] = new Variable(opt[key]);
+            }
+         });
+
+         return f(Variable.oneDimToVariable(x), opt);
       };
    }
 
