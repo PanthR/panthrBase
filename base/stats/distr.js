@@ -65,13 +65,25 @@ return function(loader) {
       }, { min: 0, max: 1 })
    );
    loader.addModuleMethod('stats', 'punif',
-      makeCdf(function(opt) {
-         return panthrMath.punif(opt.min, opt.max, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.min, opt.max],
+            function(x, min, max) {
+               return panthrMath.punif(min, max, opt.lowerTail, opt.log)(x);
+            },
+            'scalar'
+         );
       }, { min: 0, max: 1 })
    );
    loader.addModuleMethod('stats', 'qunif',
-      makeInvCdf(function(opt) {
-         return panthrMath.qunif(opt.min, opt.max, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(ps, opt) {
+         return Variable.mapMulti(
+            [ps, opt.min, opt.max],
+            function(p, min, max) {
+               return panthrMath.qunif(min, max, opt.lowerTail, opt.log)(p);
+            },
+            'scalar'
+         );
       }, { min: 0, max: 1 })
    );
 
@@ -98,13 +110,25 @@ return function(loader) {
       }, { mu: 0, sigma: 1 })
    );
    loader.addModuleMethod('stats', 'pnorm',
-      makeCdf(function(opt) {
-         return panthrMath.pnorm(opt.mu, opt.sigma, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.mu, opt.sigma],
+            function(x, mu, sigma) {
+               return panthrMath.pnorm(mu, sigma, opt.lowerTail, opt.log)(x);
+            },
+            'scalar'
+         );
       }, { mu: 0, sigma: 1 })
    );
    loader.addModuleMethod('stats', 'qnorm',
-      makeInvCdf(function(opt) {
-         return panthrMath.qnorm(opt.mu, opt.sigma, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(ps, opt) {
+         return Variable.mapMulti(
+            [ps, opt.mu, opt.sigma],
+            function(p, mu, sigma) {
+               return panthrMath.qnorm(mu, sigma, opt.lowerTail, opt.log)(p);
+            },
+            'scalar'
+         );
       }, { mu: 0, sigma: 1 })
    );
    //
@@ -130,13 +154,25 @@ return function(loader) {
       }, { a: 2, b: 2 })
    );
    loader.addModuleMethod('stats', 'pbeta',
-      makeCdf(function(opt) {
-         return panthrMath.pbeta(opt.a, opt.b, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.a, opt.b],
+            function(x, a, b) {
+               return panthrMath.pbeta(a, b, opt.lowerTail, opt.log)(x);
+            },
+            'scalar'
+         );
       }, { a: 2, b: 2 })
    );
    loader.addModuleMethod('stats', 'qbeta',
-      makeInvCdf(function(opt) {
-         return panthrMath.qbeta(opt.a, opt.b, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(ps, opt) {
+         return Variable.mapMulti(
+            [ps, opt.a, opt.b],
+            function(p, a, b) {
+               return panthrMath.qbeta(a, b, opt.lowerTail, opt.log)(p);
+            },
+            'scalar'
+         );
       }, { a: 2, b: 2 })
    );
    //
@@ -162,13 +198,25 @@ return function(loader) {
       }, { a: 1, s: 1 })
    );
    loader.addModuleMethod('stats', 'pgamma',
-      makeCdf(function(opt) {
-         return panthrMath.pgamma(opt.a, opt.s, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.a, opt.s],
+            function(x, a, s) {
+               return panthrMath.pgamma(a, s, opt.lowerTail, opt.log)(x);
+            },
+            'scalar'
+         );
       }, { a: 1, s: 1 })
    );
    loader.addModuleMethod('stats', 'qgamma',
-      makeInvCdf(function(opt) {
-         return panthrMath.qgamma(opt.a, opt.s, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(ps, opt) {
+         return Variable.mapMulti(
+            [ps, opt.a, opt.s],
+            function(p, a, s) {
+               return panthrMath.qgamma(a, s, opt.lowerTail, opt.log)(p);
+            },
+            'scalar'
+         );
       }, { a: 1, s: 1 })
    );
    //
@@ -194,13 +242,25 @@ return function(loader) {
       }, { df: 10 })
    );
    loader.addModuleMethod('stats', 'pt',
-      makeCdf(function(opt) {
-         return panthrMath.pt(opt.df, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.df],
+            function(x, df) {
+               return panthrMath.pt(df, opt.lowerTail, opt.log)(x);
+            },
+            'scalar'
+         );
       }, { df: 10 })
    );
    loader.addModuleMethod('stats', 'qt',
-      makeInvCdf(function(opt) {
-         return panthrMath.qt(opt.df, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(ps, opt) {
+         return Variable.mapMulti(
+            [ps, opt.df],
+            function(p, df) {
+               return panthrMath.qt(df, opt.lowerTail, opt.log)(p);
+            },
+            'scalar'
+         );
       }, { df: 10 })
    );
    //
@@ -226,13 +286,25 @@ return function(loader) {
       }, { df: 10 })
    );
    loader.addModuleMethod('stats', 'pchisq',
-      makeCdf(function(opt) {
-         return panthrMath.pchisq(opt.df, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.df],
+            function(x, df) {
+               return panthrMath.pchisq(df, opt.lowerTail, opt.log)(x);
+            },
+            'scalar'
+         );
       }, { df: 10 })
    );
    loader.addModuleMethod('stats', 'qchisq',
-      makeInvCdf(function(opt) {
-         return panthrMath.qchisq(opt.df, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(ps, opt) {
+         return Variable.mapMulti(
+            [ps, opt.df],
+            function(p, df) {
+               return panthrMath.qchisq(df, opt.lowerTail, opt.log)(p);
+            },
+            'scalar'
+         );
       }, { df: 10 })
    );
    //
@@ -258,13 +330,25 @@ return function(loader) {
       }, { size: 10, p: 0.5 })
    );
    loader.addModuleMethod('stats', 'pbinom',
-      makeCdf(function(opt) {
-         return panthrMath.pbinom(opt.size, opt.p, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.size, opt.p],
+            function(x, size, p) {
+               return panthrMath.pbinom(size, p, opt.lowerTail, opt.log)(x);
+            },
+            'scalar'
+         );
       }, { size: 10, p: 0.5 })
    );
    loader.addModuleMethod('stats', 'qbinom',
-      makeInvCdf(function(opt) {
-         return panthrMath.qbinom(opt.size, opt.p, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(ps, opt) {
+         return Variable.mapMulti(
+            [ps, opt.size, opt.p],
+            function(p, size, prob) {
+               return panthrMath.qbinom(size, prob, opt.lowerTail, opt.log)(p);
+            },
+            'scalar'
+         );
       }, { size: 10, p: 0.5 })
    );
    //
@@ -290,13 +374,25 @@ return function(loader) {
       }, { lambda: 1 })
    );
    loader.addModuleMethod('stats', 'ppois',
-      makeCdf(function(opt) {
-         return panthrMath.ppois(opt.lambda, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.lambda],
+            function(x, lambda) {
+               return panthrMath.ppois(lambda, opt.lowerTail, opt.log)(x);
+            },
+            'scalar'
+         );
       }, { lambda: 1 })
    );
    loader.addModuleMethod('stats', 'qpois',
-      makeInvCdf(function(opt) {
-         return panthrMath.qpois(opt.lambda, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(ps, opt) {
+         return Variable.mapMulti(
+            [ps, opt.lambda],
+            function(p, lambda) {
+               return panthrMath.qpois(lambda, opt.lowerTail, opt.log)(p);
+            },
+            'scalar'
+         );
       }, { lambda: 1 })
    );
 
@@ -323,16 +419,27 @@ return function(loader) {
       }, { prob: 0.5 })
    );
    loader.addModuleMethod('stats', 'pgeom',
-      makeCdf(function(opt) {
-         return panthrMath.pgeom(opt.prob, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.prob],
+            function(x, prob) {
+               return panthrMath.pgeom(prob, opt.lowerTail, opt.log)(x);
+            },
+            'scalar'
+         );
       }, { prob: 0.5 })
    );
    loader.addModuleMethod('stats', 'qgeom',
-      makeInvCdf(function(opt) {
-         return panthrMath.qgeom(opt.prob, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(ps, opt) {
+         return Variable.mapMulti(
+            [ps, opt.prob],
+            function(p, prob) {
+               return panthrMath.qgeom(prob, opt.lowerTail, opt.log)(p);
+            },
+            'scalar'
+         );
       }, { prob: 0.5 })
    );
-
    //
    // Exponential
    //
@@ -356,13 +463,25 @@ return function(loader) {
       }, { rate: 1 })
    );
    loader.addModuleMethod('stats', 'pexp',
-      makeCdf(function(opt) {
-         return panthrMath.pexp(opt.rate, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(xs, opt) {
+         return Variable.mapMulti(
+            [xs, opt.rate],
+            function(x, rate) {
+               return panthrMath.pexp(rate, opt.lowerTail, opt.log)(x);
+            },
+            'scalar'
+         );
       }, { rate: 1 })
    );
    loader.addModuleMethod('stats', 'qexp',
-      makeInvCdf(function(opt) {
-         return panthrMath.qexp(opt.rate, opt.lowerTail, opt.log);
+      makeWrapDefaults(function(ps, opt) {
+         return Variable.mapMulti(
+            [ps, opt.rate],
+            function(p, rate) {
+               return panthrMath.qexp(rate, opt.lowerTail, opt.log)(p);
+            },
+            'scalar'
+         );
       }, { rate: 1 })
    );
 
@@ -412,33 +531,6 @@ return function(loader) {
          return f(Variable.oneDimToVariable(x), opt);
       };
    }
-
-   // Create the `p*` cdf based on distribution defaults `defs`.
-   // The function `f(val, opt)` returns the cdf value for `x=val` and
-   // parameters `opt`.
-   function makeCdf(f, defs) {
-      return function(x, opt) {
-         var cdf;
-
-         opt = getOptions(opt, defs);
-         cdf = f(opt);
-         return Variable.oneDimToVariable(x).map(cdf, true /* skipMissing */);
-      };
-   }
-
-   // Create the `q*` inverse cdf based on distribution defaults `defs`.
-   // The function `f(p, opt)` returns the percentile for `p` and
-   // parameters `opt`.
-   function makeInvCdf(f, defs) {
-      return function(p, opt) {
-         var invCdf;
-
-         opt = getOptions(opt, defs);
-         invCdf = f(opt);
-         return Variable.oneDimToVariable(p).map(invCdf, true /* skipMissing */);
-      };
-   }
-
 };
 
 });
