@@ -56,7 +56,7 @@ return function(loader) {
       }, { min: 0, max: 1 })
    );
    loader.addModuleMethod('stats', 'dunif',
-      makePdf(function(xs, opt) {
+      makeWrapDefaults(function(xs, opt) {
          return Variable.mapMulti(
             [xs, opt.min, opt.max],
             function(x, min, max) { return panthrMath.dunif(min, max, opt.log)(x); },
@@ -89,7 +89,7 @@ return function(loader) {
       }, { mu: 0, sigma: 1 })
    );
    loader.addModuleMethod('stats', 'dnorm',
-      makePdf(function(xs, opt) {
+      makeWrapDefaults(function(xs, opt) {
          return Variable.mapMulti(
             [xs, opt.mu, opt.sigma],
             function(x, mean, sd) { return panthrMath.dnorm(mean, sd, opt.log)(x); },
@@ -121,7 +121,7 @@ return function(loader) {
       }, { a: 2, b: 2 })
    );
    loader.addModuleMethod('stats', 'dbeta',
-      makePdf(function(xs, opt) {
+      makeWrapDefaults(function(xs, opt) {
          return Variable.mapMulti(
             [xs, opt.a, opt.b],
             function(x, a, b) { return panthrMath.dbeta(a, b, opt.log)(x); },
@@ -153,7 +153,7 @@ return function(loader) {
       }, { a: 1, b: 1 })
    );
    loader.addModuleMethod('stats', 'dgamma',
-      makePdf(function(xs, opt) {
+      makeWrapDefaults(function(xs, opt) {
          return Variable.mapMulti(
             [xs, opt.a, opt.s],
             function(x, a, s) { return panthrMath.dgamma(a, s, opt.log)(x); },
@@ -185,7 +185,7 @@ return function(loader) {
       }, { df: 10 })
    );
    loader.addModuleMethod('stats', 'dt',
-      makePdf(function(xs, opt) {
+      makeWrapDefaults(function(xs, opt) {
          return Variable.mapMulti(
             [xs, opt.df],
             function(x, df) { return panthrMath.dt(df, opt.log)(x); },
@@ -217,7 +217,7 @@ return function(loader) {
       }, { df: 10 })
    );
    loader.addModuleMethod('stats', 'dchisq',
-      makePdf(function(xs, opt) {
+      makeWrapDefaults(function(xs, opt) {
          return Variable.mapMulti(
             [xs, opt.df],
             function(x, df) { return panthrMath.dchisq(df, opt.log)(x); },
@@ -249,7 +249,7 @@ return function(loader) {
       }, { size: 10, p: 0.5 })
    );
    loader.addModuleMethod('stats', 'dbinom',
-      makePdf(function(xs, opt) {
+      makeWrapDefaults(function(xs, opt) {
          return Variable.mapMulti(
             [xs, opt.size, opt.p],
             function(x, size, p) { return panthrMath.dbinom(size, p, opt.log)(x); },
@@ -281,7 +281,7 @@ return function(loader) {
       }, { lambda: 1 })
    );
    loader.addModuleMethod('stats', 'dpois',
-      makePdf(function(xs, opt) {
+      makeWrapDefaults(function(xs, opt) {
          return Variable.mapMulti(
             [xs, opt.lambda],
             function(x, lambda) { return panthrMath.dpois(lambda, opt.log)(x); },
@@ -314,7 +314,7 @@ return function(loader) {
       }, { prob: 0.5 })
    );
    loader.addModuleMethod('stats', 'dgeom',
-      makePdf(function(xs, opt) {
+      makeWrapDefaults(function(xs, opt) {
          return Variable.mapMulti(
             [xs, opt.prob],
             function(x, prob) { return panthrMath.dgeom(prob, opt.log)(x); },
@@ -347,7 +347,7 @@ return function(loader) {
       }, { rate: 1 })
    );
    loader.addModuleMethod('stats', 'dexp',
-      makePdf(function(xs, opt) {
+      makeWrapDefaults(function(xs, opt) {
          return Variable.mapMulti(
             [xs, opt.rate],
             function(x, rate) { return panthrMath.dexp(rate, opt.log)(x); },
@@ -398,7 +398,7 @@ return function(loader) {
    // Create the `d*` density function based on distribution defaults `defs`.
    // The function `f(val, opt)` returns the density value for `x=val` and
    // parameters `opt`.
-   function makePdf(f, defs) {
+   function makeWrapDefaults(f, defs) {
       return function(x, opt) {
          opt = getOptions(opt, defs);
 
