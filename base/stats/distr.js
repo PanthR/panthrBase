@@ -181,8 +181,8 @@ return function(loader) {
    loader.addModuleMethod('stats', 'rgamma',
       makeRandom(function(n, opt) {
          return Variable.mapMulti(
-            [opt.a, opt.b],
-            function(a, b) { return panthrMath.rgamma(a, b)(); },
+            [opt.a, opt.s],
+            function(a, s) { return panthrMath.rgamma(a, s)(); },
             'scalar',
             n
          );
