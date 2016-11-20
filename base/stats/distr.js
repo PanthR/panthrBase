@@ -186,7 +186,7 @@ return function(loader) {
             'scalar',
             n
          );
-      }, { a: 1, b: 1 })
+      }, { a: 1, s: 1 })
    );
    loader.addModuleMethod('stats', 'dgamma',
       makeWrapDefaults(function(xs, opt) {
