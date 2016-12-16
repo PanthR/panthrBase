@@ -4,7 +4,7 @@ define(function(require) {
 
 var panthrMath;
 
-panthrMath = require('panthrMath');
+panthrMath = require('panthr-math');
 
 return function(loader) {
    /**
@@ -32,7 +32,7 @@ return function(loader) {
    loader.addModuleMethod('math', 'log1p', panthrMath.log1p);
    loader.addModuleMethod('math', 'lpoisson', panthrMath.lpoisson);
    loader.addModuleMethod('math', 'phi', panthrMath.phi);
-   loader.addModuleMethod('math', 'strlerr', panthrMath.strlerr);
+   loader.addModuleMethod('math', 'stirlerr', panthrMath.stirlerr);
 };
 
 });
