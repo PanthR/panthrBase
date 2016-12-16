@@ -32,6 +32,7 @@ return function(loader) {
    loader.loadModule(require('./base/fun'));
    loader.loadModule(require('./base/base'));
    loader.loadModule(require('./base/stats'));
+   loader.loadModule(require('./base/math'));
 
    return Base;
 
