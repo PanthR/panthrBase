@@ -30,6 +30,8 @@ return function(loader) {
    loader.addModuleMethod('math', 'lgamma', panthrMath.lgamma);
    loader.addModuleMethod('math', 'gamma', panthrMath.gamma);
    loader.addModuleMethod('math', 'log1p', panthrMath.log1p);
+   loader.addModuleMethod('math', 'log10', panthrMath.log10);
+   loader.addModuleMethod('math', 'log2', panthrMath.log2);
    loader.addModuleMethod('math', 'lpoisson', panthrMath.lpoisson);
    loader.addModuleMethod('math', 'phi', panthrMath.phi);
    loader.addModuleMethod('math', 'stirlerr', panthrMath.stirlerr);
