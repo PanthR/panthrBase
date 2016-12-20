@@ -29,6 +29,8 @@ return function(loader) {
    loader.addModuleMethod('math', 'beta', panthrMath.beta);
    loader.addModuleMethod('math', 'lgamma', panthrMath.lgamma);
    loader.addModuleMethod('math', 'gamma', panthrMath.gamma);
+   loader.addModuleMethod('math', 'lchoose', panthrMath.lchoose);
+   loader.addModuleMethod('math', 'choose', panthrMath.choose);
    loader.addModuleMethod('math', 'log1p', panthrMath.log1p);
    loader.addModuleMethod('math', 'log10', panthrMath.log10);
    loader.addModuleMethod('math', 'log2', panthrMath.log2);
