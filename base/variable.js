@@ -752,6 +752,47 @@ define(function(require) {
    };
 
    /**
+    * Returns the variable consisting of successive differences of the values.
+    */
+   Variable.prototype.diff = function diff() {
+      return this.reproduce(this.toVector().diff());
+   };
+
+   /**
+    * Given a function f(acc, val, i) and an `initial` value, create a new
+    * variable of the same length as `this`, and which stores the accumulated
+    * results. See LinAlg documentation of Vector#cumulative.
+    */
+   Variable.prototype.cumulative = function cumulative(f, initial) {
+      return this.reproduce(this.toVector().cumulative(f, initial));
+   };
+
+   /**
+    * Returns a new variable of the partial sums.
+    */
+   Variable.prototype.cumSum = function cumSum() {
+      return this.reproduce(this.toVector().cumSum());
+   };
+   /**
+    * Returns a new variable of the partial products.
+    */
+   Variable.prototype.cumProd = function cumProd() {
+      return this.reproduce(this.toVector().cumProd());
+   };
+   /**
+    * Returns a new variable of the partial maxima.
+    */
+   Variable.prototype.cumMax = function cumMax() {
+      return this.reproduce(this.toVector().cumMax());
+   };
+   /**
+    * Returns a new variable of the partial minima.
+    */
+   Variable.prototype.cumMin = function cumMin() {
+      return this.reproduce(this.toVector().cumMin());
+   };
+
+   /**
     * Return a new variable containing the non-missing values from the original
     * variable as indicated by `utils.isNotMissing`.
     */
