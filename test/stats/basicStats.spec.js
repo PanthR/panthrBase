@@ -33,6 +33,25 @@ describe('Basic statistics', function() {
       expect(M.sum(true)).to.equal(0);
       expect(utils.isMissing(M.sum())).to.be.true;
    });
+   it('prod', function() {
+      expect(Variable).to.respondTo('prod');
+      A.forEach(function(v) {
+         expect(utils.isMissing(v.prod())).to.be.true;
+         if (v.length() > 0) {
+            expect(v.nonMissing().prod()).to.exist;
+            expect(v.prod(true)).to.exist;
+         }
+      });
+      expect(A[0].prod(true)).to.equal(5.5 * 3.3 * (-2.5));
+      expect(A[1].prod(true)).to.equal(1 * 2 * 2);
+      expect(A[2].prod(true)).to.equal(1 * 0 * 1);
+      expect(A[3].prod(true)).to.equal(2 * 1 * 1);
+      expect(E.prod(true)).to.equal(1);
+      expect(E.prod()).to.equal(1);
+      expect(utils.isMissing(STR.prod())).to.be.true;
+      expect(M.prod(true)).to.equal(1);
+      expect(utils.isMissing(M.prod())).to.be.true;
+   });
    it('mean', function() {
       expect(Variable).to.respondTo('mean');
       A.forEach(function(v) {

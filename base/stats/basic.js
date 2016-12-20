@@ -20,6 +20,15 @@ return function(loader) {
    });
 
    /**
+    * Return the product of the values of the variable.
+    * `skipMissing` defaults to `false`.  If `skipMissing` is `false` and
+    * the variable has missing values, return `utils.missing`.
+    */
+   loader.addInstanceMethod('Variable', 'prod', function prod(skipMissing) {
+      return this.asScalar().reduce(utils.op.mult, 1, skipMissing);
+   });
+
+   /**
     * Return the mean of the values of the variable.
     * `skipMissing` defaults to `false`.  If `skipMissing` is `false` and
     * the variable has missing values, return `utils.missing`.
