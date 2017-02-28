@@ -36,6 +36,12 @@ describe('List construction', function() {
       expect(l.length()).to.equal(4);
       expect(l.get()).to.deep.equal([2, 4, 5, 6]);
    });
+   it('takes multiple arguments', function() {
+      var l = List(2, 4, 5, 6);
+      expect(l).to.be.instanceof(List);
+      expect(l.length()).to.equal(4);
+      expect(l.get()).to.deep.equal([2, 4, 5, 6]);
+   });
 });
 describe('List names', function() {
    var l = new List({a: 4, b: 7, c: -1});

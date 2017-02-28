@@ -24,9 +24,11 @@ define(function(require) {
     * We can create a list by providing:
     * - an object containing the items to be placed in the list along with their names
     * - an array of items to be placed in the list, without names
+    * - multiple arguments, which will be turned into a single array argument
     * - no arguments, resulting in an empty list
     */
    function List(values) {
+      if (arguments.length > 1) { values = arguments; }
       if (!(this instanceof List)) { return new List(values); }
       if (Array.isArray(values)) {
          this.values = [utils.missing].concat(values);
