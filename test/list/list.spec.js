@@ -30,7 +30,7 @@ describe('List construction', function() {
       expect(l.length()).to.equal(4);
       expect(l.get()).to.deep.equal([4, 3, 2, 1]);
    });
-   it('takes list of values', function() {
+   it('can be called without new', function() {
       var l = List([2, 4, 5, 6]);
       expect(l).to.be.instanceof(List);
       expect(l.length()).to.equal(4);
