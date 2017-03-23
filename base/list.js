@@ -285,7 +285,9 @@ define(function(require) {
     * For any values with no associated name, `name` will be supplied as
     * `utils.missing`.
     *
-    * Similar to Javascript's `Array.prototype.reduce`.
+    * Similar to Javascript's `Array.prototype.reduce`. But unlike its
+    * Array counterpart, if it is not given an `initial` value it will
+    * use `undefined`, rather than using the first list entry.
     */
    List.prototype.reduce = function reduce(f, initial) {
       var i, acc;
