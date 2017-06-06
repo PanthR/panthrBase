@@ -349,6 +349,9 @@ define(function(require) {
     * Returns a sublist as indicated by the provided indices. The indices
     * may be a `Variable`, `Vector` or array, and containing either numeric
     * indices or names (and possibly including missing values).
+    *
+    * Note: This will not clone the entries. If that is the desired effect,
+    * then you can chain the call into a call to `List#clone`.
     */
    List.prototype.index = function(indices) {
       var newList, i, index;
@@ -357,7 +360,7 @@ define(function(require) {
          throw new Error('List indexing must be one-dimensional.');
       }
       /* eslint-disable no-undefined */
-      if (indices === undefined) { return this.clone(); }
+      if (indices === undefined) { return this; }
       /* eslint-enable no-undefined */
       if (indices === null) { return new List({}); }
 
@@ -370,7 +373,7 @@ define(function(require) {
          if (utils.isMissing(index)) {
             newList.push(null);
          } else {
-            newList.push(utils.cloneIfPossible(this.get(index)), this.names(index));
+            newList.push(this.get(index), this.names(index));
          }
       }
 
