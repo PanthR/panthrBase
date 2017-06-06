@@ -250,6 +250,21 @@ define(function(require) {
    };
 
    /**
+    * Synomym for `List#push`.
+    */
+   List.prototype.append = List.prototype.push;
+
+   /**
+    * Prepends a value into the list, with an optional name.
+    */
+   List.prototype.prepend = function prepend(val, name) {
+      this.values.splice(1, 0, val);
+      this._names.splice(1, 0, name == null ? utils.missing : name);
+
+      return this;
+   };
+
+   /**
     * Returns a boolean indicating whether the given index or name
     * exists in the list.
     */

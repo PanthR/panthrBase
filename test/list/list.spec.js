@@ -155,6 +155,24 @@ describe('List push:', function() {
       expect(l.names().toArray()).to.deep.equal(['a', 'b', 'c', 'd']);
    });
 });
+describe('List prepend:', function() {
+   it('works by specifying just a value', function() {
+      var l = new List({ a: 4, b: 7, c: -1 });
+      expect(l).to.respondTo('prepend');
+      expect(function() { l.prepend(5); }).to.not.throw(Error);
+      expect(l.length()).to.equal(4);
+      expect(l.get(1)).to.equal(5);
+      expect(l.names().toArray()).to.deep.equal([utils.missing, 'a', 'b', 'c']);
+   });
+   it('works by specifying a name in addition to a value', function() {
+      var l = new List({ a: 4, b: 7, c: -1 });
+      expect(l).to.respondTo('prepend');
+      expect(function() { l.prepend(5, 'd'); }).to.not.throw(Error);
+      expect(l.length()).to.equal(4);
+      expect(l.get(1)).to.equal(5);
+      expect(l.names().toArray()).to.deep.equal(['d', 'a', 'b', 'c']);
+   });
+});
 describe('List has:', function() {
    it('finds named entry by index', function() {
       var l = new List({a: 4, b: 7, c: -1});
