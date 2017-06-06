@@ -237,10 +237,16 @@ define(function(require) {
    };
 
    /**
-    * Pushes a new (unnamed) value at the end of a list
+    * Pushes a new value at the end of a list, with an optional associated name.
     */
-   List.prototype.push = function push(val) {
-      return this._set(this.length() + 1, val);
+   List.prototype.push = function push(val, name) {
+      var pos;
+
+      pos = this.length() + 1;
+      this._set(pos, val);
+      if (name != null) { this.names(pos, name); }
+
+      return this;
    };
 
    /**
