@@ -201,7 +201,7 @@ define(function(require) {
 
    utils.cloneIfPossible = function(val) {
       return val instanceof Object && val.clone ? val.clone() : val;
-   }
+   };
 
    return utils;
 
