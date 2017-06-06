@@ -342,9 +342,7 @@ define(function(require) {
     * on any top-level items in the list that have a clone method.
     */
    List.prototype.clone = function clone() {
-      return this.map(function(val) {
-         return val instanceof Object && val.clone ? val.clone() : val;
-      });
+      return this.map(utils.cloneIfPossible);
    };
 
    /**
