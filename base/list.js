@@ -346,6 +346,38 @@ define(function(require) {
    };
 
    /**
+    * Returns a sublist as indicated by the provided indices. The indices
+    * may be a `Variable`, `Vector` or array, and containing either numeric
+    * indices or names (and possibly including missing values).
+    */
+   List.prototype.index = function(indices) {
+      var newList, i, index;
+
+      if (arguments.length > 1) {
+         throw new Error('List indexing must be one-dimensional.');
+      }
+      /* eslint-disable no-undefined */
+      if (indices === undefined) { return this.clone(); }
+      /* eslint-enable no-undefined */
+      if (indices === null) { return new List({}); }
+
+      indices = Variable.normalizeIndices(this, indices);
+
+      newList = new List({});
+
+      for (i = 0; i < indices.length; i += 1) {
+         index = indices[i];
+         if (utils.isMissing(index)) {
+            newList.push(null);
+         } else {
+            newList.push(utils.cloneIfPossible(this.get(index)), this.names(index));
+         }
+      }
+
+      return newList;
+   };
+
+   /**
     * Return a `Variable` by concatenating the values from the list's items.
     * Works with items of any of the following types:
     * - single value

@@ -225,3 +225,58 @@ describe('List deepSet:', function() {
       expect(function() { l.deepSet(["a", "c", "x"], 10) }).to.throw(Error);
    });
 });
+
+describe('List#index', function() {
+   var l1 = new List([2, 4, 6]);
+   l1.names(['A', 'B', 'C']);
+   var l2 = new List(['A', 'B']);
+   l2.append(l1);
+   it('returns a clone if no arguments provided', function() {
+      var l = l1.index();
+      expect(l.length()).to.equal(3);
+      expect(l).to.not.equal(l1);
+      expect(l.get(1)).to.equal(l1.get(1));
+      expect(l.get(2)).to.equal(l1.get(2));
+      expect(l.get(3)).to.equal(l1.get(3));
+      l = l2.index();
+      expect(l.length()).to.equal(3);
+      expect(l).to.not.equal(l2);
+      expect(l.get(1)).to.equal(l2.get(1));
+      expect(l.get(2)).to.equal(l2.get(2));
+      expect(l.get(3)).to.not.equal(l2.get(3));
+      expect(l.get(3).get(2)).to.equal(l2.get(3).get(2));
+   });
+   it('returns an empty list if the index "null"', function() {
+      var l = l1.index(null);
+      expect(l.length()).to.equal(0);
+      expect(l).to.not.equal(l1);
+      l = l2.index(null);
+      expect(l.length()).to.equal(0);
+      expect(l).to.not.equal(l2);
+   });
+   it('allows repeated values in indices', function() {
+      var l = l1.index(new Variable([3, 1, 1]));
+      expect(l.length()).to.equal(3);
+      expect(l.get(1)).to.equal(l1.get(3));
+      expect(l.get(2)).to.equal(l1.get(1));
+      expect(l.get(3)).to.equal(l1.get(1));
+
+      l = l2.index(new Variable([3, 3, 1]));
+      expect(l.length()).to.equal(3);
+      expect(l.get(3)).to.equal(l2.get(1));
+      expect(l.get(1)).to.not.equal(l2.get(3));
+      expect(l.get(2)).to.not.equal(l2.get(2));
+      expect(l.get(1)).to.not.equal(l.get(2));
+      expect(l.get(1).get(2)).to.equal(l2.get(3).get(2));
+      expect(l.get(2).get(2)).to.equal(l2.get(3).get(2));
+   });
+   it('uses named coordinates correctly', function() {
+      var l = l1.index(new Variable(['A', 'A', 'C']));
+      expect(l.length()).to.equal(3);
+      expect(l.get(1)).to.equal(l1.get(1));
+      expect(l.get(2)).to.equal(l1.get(1));
+      expect(l.get(3)).to.equal(l1.get(3));
+      expect(l.names().toArray()).to.deep.equal(['A', 'A', 'C']);
+   });
+});
+

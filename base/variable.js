@@ -347,6 +347,8 @@ define(function(require) {
       return 'scalar';
    };
 
+   Object.defineProperty(Variable, 'normalizeIndices', { value: normalizeIndices });
+
    /**
     * Convert the variable to a target mode. Currently only offers the following
     * target modes: logical, string, scalar
