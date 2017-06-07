@@ -59,10 +59,16 @@ define(function(require) {
    };
 
    /**
+    * Returns a single column, without cloning
+    */
+   Dataset.prototype.getCol = function getCol(col) {
+      return List.prototype.get.call(this, col);
+   };
+   /**
     * Get a single column (variable). `col` is a positive number or string name.
     */
    Dataset.prototype.getVar = function getVar(col) {
-      return List.prototype.get.call(this, col).clone();
+      return this.getCol(col).clone();
    };
 
    /**
@@ -88,10 +94,18 @@ define(function(require) {
       }.bind(this));
    };
 
+   Dataset.prototype.each = function each(f) {
+      var i;
+
+      for (i = 1; i <= this.length(); i += 1) {
+         f(this.getCol(i), i, this.names(i));
+      }
+      return this;
+   };
    /**
     * Wrapper for `List#each`.
     */
-   Dataset.prototype.eachCol = List.prototype.each;
+   Dataset.prototype.eachCol = Dataset.prototype.each;
 
    /**
     * Return a subset of the values in the dataset. This method may be called with
@@ -258,7 +272,7 @@ define(function(require) {
       if (values.nrow !== this.nrow) {
          throw new Error('mismatch -- Dataset.nrow and num rows in new columns');
       }
-      List.prototype.each.call(values, function(val, i, name) {
+      values.eachCol(function(val, i, name) {
          List.prototype.set.call(that, len + i, val).names(len + i, name);
       });
       that.ncol += values.ncol;
