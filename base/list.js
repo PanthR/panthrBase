@@ -44,6 +44,8 @@ define(function(require) {
 
    List.prototype = Object.create({});
 
+   List.View = require('./list/listView')(List);
+
    /* eslint-disable complexity */
    /**
     * Get or set the item names.
@@ -311,7 +313,7 @@ define(function(require) {
     * use `undefined`, rather than using the first list entry.
     */
    List.prototype.reduce = function reduce(f, initial) {
-      var i, acc;
+      var acc;
 
       acc = initial;
       this.each(function(val, i, name) {
@@ -355,8 +357,6 @@ define(function(require) {
     * then you can chain the call into a call to `List#clone`.
     */
    List.prototype.index = function(indices) {
-      var newList, i, index;
-
       if (arguments.length > 1) {
          throw new Error('List indexing must be one-dimensional.');
       }
@@ -367,18 +367,7 @@ define(function(require) {
 
       indices = Variable.normalizeIndices(this, indices);
 
-      newList = new List({});
-
-      for (i = 0; i < indices.length; i += 1) {
-         index = indices[i];
-         if (utils.isMissing(index)) {
-            newList.push(null);
-         } else {
-            newList.push(this.get(index), this.names(index));
-         }
-      }
-
-      return newList;
+      return new List.View(this, indices);
    };
 
    /**
