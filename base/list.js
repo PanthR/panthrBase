@@ -294,7 +294,7 @@ define(function(require) {
       var i;
 
       for (i = 1; i <= this.length(); i += 1) {
-         f(this.values[i], i, this._names[i]);
+         f(this.get(i), i, this.names(i));
       }
       return this;
    };
@@ -314,9 +314,10 @@ define(function(require) {
       var i, acc;
 
       acc = initial;
-      for (i = 1; i <= this.length(); i += 1) {
-         acc = f(acc, this.values[i], i, this._names[i]);
-      }
+      this.each(function(val, i, name) {
+         acc = f(acc, val, i, name);
+      });
+
       return acc;
    };
 
