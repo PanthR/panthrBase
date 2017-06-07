@@ -457,7 +457,7 @@ define(function(require) {
    List.prototype.unnest = function unnest(levels) {
       var i;
 
-      if (arguments.length === 0) { levels = 1; }
+      if (levels == null) { levels = 1; }
       if (levels === 0) { return this; }
       if (levels > 1) {
          this.each(function(e) {
