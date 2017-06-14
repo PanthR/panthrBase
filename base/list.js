@@ -371,6 +371,33 @@ define(function(require) {
    };
 
    /**
+    * Set the entries of the list specified by `indices` to the values specified
+    * by `values`, possibly recycled if needed. If `indices` is `undefined`, it
+    * behaves as if indices equals "1:length".
+    */
+   List.prototype.indexSet = function(values, indices) {
+      var theView, valueIndices;
+
+      if (arguments.length > 2) {
+         throw new Error('List indexing must be one-dimensional.');
+      }
+      if (indices === null) { return this; }
+
+      /* eslint-disable no-undefined */
+      if (indices === undefined) { indices = Variable.seq(this.length()); }
+      /* eslint-enable no-undefined */
+
+      indices = Variable.normalizeIndices(this, indices);
+      theView = new List.View(this, indices);
+      valueIndices = Variable.seq(values.length())
+                        .resize(theView.length(), true);
+      theView.each(function(v, i) {
+         theView.set(i, values.get(valueIndices.get(i)));
+      });
+
+      return this;
+   };
+   /**
     * Return a `Variable` by concatenating the values from the list's items.
     * Works with items of any of the following types:
     * - single value
