@@ -225,6 +225,7 @@ define(function(require) {
       if (typeof i === 'number') {
          i = Math.floor(i);
          if (i < 1) { throw new Error('cannot set at negative index: ' + i); }
+         if (i > this.length()) { this._names[i] = utils.missing; }
          this.values[i] = val;
       } else {
          name = i;
