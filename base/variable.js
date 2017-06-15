@@ -530,13 +530,15 @@ define(function(require) {
      * - If `i` is a logical variable, it must have the same length as the original
      * variable, in which case set the values which correspond to the `true`
      * values in `i`.
+     * - If `i` is out of bounds then the variable will be resized first, using
+     * `Variable#resize`.
      *
      * In all cases, if there are any null/undefined/NaN indices, an error occurs.
      *
-     * This method cannot be used to append values. To set values out of bounds,
-     * call `Variable#resize` first.
      */
    Variable.prototype.set = function set(i, val) {
+      var maxIndex;
+
       i = normalizeIndices(this, i);
       val = val instanceof Variable ? val.get() : normalizeValue(val, i);
       /* eslint-disable no-extra-parens */
@@ -544,6 +546,15 @@ define(function(require) {
       /* eslint-enable */
          throw new Error('Missing indices not allowed in "set"');
       }
+      maxIndex = Array.isArray(i) ? i.reduce(function(acc, v) {
+         return acc < v ? v : acc;
+      }, -Infinity)
+         : i;
+
+      if (maxIndex > this.length()) {
+         this.resize(maxIndex, false);
+      }
+
       return this._set(i, val);
    };
 
