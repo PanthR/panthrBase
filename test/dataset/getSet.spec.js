@@ -91,7 +91,9 @@ describe('Dataset', function() {
          expect(dSet.set(2, 1, function(i, j) { return i + (2*j); })
             .get(2, 'a')).to.equal(4);
          expect(dSet.set(2, 3, function(i, j) { return 1; }).get(2, 3)).to.equal('A');
-         expect(function() {dSet.set(4, 1, 2); }).to.throw(Error);
+         dSet.set(4, 1, 2)
+         expect(dSet.get(4,1)).to.equal(2);
+         expect(utils.isMissing(dSet.get(4,2))).to.equal(true);
       });
       it('can set a whole column', function() {
          expect(dSet.setVar('a', new Variable(['e', 'e', 'f']))
@@ -135,14 +137,6 @@ describe('Dataset', function() {
          expect(dSet.set(2, [1,2], dSet.get(1, [1,2])).getVar(1).toArray()).to.deep.equal([4,4,3]);
          expect(dSet.set(2, [1,2], dSet.get(1, [1,2])).getVar(2).toArray())
             .to.deep.equal([7,7,7]);
-      });
-      it('errors when setting out of current dims', function() {
-         expect(function() { dSet.set(4, [1,4,5]); }).to.throw(Error);
-         expect(function() { dSet.set(4, true, [1,4,5]); }).to.throw(Error);
-         expect(function() { dSet.set(4, 1, 2); }).to.throw(Error);
-         expect(dSet.getVar(1).toArray()).to.deep.equal([1,2,3]);
-         expect(dSet.getVar(2).toArray()).to.deep.equal([5,6,7]);
-         expect(dSet.getVar(3).toArray()).to.deep.equal(['A', 'B', 'B']);
       });
    });
    describe('appendRows', function() {

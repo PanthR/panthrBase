@@ -196,6 +196,8 @@ define(function(require) {
             return vals(i, j, that.names(j));
          });
       });
+      validateLengths(this, true);
+
       return this;
    };
 
@@ -348,14 +350,32 @@ define(function(require) {
    };
 
    // Throw error if there are variables of unequal length
-   function validateLengths(dSet) {
-      dSet.reduce(function(acc, val) {
-         if (acc === null) { return val.length(); }
-         if (acc !== val.length()) {
+   // If `fix` is true, resize the variables to max length
+   function validateLengths(dSet, fix) {
+      var equalLengths, maxLength;
+
+      fix = fix === true; // default it to false
+      equalLengths = true;
+      maxLength = dSet.reduce(function(acc, val) {
+         var length;
+
+         length = val.length();
+         if (acc === null) { return length; }
+         if (acc === length) { return acc; }
+         if (!fix) {
             throw new Error('Dataset columns have unequal length.');
          }
-         return acc;
+         equalLengths = false;
+
+         return acc < length ? length : acc;
       }, null);
+
+      if (!equalLengths && fix) {
+         dSet.eachCol(function(col) {
+            if (col.length() < maxLength) { col.resize(maxLength); }
+         });
+      }
+
       return dSet;
    }
 
