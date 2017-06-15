@@ -144,7 +144,7 @@ describe('List push:', function() {
       expect(function() { l.push(5); }).to.not.throw(Error);
       expect(l.length()).to.equal(4);
       expect(l.get(4)).to.equal(5);
-      expect(l.names().toArray()).to.deep.equal(['a', 'b', 'c']);
+      expect(l.names().toArray().slice(0, 3)).to.deep.equal(['a', 'b', 'c']);
    });
    it('works by specifying a name in addition to a value', function() {
       var l = new List({a: 4, b: 7, c: -1});
