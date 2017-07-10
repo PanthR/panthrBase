@@ -508,11 +508,13 @@ define(function(require) {
       /* eslint-disable no-undefined */
       if (indices === undefined) {
         // Global set
-        this.set(Variable.seq(1, this.length()), values);
+        return this.set(Variable.seq(1, this.length()), values);
       /* eslint-enable no-undefined */
       } else if (indices !== null) {
-        this.set(indices, values);
+        return this.set(indices, values);
       }
+
+      return this;
    };
    /**
      * Set the entries indicated by `i` to the values indicated by `val`.

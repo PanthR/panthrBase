@@ -290,6 +290,23 @@ define(function(require) {
    };
 
    /**
+    * Resize the list, either by truncating or by padding with missing values.
+    */
+   List.prototype.resize = function resize(length) {
+      var currLen;
+
+      currLen = this.length();
+      if (length < currLen) {
+         this.values = this.values.slice(0, length + 1);
+         this._names = this._names.slice(0, length + 1);
+      } else if (length > currLen) {
+         this.set(length, utils.missing);
+      }
+
+      return this;
+   };
+
+   /**
    * Apply the function `f(val, i, name)` to each item in the list.  For any
    * items with no associated name, `name` will be `utils.missing`.
    */

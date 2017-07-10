@@ -226,6 +226,30 @@ describe('List deepSet:', function() {
    });
 });
 
+describe('List resize:', function() {
+   it('can make a list shorter', function() {
+      var l = new List({a: 7, b: 9});
+      l.resize(1);
+      expect(l.length()).to.equal(1);
+      expect(l.get(1)).to.equal(7);
+      expect(utils.isMissing(l.get(2))).to.equal(true);
+      expect(utils.isMissing(l.get('b'))).to.equal(true);
+      l.resize(0);
+      expect(l.length()).to.equal(0);
+      expect(utils.isMissing(l.get(1))).to.equal(true);
+   });
+   it('can make a list longer', function() {
+      var l = new List({a: 7, b: 9});
+      l.resize(5);
+      expect(l.length()).to.equal(5);
+      expect(l.get(1)).to.equal(7);
+      expect(l.get('b')).to.equal(9);
+      expect(utils.isMissing(l.get(3))).to.equal(true);
+      expect(utils.isMissing(l.get(4))).to.equal(true);
+      expect(utils.isMissing(l.get(5))).to.equal(true);
+   });
+});
+
 describe('List#index', function() {
    var l1 = new List([2, 4, 6]);
    l1.names(['A', 'B', 'C']);
