@@ -43,6 +43,7 @@ define(function(require) {
    }
 
    List.prototype = Object.create({});
+   List.prototype.constructor = List;
 
    List.View = require('./list/listView')(List);
 
@@ -353,7 +354,7 @@ define(function(require) {
       this.each(function(val, i, name) {
          arr.push(f(val, i, name));
       });
-      return (new List(arr)).names(
+      return (new this.constructor(arr)).names(
          utils.optionMap(this.names(), function(nms) { return nms.toArray(); })
       );
    };
