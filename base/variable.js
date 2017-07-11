@@ -478,7 +478,7 @@ define(function(require) {
 
       indices = normalizeIndices(this, indices);
 
-      return this.reproduce(this.values.get(indices));
+      return this.select(indices);
    };
 
    /**
@@ -657,6 +657,7 @@ define(function(require) {
     */
    Variable.prototype.select = function select(indices) {
       indices = Variable.oneDimToArray(indices);
+
       return !utils.isMissing(this._names) ?
          this.reproduce(this.values.get(indices), this.names().get(indices))
          : this.reproduce(this.values.get(indices));
@@ -878,12 +879,14 @@ define(function(require) {
          someNegatives = ind.some(function(val) {
             return typeof val === 'number' && val < 0;
          });
-         if (allNegOrZero) {
-            ind = v.values.map(function(val, k) {
-               return ind.indexOf(-k) === -1 ? k : 0;
-            }).toArray();
-         } else if (someNegatives) {
-            throw new Error('Cannot use both positive and negative indices.');
+         if (someNegatives) {
+            if (allNegOrZero) {
+               ind = v.values.map(function(val, k) {
+                  return ind.indexOf(-k) === -1 ? k : 0;
+               }).toArray();
+            } else {
+               throw new Error('Cannot use both positive and negative indices.');
+            }
          }
          // ind contains only null, nonnegative integers, or strings at this point
          ind = ind.map(resolveIndex(v.names()))

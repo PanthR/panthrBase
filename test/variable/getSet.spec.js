@@ -28,9 +28,23 @@ describe('Variable#get', function() {
       expect(v4.get(4)).to.equal(true);
    });
    it('places null in for missing/nan indices', function() {
-      expect(utils.areEqualArrays(v1.get([1, undefined, 2]), [2.12, utils.missing, -12.2])).to.be.true;
-      expect(utils.areEqualArrays(v1.get([1, null, 2]), [2.12, utils.missing, -12.2])).to.be.true;
-      expect(utils.areEqualArrays(v1.get([1, NaN, 2]), [2.12, utils.missing, -12.2])).to.be.true;
+      var newV1, newV6;
+
+      newV1 = v1.clone();
+      newV6 = v6.clone();
+
+      newV1.names(["a","b"]);
+      newV6.names(["p","q"]);
+      expect(utils.areEqualArrays(v1.get([NaN]), [utils.missing])).to.equal(true);
+      expect(utils.areEqualArrays(v6.get([NaN]), [utils.missing])).to.equal(true);
+      expect(utils.areEqualArrays(v1.get([1, undefined, 2]), [2.12, utils.missing, -12.2])).to.equal(true);
+      expect(utils.areEqualArrays(v1.get([1, null, 2]), [2.12, utils.missing, -12.2])).to.equal(true);
+      expect(utils.areEqualArrays(v1.get([1, NaN, 2]), [2.12, utils.missing, -12.2])).to.equal(true);
+      expect(utils.areEqualArrays(newV1.get([NaN]), [utils.missing])).to.equal(true);
+      expect(utils.areEqualArrays(newV6.get([NaN]), [utils.missing])).to.equal(true);
+      expect(utils.areEqualArrays(newV1.get([1, undefined, 2]), [2.12, utils.missing, -12.2])).to.equal(true);
+      expect(utils.areEqualArrays(newV1.get([1, null, 2]), [2.12, utils.missing, -12.2])).to.equal(true);
+      expect(utils.areEqualArrays(newV1.get([1, NaN, 2]), [2.12, utils.missing, -12.2])).to.equal(true);
    });
    it('returns null when out of bounds', function() {
       expect(utils.equal(v1.get(0), null)).to.be.true;
